@@ -40,7 +40,6 @@ ALPHA [a-zA-Z]
 [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn] {
     col += yyleng;
     return KFUNC;
-
 }
 [Pp][Rr][Oo][Cc][Ee][Dd][Uu][Rr][Ee] {
     col += yyleng;
@@ -100,7 +99,18 @@ ALPHA [a-zA-Z]
     col += yyleng;
     return KAND;
 }
-
+[Bb][Oo][Ll][Ee][Aa][Nn] {
+    col += yyleng;
+    return KBOOL;
+}
+[Tt][Rr][Uu][Ee] {
+    col += yyleng;
+    return KTRUE;
+}
+[Ff][Aa][Ll][Ss][Ee] {
+    col += yyleng;
+    return KFALSE;
+}
 ({ALPHA}|_)({ALPHA}|{DIGIT}|_)* {
     col += yyleng;
     return KIDENT;
@@ -112,7 +122,10 @@ ALPHA [a-zA-Z]
 }
 
 
-
+":=" {
+    col += yyleng;
+    return KASSIGNE;
+}
 [(),{}+=*;-] {
     col += yyleng;
     return *yytext;

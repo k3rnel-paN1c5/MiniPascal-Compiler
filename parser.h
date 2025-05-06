@@ -43,23 +43,27 @@
      KVAR = 259,
      KINT = 260,
      KREAL = 261,
-     KFUNC = 262,
-     KPROC = 263,
-     KWHILE = 264,
-     KDO = 265,
-     KBEGIN = 266,
-     KEND = 267,
-     KIF = 268,
-     KTHEN = 269,
-     KELSE = 270,
-     KARRAY = 271,
-     KOF = 272,
-     KDIV = 273,
-     KNOT = 274,
-     KOR = 275,
-     KAND = 276,
-     KIDENT = 277,
-     KINTNUM = 278
+     KBOOL = 262,
+     KFUNC = 263,
+     KPROC = 264,
+     KWHILE = 265,
+     KDO = 266,
+     KBEGIN = 267,
+     KEND = 268,
+     KIF = 269,
+     KTHEN = 270,
+     KELSE = 271,
+     KARRAY = 272,
+     KOF = 273,
+     KDIV = 274,
+     KNOT = 275,
+     KOR = 276,
+     KAND = 277,
+     KASSIGNE = 278,
+     KIDENT = 279,
+     KINTNUM = 280,
+     KTRUE = 281,
+     KFALSE = 282
    };
 #endif
 /* Tokens.  */
@@ -67,23 +71,27 @@
 #define KVAR 259
 #define KINT 260
 #define KREAL 261
-#define KFUNC 262
-#define KPROC 263
-#define KWHILE 264
-#define KDO 265
-#define KBEGIN 266
-#define KEND 267
-#define KIF 268
-#define KTHEN 269
-#define KELSE 270
-#define KARRAY 271
-#define KOF 272
-#define KDIV 273
-#define KNOT 274
-#define KOR 275
-#define KAND 276
-#define KIDENT 277
-#define KINTNUM 278
+#define KBOOL 262
+#define KFUNC 263
+#define KPROC 264
+#define KWHILE 265
+#define KDO 266
+#define KBEGIN 267
+#define KEND 268
+#define KIF 269
+#define KTHEN 270
+#define KELSE 271
+#define KARRAY 272
+#define KOF 273
+#define KDIV 274
+#define KNOT 275
+#define KOR 276
+#define KAND 277
+#define KASSIGNE 278
+#define KIDENT 279
+#define KINTNUM 280
+#define KTRUE 281
+#define KFALSE 282
 
 
 
