@@ -29,7 +29,7 @@
 %token KNOT
 %token KOR
 %token KAND
-%token KASSIGNE
+%token KASSIGN
 %token KIDENT
 %token KINTNUM
 %token KREALNUM
@@ -98,7 +98,7 @@ optional_stmts: stmt_list
 stmt_list: stmt 
         | stmt_list ';' stmt
 ;
-stmt: variable KASSIGNE exp
+stmt: variable KASSIGN exp
     | proc_stmt
     | comp_stmt
     | KIF exp KTHEN stmt %prec IF_PREC

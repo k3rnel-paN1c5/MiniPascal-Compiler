@@ -130,7 +130,7 @@ ALPHA [a-zA-Z]
 
 ":=" {
     col += yyleng;
-    return KASSIGNE;
+    return KASSIGN;
 }
 ">" {
     col += yyleng;
