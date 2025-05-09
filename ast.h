@@ -69,7 +69,7 @@ class Prog : Node
     Decs *declarations;
     SubDecs *subDeclarations;
     CompStmt *compoundStatment;
-    Prog(int , Ident *, Decs *, SubDecs *, CompStmt *, int, int);
+    Prog(Ident *, Decs *, SubDecs *, CompStmt *, int, int);
 };
 
 
