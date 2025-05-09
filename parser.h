@@ -39,32 +39,32 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     KPROGRAM = 258,
-     KVAR = 259,
-     KINT = 260,
-     KREAL = 261,
-     KBOOL = 262,
-     KFUNC = 263,
-     KPROC = 264,
-     KWHILE = 265,
-     KDO = 266,
-     KBEGIN = 267,
-     KEND = 268,
-     KIF = 269,
-     KTHEN = 270,
-     KELSE = 271,
-     KARRAY = 272,
-     KOF = 273,
-     KMOD = 274,
-     KNOT = 275,
-     KOR = 276,
-     KAND = 277,
-     KASSIGNE = 278,
-     KIDENT = 279,
-     KINTNUM = 280,
-     KREALNUM = 281,
-     KTRUE = 282,
-     KFALSE = 283,
+     KINT = 258,
+     KREAL = 259,
+     KBOOL = 260,
+     KFUNC = 261,
+     KPROC = 262,
+     KWHILE = 263,
+     KARRAY = 264,
+     KIDENT = 265,
+     KINTNUM = 266,
+     KREALNUM = 267,
+     KTRUE = 268,
+     KFALSE = 269,
+     KPROGRAM = 270,
+     KVAR = 271,
+     KDO = 272,
+     KBEGIN = 273,
+     KEND = 274,
+     KIF = 275,
+     KTHEN = 276,
+     KELSE = 277,
+     KOF = 278,
+     KMOD = 279,
+     KNOT = 280,
+     KOR = 281,
+     KAND = 282,
+     KASSIGN = 283,
      KGT = 284,
      KLT = 285,
      KGE = 286,
@@ -80,32 +80,32 @@
    };
 #endif
 /* Tokens.  */
-#define KPROGRAM 258
-#define KVAR 259
-#define KINT 260
-#define KREAL 261
-#define KBOOL 262
-#define KFUNC 263
-#define KPROC 264
-#define KWHILE 265
-#define KDO 266
-#define KBEGIN 267
-#define KEND 268
-#define KIF 269
-#define KTHEN 270
-#define KELSE 271
-#define KARRAY 272
-#define KOF 273
-#define KMOD 274
-#define KNOT 275
-#define KOR 276
-#define KAND 277
-#define KASSIGNE 278
-#define KIDENT 279
-#define KINTNUM 280
-#define KREALNUM 281
-#define KTRUE 282
-#define KFALSE 283
+#define KINT 258
+#define KREAL 259
+#define KBOOL 260
+#define KFUNC 261
+#define KPROC 262
+#define KWHILE 263
+#define KARRAY 264
+#define KIDENT 265
+#define KINTNUM 266
+#define KREALNUM 267
+#define KTRUE 268
+#define KFALSE 269
+#define KPROGRAM 270
+#define KVAR 271
+#define KDO 272
+#define KBEGIN 273
+#define KEND 274
+#define KIF 275
+#define KTHEN 276
+#define KELSE 277
+#define KOF 278
+#define KMOD 279
+#define KNOT 280
+#define KOR 281
+#define KAND 282
+#define KASSIGN 283
 #define KGT 284
 #define KLT 285
 #define KGE 286
@@ -123,7 +123,44 @@
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef union YYSTYPE
+#line 13 "parser.y"
+{
+    // AST Nodes
+    Prog* tProg;
+    Ident* tIdent;
+    Decs* tDecs;
+    IdentList* tIdentlist;
+    Type* tType;
+    StdType* tStdtype;
+    Array* tArray;
+    SubDecs* tSubdecs;
+    SubDec* tSubdec;
+    SubHead* tSubhead;
+    Func* tFunc;
+    Proc* tProc;
+    Args* tArgs;
+    ParList* tParlist;
+    CompStmt* tCompstmt;
+    OptionalStmts* tOptionalstmts;
+    StmtList* tStmtlist;
+    Stmt* tStmt;
+    ExpList* tExplist;
+    Exp* tExp;
+    Var* tVar;
+    ProcStmt* tProcstmt;
+    BinOp* tBinop;
+    While* tWhile;
+
+    Integer*  tInt;
+    Real* tReal;
+    Bool* tBool;
+
+
+}
+/* Line 1529 of yacc.c.  */
+#line 163 "parser.h"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

@@ -106,14 +106,17 @@ ALPHA [a-zA-Z]
 }
 [Tt][Rr][Uu][Ee] {
     col += yyleng;
+    yylval.tBool = new Bool(true, lin, col);
     return KTRUE;
 }
 [Ff][Aa][Ll][Ss][Ee] {
     col += yyleng;
+    yylval.tBool = new Bool(false, lin, col);
     return KFALSE;
 }
 ({ALPHA}|_)({ALPHA}|{DIGIT}|_)* {
     col += yyleng;
+    yylval.tIdent = new Ident(strdup(yytext), lin, col);
     return KIDENT;
 }
 0{DIGIT}+ {
@@ -122,9 +125,11 @@ ALPHA [a-zA-Z]
 }
  (0|([1-9]{DIGIT}*)) {
     col += yyleng;
+    yylval.tInt = new Integer(atoi(yytext), lin, col);
     return KINTNUM;
 }
 (({DIGIT}+\.{DIGIT}*([e|E][+-]?{DIGIT}+)?)|(\.{DIGIT}+([e|E][+-]?{DIGIT}+)?)|({DIGIT}+[e|E][+-]?{DIGIT}+)) {
+    yylval.tReal = new Real(atof(yytext), lin, col);
     return KREALNUM;
 }
 

@@ -5,6 +5,7 @@
 using namespace std;
 
 class Node;
+class Stmt;
 class Prog;
 class Ident;
 class Decs;
@@ -12,6 +13,7 @@ class ParDec;
 class IdentList;
 class SubDecs;
 class SubDec;
+class SubHead;
 class Func;
 class Args;
 class ParList;
@@ -19,7 +21,6 @@ class Proc;
 class CompStmt;
 class OptionalStmts;
 class StmtList;
-class Stmt;
 class Var;
 class Exp;
 class Assign;
@@ -33,11 +34,8 @@ class StdType;
 class IdExpr;
 class Integer;
 class Real;
-class Boolean;
+class Bool;
 class Array;
-class IntNum;
-class RealNum;
-class BoolVal;
 class BinOp;
 class Add;
 class Sub;
@@ -110,13 +108,12 @@ public:
 class Type : public Node
 {
 public:
-    TypeEnum typ;
-    Type(TypeEnum, int, int);
+    Type(int, int);
 };
 class StdType : public Type
 {
 public:
-
+    TypeEnum type;
     StdType(TypeEnum, int, int);
 };
 class Array : public Type
@@ -124,7 +121,8 @@ class Array : public Type
 public:
     int beginIndex;
     int endIndex;
-    Array(int, int, TypeEnum, int, int);
+    StdType* stdType;
+    Array(int, int, StdType* , int, int);
 };
 
 class SubDecs : public Node 
@@ -137,9 +135,16 @@ public:
 class SubDec : public Node 
 {
 public: 
-    SubDec(int, int);
+    SubHead* subHead;
+    CompStmt* compStmt;
+    SubDec(SubHead*, CompStmt*, int, int);
 };
-class Func : public SubDec 
+class SubHead : public Node
+{
+public:
+    SubHead(int, int);
+};
+class Func : public SubHead 
 {
 public:
     Ident* id;
@@ -147,7 +152,7 @@ public:
     StdType* typ;
     Func(Ident*, Args*, StdType*, int, int);
 };
-class Proc : public SubDec 
+class Proc : public SubHead 
 {
 public:
     Ident* id;
@@ -165,30 +170,31 @@ class ParList : public Node
 public:
     vector<ParDec*> * parList;
     ParList(ParDec*, int, int);
-};
-class CompStmt : public Stmt 
-{
-public:
-    OptionalStmts* optitonalStmts;
-    CompStmt(OptionalStmts*, int, int);
+    void AddDec(ParDec*);
 };
 class OptionalStmts : public Node
 {
-public:
+    public:
     StmtList* stmtList;
     OptionalStmts(StmtList*,int, int);
 };
 class StmtList : public Node 
 {
-public:
+    public:
     vector<Stmt*> * stmts;
     StmtList(Stmt*, int, int);
     void AddStmt(Stmt*);
 };
 class Stmt : public Node 
 {
-public:     
+    public:     
     Stmt(int, int);
+};
+class CompStmt : public Stmt 
+{
+public:
+    OptionalStmts* optitonalStmts;
+    CompStmt(OptionalStmts*, int, int);
 };
 class Assign : public Stmt
 {
@@ -222,5 +228,142 @@ public:
     Ident* id;
     IdExp(Ident*, int, int);
 };
+class Integer : public Exp
+{
+public:
+    int val;
+    Integer(int, int, int);
+};
+class Real : public Exp
+{
+public:
+    float val;
+    Real(float, int, int);
+};
+class Bool : public Exp
+{
+public:
+    bool val;
+    Bool(bool, int, int);
+};
+class FuncCall : public Exp
+{
+public:
+    Ident* id;
+    ExpList* exps;
+    FuncCall(Ident*, ExpList*, int, int);
+};
+class Not: public Exp
+{
+public:
+    Exp* exp;
+    Not(Exp* , int, int);
+};
+class BinOp : public Exp 
+{
+public:
+    Exp* leftExp;
+    Exp* rightExp;
+    BinOp(Exp*, Exp*, int, int);
+};
+class Add : public BinOp 
+{
+public:
+    Add(Exp*, Exp*, int, int);
+};
+class Sub : public BinOp 
+{
+public:
+    Sub(Exp*, Exp*, int, int);
+};
+class Mult : public BinOp 
+{
+public:
+    Mult(Exp*, Exp*, int, int);
+};
+class Divide : public BinOp 
+{
+public:
+    Divide(Exp*, Exp*, int, int);
+};
+class Mod : public BinOp 
+{
+public:
+    Mod(Exp*, Exp*, int, int);
+};
+class GT : public BinOp 
+{
+public:
+    GT(Exp*, Exp*, int, int);
+};
+class LT : public BinOp 
+{
+public:
+    LT(Exp*, Exp*, int, int);
+};
+class GE : public BinOp 
+{
+public:
+    GE(Exp*, Exp*, int, int);
+};
+class LE : public BinOp 
+{
+public:
+    LE(Exp*, Exp*, int, int);
+};
+class ET : public BinOp 
+{
+public:
+    ET(Exp*, Exp*, int, int);
+};
+class NE : public BinOp 
+{
+public:
+    NE(Exp*, Exp*, int, int);
+};
+class And : public BinOp 
+{
+public:
+    And(Exp*, Exp*, int, int);
+};
+class Or : public BinOp 
+{
+public:
+    Or(Exp*, Exp*, int, int);
+};
+class IfThen : public Stmt
+{
+public: 
+    Exp* expr;
+    Stmt* stmt;
+    IfThen(Exp* , Stmt*, int, int);
+};
+class IfThenElse : public Stmt
+{
+public: 
+    Exp* expr;
+    Stmt* trueStmt;
+    Stmt* falseStmt;
+    IfThenElse(Exp* , Stmt*, Stmt*, int, int);
+};
+class While : public Stmt
+{
+public: 
+    Exp* expr;
+    Stmt* stmt;
+    While(Exp* , Stmt*, int, int);
+};
 
+class Var : public Node
+{
+public:
+    Ident* id;
+    Var(Ident*, int, int);
+};
+class ArrayElement : public Var
+{
+public:
+    Exp* index;
+    ArrayElement(Ident*, Exp*, int, int);
+};
 #endif

@@ -1,5 +1,8 @@
+#include "ast.h"
+#include "parser.h"
 extern int yydebug;
 extern int yyparse();
+extern Func* root;
 
 
 int main() {
