@@ -85,7 +85,7 @@ ALPHA [a-zA-Z]
 }
 [Dd][Ii][Vv] {
     col += yyleng;
-    return KDIV;
+    return KMOD;
 }
 [Nn][Oo][Tt] {
     col += yyleng;
@@ -115,21 +115,67 @@ ALPHA [a-zA-Z]
     col += yyleng;
     return KIDENT;
 }
-
-0|[1-9]{DIGIT}* {
+0{DIGIT}+ {
+    col += yyleng;
+    cout <<"Lexical Error(Leading Zeros) at column: " << col << " row: " << lin+1  << endl;
+}
+ (0|([1-9]{DIGIT}*)) {
     col += yyleng;
     return KINTNUM;
 }
-
+(({DIGIT}+\.{DIGIT}*([e|E][+-]?{DIGIT}+)?)|(\.{DIGIT}+([e|E][+-]?{DIGIT}+)?)|({DIGIT}+[e|E][+-]?{DIGIT}+)) {
+    return KREALNUM;
+}
 
 ":=" {
     col += yyleng;
     return KASSIGNE;
 }
-[(),{}+=*;-] {
+">" {
+    col += yyleng;
+    return KGT;
+}
+"<" {
+    col += yyleng;
+    return KLT;
+}
+">=" {
+    col += yyleng;
+    return KGE;
+}
+"<=" {
+    col += yyleng;
+    return KLE;
+}
+"=" {
+    col += yyleng;
+    return KET;
+}
+"<>" {
+    col += yyleng;
+    return KNE;
+}
+"+" {
+    col += yyleng;
+    return KADD;
+}
+"-" {
+    col += yyleng;
+    return KSUB;
+}
+"/" {
+    col += yyleng;
+    return KDIVIDE;
+}
+"*" {
+    col += yyleng;
+    return KMULT;
+}
+
+[(),{};:] {
     col += yyleng;
     return *yytext;
-    }
+}
 
 
 

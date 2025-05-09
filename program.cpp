@@ -3,7 +3,7 @@ extern int yyparse();
 
 
 int main() {
-    yydebug = 0;  // Enable debug if needed
+    yydebug = 1;  // Enable debug if needed
     yyparse(); 
     return 0;
 }

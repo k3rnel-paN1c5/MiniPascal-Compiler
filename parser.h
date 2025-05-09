@@ -55,15 +55,26 @@
      KELSE = 271,
      KARRAY = 272,
      KOF = 273,
-     KDIV = 274,
+     KMOD = 274,
      KNOT = 275,
      KOR = 276,
      KAND = 277,
      KASSIGNE = 278,
      KIDENT = 279,
      KINTNUM = 280,
-     KTRUE = 281,
-     KFALSE = 282
+     KREALNUM = 281,
+     KTRUE = 282,
+     KFALSE = 283,
+     KGT = 284,
+     KLT = 285,
+     KGE = 286,
+     KLE = 287,
+     KET = 288,
+     KNE = 289,
+     KMULT = 290,
+     KADD = 291,
+     KSUB = 292,
+     KDIVIDE = 293
    };
 #endif
 /* Tokens.  */
@@ -83,15 +94,26 @@
 #define KELSE 271
 #define KARRAY 272
 #define KOF 273
-#define KDIV 274
+#define KMOD 274
 #define KNOT 275
 #define KOR 276
 #define KAND 277
 #define KASSIGNE 278
 #define KIDENT 279
 #define KINTNUM 280
-#define KTRUE 281
-#define KFALSE 282
+#define KREALNUM 281
+#define KTRUE 282
+#define KFALSE 283
+#define KGT 284
+#define KLT 285
+#define KGE 286
+#define KLE 287
+#define KET 288
+#define KNE 289
+#define KMULT 290
+#define KADD 291
+#define KSUB 292
+#define KDIVIDE 293
 
 
 

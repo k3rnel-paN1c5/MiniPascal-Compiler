@@ -24,15 +24,27 @@
 %token KELSE
 %token KARRAY
 %token KOF
-%token KDIV
+%token KMOD
 %token KNOT
 %token KOR
 %token KAND
 %token KASSIGNE
 %token KIDENT
 %token KINTNUM
+%token KREALNUM
 %token KTRUE
 %token KFALSE
+%token KGT
+%token KLT
+%token KGE
+%token KLE
+%token KET
+%token KNE
+%token KMULT
+%token KADD
+%token KSUB
+%token KDIVIDE
+
 
 
 %%
@@ -51,8 +63,7 @@ std_type: KINT
         | KREAL 
         | KBOOL
 ;
-sub_declarations: sub_declarations
-                | sub_dec ';'
+sub_declarations: sub_declarations sub_dec ';'
                 | /* empty */
 ;
 sub_dec: sub_head comp_stmt
@@ -96,14 +107,31 @@ exp: KIDENT
    | KFALSE
    | KIDENT '(' exp_list ')'
    | '(' exp ')'
-   | exp uniOp exp
-   | KNOT exp
+   | exp binOp exp
+   | uniOp exp
+   | 
 ;
-uniOp: '+'
+binOp: KADD
+     | KSUB
+     | KMULT
+     | KDIVIDE
+     | KMOD
+     | KGT
+     | KGE
+     | KLT
+     | KLE
+     | KNE
+     | KET
+     | KAND
+     | KOR
 ;
+
+uniOp: KNOT
+;
+
 %%
 
 int yyerror(const char* s){
-    cout << "SYNTAX ERROR: " << s << endl;
+    cout << "SYNTAX ERROR: " << s << " Line: "<<lin+1 << " Column: " << col << endl;
     return 0; 
 }
