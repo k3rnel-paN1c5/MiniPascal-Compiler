@@ -74,7 +74,9 @@
      KMULT = 290,
      KADD = 291,
      KSUB = 292,
-     KDIVIDE = 293
+     KDIVIDE = 293,
+     IF_PREC = 294,
+     BINOP = 295
    };
 #endif
 /* Tokens.  */
@@ -114,6 +116,8 @@
 #define KADD 291
 #define KSUB 292
 #define KDIVIDE 293
+#define IF_PREC 294
+#define BINOP 295
 
 
 

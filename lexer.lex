@@ -171,6 +171,10 @@ ALPHA [a-zA-Z]
     col += yyleng;
     return KMULT;
 }
+".." {
+    col += yyleng;
+    return *yytext;
+}
 
 [(),{};:] {
     col += yyleng;

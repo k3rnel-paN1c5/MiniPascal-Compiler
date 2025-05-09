@@ -1,13 +1,3 @@
-Terminals which are not used
-
-   KREALNUM
-
-
-State 79 conflicts: 13 shift/reduce
-State 94 conflicts: 13 shift/reduce
-State 95 conflicts: 1 shift/reduce
-
-
 Grammar
 
     0 $accept: program $end
@@ -67,13 +57,13 @@ Grammar
 
    37 exp: KIDENT
    38    | KINTNUM
-   39    | KTRUE
-   40    | KFALSE
-   41    | KIDENT '(' exp_list ')'
-   42    | '(' exp ')'
-   43    | exp binOp exp
-   44    | uniOp exp
-   45    | /* empty */
+   39    | KREALNUM
+   40    | KTRUE
+   41    | KFALSE
+   42    | KIDENT '(' exp_list ')'
+   43    | '(' exp ')'
+   44    | exp binOp exp
+   45    | KNOT exp
 
    46 binOp: KADD
    47      | KSUB
@@ -89,14 +79,12 @@ Grammar
    57      | KAND
    58      | KOR
 
-   59 uniOp: KNOT
-
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'(' (40) 16 34 41 42
-')' (41) 16 34 41 42
+'(' (40) 16 34 42 43
+')' (41) 16 34 42 43
 ',' (44) 5 36
 '..' (46) 7
 ':' (58) 2 14 18 19
@@ -121,15 +109,15 @@ KELSE (271) 29
 KARRAY (272) 7
 KOF (273) 7
 KMOD (274) 50
-KNOT (275) 59
+KNOT (275) 45
 KOR (276) 58
 KAND (277) 57
 KASSIGNE (278) 25
-KIDENT (279) 1 4 5 14 15 31 32 33 34 37 41
+KIDENT (279) 1 4 5 14 15 31 32 33 34 37 42
 KINTNUM (280) 7 38
-KREALNUM (281)
-KTRUE (282) 39
-KFALSE (283) 40
+KREALNUM (281) 39
+KTRUE (282) 40
+KFALSE (283) 41
 KGT (284) 51
 KLT (285) 53
 KGE (286) 52
@@ -140,54 +128,54 @@ KMULT (290) 48
 KADD (291) 46
 KSUB (292) 47
 KDIVIDE (293) 49
+IF_PREC (294)
+BINOP (295)
 
 
 Nonterminals, with rules where they appear
 
-$accept (47)
+$accept (49)
     on left: 0
-program (48)
+program (50)
     on left: 1, on right: 0
-declarations (49)
+declarations (51)
     on left: 2 3, on right: 1 2
-ident_list (50)
+ident_list (52)
     on left: 4 5, on right: 2 5 18 19
-type (51)
+type (53)
     on left: 6 7, on right: 2 18 19
-std_type (52)
+std_type (54)
     on left: 8 9 10, on right: 6 7 14
-sub_declarations (53)
+sub_declarations (55)
     on left: 11 12, on right: 1 11
-sub_dec (54)
+sub_dec (56)
     on left: 13, on right: 11
-sub_head (55)
+sub_head (57)
     on left: 14 15, on right: 13
-args (56)
+args (58)
     on left: 16 17, on right: 14 15
-param_list (57)
+param_list (59)
     on left: 18 19, on right: 16 19
-comp_stmt (58)
+comp_stmt (60)
     on left: 20, on right: 1 13 27
-optional_stmts (59)
+optional_stmts (61)
     on left: 21 22, on right: 20
-stmt_list (60)
+stmt_list (62)
     on left: 23 24, on right: 21 24
-stmt (61)
+stmt (63)
     on left: 25 26 27 28 29 30, on right: 23 24 28 29 30
-variable (62)
+variable (64)
     on left: 31 32, on right: 25
-proc_stmt (63)
+proc_stmt (65)
     on left: 33 34, on right: 26
-exp_list (64)
-    on left: 35 36, on right: 34 36 41
-exp (65)
+exp_list (66)
+    on left: 35 36, on right: 34 36 42
+exp (67)
     on left: 37 38 39 40 41 42 43 44 45, on right: 25 28 29 30 32 35
-    36 42 43 44
-binOp (66)
+    36 43 44 45
+binOp (68)
     on left: 46 47 48 49 50 51 52 53 54 55 56 57 58,
-    on right: 43
-uniOp (67)
-    on left: 59, on right: 44
+    on right: 44
 
 
 state 0
@@ -389,17 +377,15 @@ state 21
 
    30 stmt: KWHILE . exp KDO stmt
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
-    $default  reduce using rule 45 (exp)
-
-    exp    go to state 48
-    uniOp  go to state 49
+    exp  go to state 49
 
 
 state 22
@@ -407,17 +393,15 @@ state 22
    28 stmt: KIF . exp KTHEN stmt
    29     | KIF . exp KTHEN stmt KELSE stmt
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
-    $default  reduce using rule 45 (exp)
-
-    exp    go to state 50
-    uniOp  go to state 49
+    exp  go to state 50
 
 
 state 23
@@ -568,17 +552,25 @@ state 41
 
 state 42
 
-   59 uniOp: KNOT .
+   45 exp: KNOT . exp
 
-    $default  reduce using rule 59 (uniOp)
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
+
+    exp  go to state 62
 
 
 state 43
 
    37 exp: KIDENT .
-   41    | KIDENT . '(' exp_list ')'
+   42    | KIDENT . '(' exp_list ')'
 
-    '('  shift, and go to state 62
+    '('  shift, and go to state 63
 
     $default  reduce using rule 37 (exp)
 
@@ -592,132 +584,116 @@ state 44
 
 state 45
 
-   39 exp: KTRUE .
+   39 exp: KREALNUM .
 
     $default  reduce using rule 39 (exp)
 
 
 state 46
 
-   40 exp: KFALSE .
+   40 exp: KTRUE .
 
     $default  reduce using rule 40 (exp)
 
 
 state 47
 
-   42 exp: '(' . exp ')'
+   41 exp: KFALSE .
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
-
-    $default  reduce using rule 45 (exp)
-
-    exp    go to state 63
-    uniOp  go to state 49
+    $default  reduce using rule 41 (exp)
 
 
 state 48
 
-   30 stmt: KWHILE exp . KDO stmt
-   43 exp: exp . binOp exp
+   43 exp: '(' . exp ')'
 
-    KDO      shift, and go to state 64
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
-    binOp  go to state 78
+    exp  go to state 64
 
 
 state 49
 
-   44 exp: uniOp . exp
+   30 stmt: KWHILE exp . KDO stmt
+   44 exp: exp . binOp exp
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
+    KDO      shift, and go to state 65
+    KMOD     shift, and go to state 66
+    KOR      shift, and go to state 67
+    KAND     shift, and go to state 68
+    KGT      shift, and go to state 69
+    KLT      shift, and go to state 70
+    KGE      shift, and go to state 71
+    KLE      shift, and go to state 72
+    KET      shift, and go to state 73
+    KNE      shift, and go to state 74
+    KMULT    shift, and go to state 75
+    KADD     shift, and go to state 76
+    KSUB     shift, and go to state 77
+    KDIVIDE  shift, and go to state 78
 
-    $default  reduce using rule 45 (exp)
-
-    exp    go to state 79
-    uniOp  go to state 49
+    binOp  go to state 79
 
 
 state 50
 
    28 stmt: KIF exp . KTHEN stmt
    29     | KIF exp . KTHEN stmt KELSE stmt
-   43 exp: exp . binOp exp
+   44 exp: exp . binOp exp
 
     KTHEN    shift, and go to state 80
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
+    KMOD     shift, and go to state 66
+    KOR      shift, and go to state 67
+    KAND     shift, and go to state 68
+    KGT      shift, and go to state 69
+    KLT      shift, and go to state 70
+    KGE      shift, and go to state 71
+    KLE      shift, and go to state 72
+    KET      shift, and go to state 73
+    KNE      shift, and go to state 74
+    KMULT    shift, and go to state 75
+    KADD     shift, and go to state 76
+    KSUB     shift, and go to state 77
+    KDIVIDE  shift, and go to state 78
 
-    binOp  go to state 78
+    binOp  go to state 79
 
 
 state 51
 
    32 variable: KIDENT '[' . exp ']'
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
-    $default  reduce using rule 45 (exp)
-
-    exp    go to state 81
-    uniOp  go to state 49
+    exp  go to state 81
 
 
 state 52
 
    34 proc_stmt: KIDENT '(' . exp_list ')'
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
-
-    $default  reduce using rule 45 (exp)
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
     exp_list  go to state 82
     exp       go to state 83
-    uniOp     go to state 49
 
 
 state 53
@@ -746,17 +722,15 @@ state 55
 
    25 stmt: variable KASSIGNE . exp
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
-    $default  reduce using rule 45 (exp)
-
-    exp    go to state 85
-    uniOp  go to state 49
+    exp  go to state 85
 
 
 state 56
@@ -811,46 +785,66 @@ state 61
 
 state 62
 
-   41 exp: KIDENT '(' . exp_list ')'
+   44 exp: exp . binOp exp
+   45    | KNOT exp .
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
+    KMOD     shift, and go to state 66
+    KGT      shift, and go to state 69
+    KLT      shift, and go to state 70
+    KGE      shift, and go to state 71
+    KLE      shift, and go to state 72
+    KET      shift, and go to state 73
+    KNE      shift, and go to state 74
+    KMULT    shift, and go to state 75
+    KADD     shift, and go to state 76
+    KSUB     shift, and go to state 77
+    KDIVIDE  shift, and go to state 78
 
     $default  reduce using rule 45 (exp)
 
-    exp_list  go to state 91
-    exp       go to state 83
-    uniOp     go to state 49
+    binOp  go to state 79
 
 
 state 63
 
-   42 exp: '(' exp . ')'
-   43    | exp . binOp exp
+   42 exp: KIDENT '(' . exp_list ')'
 
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
-    ')'      shift, and go to state 92
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
-    binOp  go to state 78
+    exp_list  go to state 91
+    exp       go to state 83
 
 
 state 64
+
+   43 exp: '(' exp . ')'
+   44    | exp . binOp exp
+
+    KMOD     shift, and go to state 66
+    KOR      shift, and go to state 67
+    KAND     shift, and go to state 68
+    KGT      shift, and go to state 69
+    KLT      shift, and go to state 70
+    KGE      shift, and go to state 71
+    KLE      shift, and go to state 72
+    KET      shift, and go to state 73
+    KNE      shift, and go to state 74
+    KMULT    shift, and go to state 75
+    KADD     shift, and go to state 76
+    KSUB     shift, and go to state 77
+    KDIVIDE  shift, and go to state 78
+    ')'      shift, and go to state 92
+
+    binOp  go to state 79
+
+
+state 65
 
    30 stmt: KWHILE exp KDO . stmt
 
@@ -865,149 +859,110 @@ state 64
     proc_stmt  go to state 29
 
 
-state 65
+state 66
 
    50 binOp: KMOD .
 
     $default  reduce using rule 50 (binOp)
 
 
-state 66
+state 67
 
    58 binOp: KOR .
 
     $default  reduce using rule 58 (binOp)
 
 
-state 67
+state 68
 
    57 binOp: KAND .
 
     $default  reduce using rule 57 (binOp)
 
 
-state 68
+state 69
 
    51 binOp: KGT .
 
     $default  reduce using rule 51 (binOp)
 
 
-state 69
+state 70
 
    53 binOp: KLT .
 
     $default  reduce using rule 53 (binOp)
 
 
-state 70
+state 71
 
    52 binOp: KGE .
 
     $default  reduce using rule 52 (binOp)
 
 
-state 71
+state 72
 
    54 binOp: KLE .
 
     $default  reduce using rule 54 (binOp)
 
 
-state 72
+state 73
 
    56 binOp: KET .
 
     $default  reduce using rule 56 (binOp)
 
 
-state 73
+state 74
 
    55 binOp: KNE .
 
     $default  reduce using rule 55 (binOp)
 
 
-state 74
+state 75
 
    48 binOp: KMULT .
 
     $default  reduce using rule 48 (binOp)
 
 
-state 75
+state 76
 
    46 binOp: KADD .
 
     $default  reduce using rule 46 (binOp)
 
 
-state 76
+state 77
 
    47 binOp: KSUB .
 
     $default  reduce using rule 47 (binOp)
 
 
-state 77
+state 78
 
    49 binOp: KDIVIDE .
 
     $default  reduce using rule 49 (binOp)
 
 
-state 78
-
-   43 exp: exp binOp . exp
-
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
-
-    $default  reduce using rule 45 (exp)
-
-    exp    go to state 94
-    uniOp  go to state 49
-
-
 state 79
 
-   43 exp: exp . binOp exp
-   44    | uniOp exp .
+   44 exp: exp binOp . exp
 
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
-    KMOD      [reduce using rule 44 (exp)]
-    KOR       [reduce using rule 44 (exp)]
-    KAND      [reduce using rule 44 (exp)]
-    KGT       [reduce using rule 44 (exp)]
-    KLT       [reduce using rule 44 (exp)]
-    KGE       [reduce using rule 44 (exp)]
-    KLE       [reduce using rule 44 (exp)]
-    KET       [reduce using rule 44 (exp)]
-    KNE       [reduce using rule 44 (exp)]
-    KMULT     [reduce using rule 44 (exp)]
-    KADD      [reduce using rule 44 (exp)]
-    KSUB      [reduce using rule 44 (exp)]
-    KDIVIDE   [reduce using rule 44 (exp)]
-    $default  reduce using rule 44 (exp)
-
-    binOp  go to state 78
+    exp  go to state 94
 
 
 state 80
@@ -1029,24 +984,24 @@ state 80
 state 81
 
    32 variable: KIDENT '[' exp . ']'
-   43 exp: exp . binOp exp
+   44 exp: exp . binOp exp
 
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
+    KMOD     shift, and go to state 66
+    KOR      shift, and go to state 67
+    KAND     shift, and go to state 68
+    KGT      shift, and go to state 69
+    KLT      shift, and go to state 70
+    KGE      shift, and go to state 71
+    KLE      shift, and go to state 72
+    KET      shift, and go to state 73
+    KNE      shift, and go to state 74
+    KMULT    shift, and go to state 75
+    KADD     shift, and go to state 76
+    KSUB     shift, and go to state 77
+    KDIVIDE  shift, and go to state 78
     ']'      shift, and go to state 96
 
-    binOp  go to state 78
+    binOp  go to state 79
 
 
 state 82
@@ -1061,25 +1016,25 @@ state 82
 state 83
 
    35 exp_list: exp .
-   43 exp: exp . binOp exp
+   44 exp: exp . binOp exp
 
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
+    KMOD     shift, and go to state 66
+    KOR      shift, and go to state 67
+    KAND     shift, and go to state 68
+    KGT      shift, and go to state 69
+    KLT      shift, and go to state 70
+    KGE      shift, and go to state 71
+    KLE      shift, and go to state 72
+    KET      shift, and go to state 73
+    KNE      shift, and go to state 74
+    KMULT    shift, and go to state 75
+    KADD     shift, and go to state 76
+    KSUB     shift, and go to state 77
+    KDIVIDE  shift, and go to state 78
 
     $default  reduce using rule 35 (exp_list)
 
-    binOp  go to state 78
+    binOp  go to state 79
 
 
 state 84
@@ -1092,25 +1047,25 @@ state 84
 state 85
 
    25 stmt: variable KASSIGNE exp .
-   43 exp: exp . binOp exp
+   44 exp: exp . binOp exp
 
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
+    KMOD     shift, and go to state 66
+    KOR      shift, and go to state 67
+    KAND     shift, and go to state 68
+    KGT      shift, and go to state 69
+    KLT      shift, and go to state 70
+    KGE      shift, and go to state 71
+    KLE      shift, and go to state 72
+    KET      shift, and go to state 73
+    KNE      shift, and go to state 74
+    KMULT    shift, and go to state 75
+    KADD     shift, and go to state 76
+    KSUB     shift, and go to state 77
+    KDIVIDE  shift, and go to state 78
 
     $default  reduce using rule 25 (stmt)
 
-    binOp  go to state 78
+    binOp  go to state 79
 
 
 state 86
@@ -1159,7 +1114,7 @@ state 90
 state 91
 
    36 exp_list: exp_list . ',' exp
-   41 exp: KIDENT '(' exp_list . ')'
+   42 exp: KIDENT '(' exp_list . ')'
 
     ','  shift, and go to state 97
     ')'  shift, and go to state 102
@@ -1167,9 +1122,9 @@ state 91
 
 state 92
 
-   42 exp: '(' exp ')' .
+   43 exp: '(' exp ')' .
 
-    $default  reduce using rule 42 (exp)
+    $default  reduce using rule 43 (exp)
 
 
 state 93
@@ -1181,39 +1136,12 @@ state 93
 
 state 94
 
-   43 exp: exp . binOp exp
-   43    | exp binOp exp .
+   44 exp: exp . binOp exp
+   44    | exp binOp exp .
 
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
+    $default  reduce using rule 44 (exp)
 
-    KMOD      [reduce using rule 43 (exp)]
-    KOR       [reduce using rule 43 (exp)]
-    KAND      [reduce using rule 43 (exp)]
-    KGT       [reduce using rule 43 (exp)]
-    KLT       [reduce using rule 43 (exp)]
-    KGE       [reduce using rule 43 (exp)]
-    KLE       [reduce using rule 43 (exp)]
-    KET       [reduce using rule 43 (exp)]
-    KNE       [reduce using rule 43 (exp)]
-    KMULT     [reduce using rule 43 (exp)]
-    KADD      [reduce using rule 43 (exp)]
-    KSUB      [reduce using rule 43 (exp)]
-    KDIVIDE   [reduce using rule 43 (exp)]
-    $default  reduce using rule 43 (exp)
-
-    binOp  go to state 78
+    binOp  go to state 79
 
 
 state 95
@@ -1223,7 +1151,6 @@ state 95
 
     KELSE  shift, and go to state 103
 
-    KELSE     [reduce using rule 28 (stmt)]
     $default  reduce using rule 28 (stmt)
 
 
@@ -1238,17 +1165,15 @@ state 97
 
    36 exp_list: exp_list ',' . exp
 
-    KNOT     shift, and go to state 42
-    KIDENT   shift, and go to state 43
-    KINTNUM  shift, and go to state 44
-    KTRUE    shift, and go to state 45
-    KFALSE   shift, and go to state 46
-    '('      shift, and go to state 47
+    KNOT      shift, and go to state 42
+    KIDENT    shift, and go to state 43
+    KINTNUM   shift, and go to state 44
+    KREALNUM  shift, and go to state 45
+    KTRUE     shift, and go to state 46
+    KFALSE    shift, and go to state 47
+    '('       shift, and go to state 48
 
-    $default  reduce using rule 45 (exp)
-
-    exp    go to state 104
-    uniOp  go to state 49
+    exp  go to state 104
 
 
 state 98
@@ -1283,9 +1208,9 @@ state 101
 
 state 102
 
-   41 exp: KIDENT '(' exp_list ')' .
+   42 exp: KIDENT '(' exp_list ')' .
 
-    $default  reduce using rule 41 (exp)
+    $default  reduce using rule 42 (exp)
 
 
 state 103
@@ -1306,25 +1231,25 @@ state 103
 state 104
 
    36 exp_list: exp_list ',' exp .
-   43 exp: exp . binOp exp
+   44 exp: exp . binOp exp
 
-    KMOD     shift, and go to state 65
-    KOR      shift, and go to state 66
-    KAND     shift, and go to state 67
-    KGT      shift, and go to state 68
-    KLT      shift, and go to state 69
-    KGE      shift, and go to state 70
-    KLE      shift, and go to state 71
-    KET      shift, and go to state 72
-    KNE      shift, and go to state 73
-    KMULT    shift, and go to state 74
-    KADD     shift, and go to state 75
-    KSUB     shift, and go to state 76
-    KDIVIDE  shift, and go to state 77
+    KMOD     shift, and go to state 66
+    KOR      shift, and go to state 67
+    KAND     shift, and go to state 68
+    KGT      shift, and go to state 69
+    KLT      shift, and go to state 70
+    KGE      shift, and go to state 71
+    KLE      shift, and go to state 72
+    KET      shift, and go to state 73
+    KNE      shift, and go to state 74
+    KMULT    shift, and go to state 75
+    KADD     shift, and go to state 76
+    KSUB     shift, and go to state 77
+    KDIVIDE  shift, and go to state 78
 
     $default  reduce using rule 36 (exp_list)
 
-    binOp  go to state 78
+    binOp  go to state 79
 
 
 state 105

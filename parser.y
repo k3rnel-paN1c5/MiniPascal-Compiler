@@ -45,6 +45,18 @@
 %token KSUB
 %token KDIVIDE
 
+%nonassoc IF_PREC
+%nonassoc KELSE
+
+%left KOR 
+%left KAND
+%left KNOT
+%left KET KNE
+%left KGT KGE KLT KLE
+%left KADD KSUB
+%left KMULT KDIVIDE KMOD
+%left BINOP   
+
 
 
 %%
@@ -88,7 +100,7 @@ stmt_list: stmt
 stmt: variable KASSIGNE exp
     | proc_stmt
     | comp_stmt
-    | KIF exp KTHEN stmt
+    | KIF exp KTHEN stmt %prec IF_PREC
     | KIF exp KTHEN stmt KELSE stmt
     | KWHILE exp KDO stmt
 ;
@@ -103,31 +115,30 @@ exp_list: exp
 ;
 exp: KIDENT
    | KINTNUM
+   | KREALNUM
    | KTRUE
    | KFALSE
    | KIDENT '(' exp_list ')'
    | '(' exp ')'
-   | exp binOp exp
-   | uniOp exp
-   | 
+   | exp binOp exp %prec BINOP
+   | KNOT exp
+
 ;
-binOp: KADD
-     | KSUB
-     | KMULT
-     | KDIVIDE
-     | KMOD
-     | KGT
+binOp: KADD 
+     | KSUB 
+     | KMULT 
+     | KDIVIDE 
+     | KMOD 
+     | KGT 
      | KGE
-     | KLT
-     | KLE
-     | KNE
-     | KET
+     | KLT 
+     | KLE 
+     | KNE 
+     | KET 
      | KAND
-     | KOR
+     | KOR 
 ;
 
-uniOp: KNOT
-;
 
 %%
 
