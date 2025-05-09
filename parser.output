@@ -74,8 +74,8 @@ Grammar
    52      | KGE
    53      | KLT
    54      | KLE
-   55      | KNE
-   56      | KET
+   55      | KET
+   56      | KNE
    57      | KAND
    58      | KOR
 
@@ -122,8 +122,8 @@ KGT (284) 51
 KLT (285) 53
 KGE (286) 52
 KLE (287) 54
-KET (288) 56
-KNE (289) 55
+KET (288) 55
+KNE (289) 56
 KMULT (290) 48
 KADD (291) 46
 KSUB (292) 47
@@ -910,16 +910,16 @@ state 72
 
 state 73
 
-   56 binOp: KET .
+   55 binOp: KET .
 
-    $default  reduce using rule 56 (binOp)
+    $default  reduce using rule 55 (binOp)
 
 
 state 74
 
-   55 binOp: KNE .
+   56 binOp: KNE .
 
-    $default  reduce using rule 55 (binOp)
+    $default  reduce using rule 56 (binOp)
 
 
 state 75

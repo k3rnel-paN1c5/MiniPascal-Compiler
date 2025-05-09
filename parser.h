@@ -149,17 +149,16 @@ typedef union YYSTYPE
     Exp* tExp;
     Var* tVar;
     ProcStmt* tProcstmt;
-    BinOp* tBinop;
     While* tWhile;
 
     Integer*  tInt;
     Real* tReal;
     Bool* tBool;
 
-
+    enum OpType tOp;
 }
 /* Line 1529 of yacc.c.  */
-#line 163 "parser.h"
+#line 162 "parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

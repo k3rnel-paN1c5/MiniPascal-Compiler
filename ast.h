@@ -58,6 +58,11 @@ enum TypeEnum
     REALTYPE,
     BOOLTYPE
 };
+enum OpType {
+    OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_MOD,
+    OP_GT, OP_GE, OP_LT, OP_LE, OP_ET, OP_NE,
+    OP_AND, OP_OR
+};
 class Node 
 {
 public:

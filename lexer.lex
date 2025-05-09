@@ -21,6 +21,12 @@ ALPHA [a-zA-Z]
     lin++;
     col = 0;    
 }
+"//".*  {
+    cout  << "One-Line Comment\n";
+}
+"{"[^}]*"}"  {
+    cout  << "Multi-Line Comment\n";
+}
 
 [Pp][Rr][Oo][Gg][Rr][Aa][Mm] {
     col += yyleng;

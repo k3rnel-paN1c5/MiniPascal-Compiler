@@ -34,14 +34,13 @@
     Exp* tExp;
     Var* tVar;
     ProcStmt* tProcstmt;
-    BinOp* tBinop;
     While* tWhile;
 
     Integer*  tInt;
     Real* tReal;
     Bool* tBool;
 
-
+    enum OpType tOp;
 }
 
 %token <tStdtype> KINT KREAL KBOOL
@@ -96,7 +95,7 @@
 %type <tProcstmt> proc_stmt
 %type <tExplist> exp_list
 %type <tExp> exp
-%type <tBinop> binOp
+%type <tOp> binOp
 
 
 
@@ -316,7 +315,21 @@ exp: KIDENT
     }
     | exp binOp exp %prec BINOP
     {
-        $$ = new BinOp($1, $2, lin, col);
+       switch ($2) {
+            case OP_ADD:  $$ = new Add($1, $3, lin, col); break;
+            case OP_SUB:  $$ = new Sub($1, $3, lin, col); break;
+            case OP_MULT: $$ = new Mult($1, $3, lin, col); break;
+            case OP_DIV:  $$ = new Divide($1, $3, lin, col); break;
+            case OP_MOD:  $$ = new Mod($1, $3, lin, col); break;
+            case OP_GT:   $$ = new GT($1, $3, lin, col); break;
+            case OP_GE:   $$ = new GE($1, $3, lin, col); break;
+            case OP_LT:   $$ = new LT($1, $3, lin, col); break;
+            case OP_LE:   $$ = new LE($1, $3, lin, col); break;
+            case OP_ET:   $$ = new ET($1, $3, lin, col); break;
+            case OP_NE:   $$ = new NE($1, $3, lin, col); break;
+            case OP_AND:  $$ = new And($1, $3, lin, col); break;
+            case OP_OR:   $$ = new Or($1, $3, lin, col); break;
+        }
     }
     | KNOT exp
     {
@@ -324,58 +337,19 @@ exp: KIDENT
     }
 
 ;
-binOp: KADD 
-    {
-        $$ = new Add($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KSUB 
-    {
-        $$ = new Sub($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KMULT 
-    {
-        $$ = new Mult($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KDIVIDE 
-    {
-        $$ = new Divide($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KMOD 
-    {
-        $$ = new Mod($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KGT 
-    {
-        $$ = new GT($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KGE
-    {
-        $$ = new GE($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KLT 
-    {
-        $$ = new LT($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KLE 
-    {
-        $$ = new LE($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KNE 
-    {
-        $$ = new NE($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KET 
-    {
-        $$ = new ET($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KAND
-    {
-        $$ = new And($$->leftExp, $$->rightExp, lin, col);
-    }
-    | KOR 
-    {
-        $$ = new Or($$->leftExp, $$->rightExp, lin, col);
-    }
+binOp: KADD    { $$ = OP_ADD; }
+     | KSUB    { $$ = OP_SUB; }
+     | KMULT   { $$ = OP_MULT; }
+     | KDIVIDE { $$ = OP_DIV; }
+     | KMOD    { $$ = OP_MOD; }
+     | KGT     { $$ = OP_GT; }
+     | KGE     { $$ = OP_GE; }
+     | KLT     { $$ = OP_LT; }
+     | KLE     { $$ = OP_LE; }
+     | KET     { $$ = OP_ET; }
+     | KNE     { $$ = OP_NE; }
+     | KAND    { $$ = OP_AND; }
+     | KOR     { $$ = OP_OR; } 
 ;
 
 
