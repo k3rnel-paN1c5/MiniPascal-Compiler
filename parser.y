@@ -1,4 +1,5 @@
 %{
+    #include "ast.h"
     #include <iostream>
     using std::endl;
     using std::cout;

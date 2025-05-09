@@ -152,6 +152,7 @@
 /* Copy the first part of user declarations.  */
 #line 1 "parser.y"
 
+    #include "ast.h"
     #include <iostream>
     using std::endl;
     using std::cout;
@@ -192,7 +193,7 @@ typedef int YYSTYPE;
 
 
 /* Line 216 of yacc.c.  */
-#line 196 "parser.cpp"
+#line 197 "parser.cpp"
 
 #ifdef short
 # undef short
@@ -500,12 +501,12 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    63,    63,    65,    65,    68,    69,    71,    72,    74,
-      75,    76,    78,    79,    81,    83,    84,    86,    87,    89,
-      90,    92,    94,    95,    97,    98,   100,   101,   102,   103,
-     104,   105,   107,   108,   110,   111,   113,   114,   116,   117,
-     118,   119,   120,   121,   122,   123,   124,   127,   128,   129,
-     130,   131,   132,   133,   134,   135,   136,   137,   138,   139
+       0,    64,    64,    66,    66,    69,    70,    72,    73,    75,
+      76,    77,    79,    80,    82,    84,    85,    87,    88,    90,
+      91,    93,    95,    96,    98,    99,   101,   102,   103,   104,
+     105,   106,   108,   109,   111,   112,   114,   115,   117,   118,
+     119,   120,   121,   122,   123,   124,   125,   128,   129,   130,
+     131,   132,   133,   134,   135,   136,   137,   138,   139,   140
 };
 #endif
 
@@ -1494,7 +1495,7 @@ yyreduce:
     {
       
 /* Line 1267 of yacc.c.  */
-#line 1498 "parser.cpp"
+#line 1499 "parser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1708,7 +1709,7 @@ yyreturn:
 }
 
 
-#line 143 "parser.y"
+#line 144 "parser.y"
 
 
 int yyerror(const char* s){

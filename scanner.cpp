@@ -531,13 +531,14 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "./lexer.lex"
 #line 2 "./lexer.lex"
-#include <iostream>
-#include "parser.h"
-using std::endl;
-using std::cout;
-int lin = 0, col = 0;
-#line 539 "scanner.cpp"
+    #include "ast.h"
+    #include <iostream>
+    #include "parser.h"
+    using std::endl;
+    using std::cout;
+    int lin = 0, col = 0;
 #line 540 "scanner.cpp"
+#line 541 "scanner.cpp"
 
 #define INITIAL 0
 
@@ -754,10 +755,10 @@ YY_DECL
 		}
 
 	{
-#line 14 "./lexer.lex"
+#line 15 "./lexer.lex"
 
 
-#line 760 "scanner.cpp"
+#line 761 "scanner.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -816,7 +817,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 16 "./lexer.lex"
+#line 17 "./lexer.lex"
 {
     col += yyleng;
     }
@@ -824,7 +825,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 19 "./lexer.lex"
+#line 20 "./lexer.lex"
 {
     lin++;
     col = 0;    
@@ -832,7 +833,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 24 "./lexer.lex"
+#line 25 "./lexer.lex"
 {
     col += yyleng;
     return KPROGRAM;
@@ -840,7 +841,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 28 "./lexer.lex"
+#line 29 "./lexer.lex"
 {
     col += yyleng;
     return KVAR;
@@ -848,7 +849,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 32 "./lexer.lex"
+#line 33 "./lexer.lex"
 {
     col += yyleng;
     return KINT;
@@ -856,7 +857,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 36 "./lexer.lex"
+#line 37 "./lexer.lex"
 {
     col += yyleng;
     return KREAL;
@@ -864,7 +865,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 40 "./lexer.lex"
+#line 41 "./lexer.lex"
 {
     col += yyleng;
     return KFUNC;
@@ -872,7 +873,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 44 "./lexer.lex"
+#line 45 "./lexer.lex"
 {
     col += yyleng;
     return KPROC;
@@ -880,7 +881,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 49 "./lexer.lex"
+#line 50 "./lexer.lex"
 {
     col += yyleng;
     return KWHILE;
@@ -888,7 +889,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 53 "./lexer.lex"
+#line 54 "./lexer.lex"
 {
     col += yyleng;
     return KDO;
@@ -896,7 +897,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "./lexer.lex"
+#line 58 "./lexer.lex"
 {
     col += yyleng;
     return KBEGIN;
@@ -904,7 +905,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 61 "./lexer.lex"
+#line 62 "./lexer.lex"
 {
     col += yyleng;
     return KEND;
@@ -912,7 +913,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 66 "./lexer.lex"
+#line 67 "./lexer.lex"
 {
     col += yyleng;
     return KIF;
@@ -920,7 +921,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 70 "./lexer.lex"
+#line 71 "./lexer.lex"
 {
     col += yyleng;
     return KTHEN;
@@ -928,7 +929,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 74 "./lexer.lex"
+#line 75 "./lexer.lex"
 {
     col += yyleng;
     return KELSE;
@@ -936,7 +937,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 78 "./lexer.lex"
+#line 79 "./lexer.lex"
 {
     col += yyleng;
     return KARRAY;
@@ -944,7 +945,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 82 "./lexer.lex"
+#line 83 "./lexer.lex"
 {
     col += yyleng;
     return KOF;
@@ -952,7 +953,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 86 "./lexer.lex"
+#line 87 "./lexer.lex"
 {
     col += yyleng;
     return KMOD;
@@ -960,7 +961,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 90 "./lexer.lex"
+#line 91 "./lexer.lex"
 {
     col += yyleng;
     return KNOT;
@@ -968,7 +969,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 94 "./lexer.lex"
+#line 95 "./lexer.lex"
 {
     col += yyleng;
     return KOR;
@@ -976,7 +977,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 98 "./lexer.lex"
+#line 99 "./lexer.lex"
 {
     col += yyleng;
     return KAND;
@@ -984,7 +985,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 102 "./lexer.lex"
+#line 103 "./lexer.lex"
 {
     col += yyleng;
     return KBOOL;
@@ -992,7 +993,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 106 "./lexer.lex"
+#line 107 "./lexer.lex"
 {
     col += yyleng;
     return KTRUE;
@@ -1000,7 +1001,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 110 "./lexer.lex"
+#line 111 "./lexer.lex"
 {
     col += yyleng;
     return KFALSE;
@@ -1008,7 +1009,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 114 "./lexer.lex"
+#line 115 "./lexer.lex"
 {
     col += yyleng;
     return KIDENT;
@@ -1016,7 +1017,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 118 "./lexer.lex"
+#line 119 "./lexer.lex"
 {
     col += yyleng;
     cout <<"Lexical Error(Leading Zeros) at column: " << col << " row: " << lin+1  << endl;
@@ -1024,7 +1025,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 122 "./lexer.lex"
+#line 123 "./lexer.lex"
 {
     col += yyleng;
     return KINTNUM;
@@ -1032,14 +1033,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 126 "./lexer.lex"
+#line 127 "./lexer.lex"
 {
     return KREALNUM;
 }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 130 "./lexer.lex"
+#line 131 "./lexer.lex"
 {
     col += yyleng;
     return KASSIGNE;
@@ -1047,7 +1048,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 134 "./lexer.lex"
+#line 135 "./lexer.lex"
 {
     col += yyleng;
     return KGT;
@@ -1055,7 +1056,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 138 "./lexer.lex"
+#line 139 "./lexer.lex"
 {
     col += yyleng;
     return KLT;
@@ -1063,7 +1064,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 142 "./lexer.lex"
+#line 143 "./lexer.lex"
 {
     col += yyleng;
     return KGE;
@@ -1071,7 +1072,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 146 "./lexer.lex"
+#line 147 "./lexer.lex"
 {
     col += yyleng;
     return KLE;
@@ -1079,7 +1080,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 150 "./lexer.lex"
+#line 151 "./lexer.lex"
 {
     col += yyleng;
     return KET;
@@ -1087,7 +1088,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 154 "./lexer.lex"
+#line 155 "./lexer.lex"
 {
     col += yyleng;
     return KNE;
@@ -1095,7 +1096,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 158 "./lexer.lex"
+#line 159 "./lexer.lex"
 {
     col += yyleng;
     return KADD;
@@ -1103,7 +1104,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 162 "./lexer.lex"
+#line 163 "./lexer.lex"
 {
     col += yyleng;
     return KSUB;
@@ -1111,7 +1112,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 166 "./lexer.lex"
+#line 167 "./lexer.lex"
 {
     col += yyleng;
     return KDIVIDE;
@@ -1119,7 +1120,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 170 "./lexer.lex"
+#line 171 "./lexer.lex"
 {
     col += yyleng;
     return KMULT;
@@ -1127,7 +1128,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 174 "./lexer.lex"
+#line 175 "./lexer.lex"
 {
     col += yyleng;
     return *yytext;
@@ -1135,7 +1136,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 179 "./lexer.lex"
+#line 180 "./lexer.lex"
 {
     col += yyleng;
     return *yytext;
@@ -1143,7 +1144,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 186 "./lexer.lex"
+#line 187 "./lexer.lex"
 {
     col += yyleng;
     cout <<"Lexical Error at column: " << col << " row: " << lin+1  << endl;
@@ -1152,10 +1153,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 192 "./lexer.lex"
+#line 193 "./lexer.lex"
 ECHO;
 	YY_BREAK
-#line 1158 "scanner.cpp"
+#line 1159 "scanner.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2160,7 +2161,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 192 "./lexer.lex"
+#line 193 "./lexer.lex"
 
 
 

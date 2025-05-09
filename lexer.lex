@@ -1,9 +1,10 @@
 %{
-#include <iostream>
-#include "parser.h"
-using std::endl;
-using std::cout;
-int lin = 0, col = 0;
+    #include "ast.h"
+    #include <iostream>
+    #include "parser.h"
+    using std::endl;
+    using std::cout;
+    int lin = 0, col = 0;
 %}
 %option noyywrap
 
