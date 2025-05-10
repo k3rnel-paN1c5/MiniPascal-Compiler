@@ -10,7 +10,7 @@ extern FILE* yyin;
 
 
 int main(int argc, char* argv[]) {
-    yydebug = 1;  // Enable debug if needed
+    yydebug = 0;  // Enable debug if needed
     if (argc < 2) {
 
         std::cerr << "If you want to take input from a file then \n Usage: " << argv[0] << " <input-file>\n";

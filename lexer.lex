@@ -199,7 +199,7 @@ ALPHA [a-zA-Z]
 . {
     col += yyleng;
     cout <<"Lexical Error at column: " << col << " row: " << lin+1  << endl;
-    
+    return 1;
     }
 
 %%
