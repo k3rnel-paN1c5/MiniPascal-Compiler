@@ -1,4 +1,4 @@
-program $ Factorial;
+program Factorial;
 var cnt, fact : Integer;
 var x: Array[1..5] of Real;
 var t, y : boolean;
@@ -15,7 +15,7 @@ begin
     // thiss is a commnt
     cnt := 5;
     fact := 1;
-    x[1]:=6.5;
+    x[1] :=6.5;
     x[4] := fact/ 5.0;
     t := true;
     while cnt > 0 do
