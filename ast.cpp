@@ -80,9 +80,11 @@ void SubDecs::AddDec(SubDec * sd)
 
 SubDec::SubDec(SubHead* head, CompStmt* cmst, int lin, int col) : Node(lin, col){
     this->subHead = head;
-    head->father = this;
+    if(head != NULL)
+        head->father = this;
     this->compStmt = cmst;
-    cmst->father  = this;
+    if(cmst != NULL)
+        cmst->father  = this;
 }
 SubHead::SubHead(int lin, int col) : Node(lin, col)
 {
@@ -93,7 +95,8 @@ Func::Func(Ident* ident, Args* ags, StdType* tp, int lin, int col) : SubHead(lin
     this->id = ident;
     ident->father = this;
     this->args = ags;
-    args->father = this;
+    if(args != NULL)
+        args->father = this;
     this->typ = tp;
     typ->father = this;
 }
@@ -102,12 +105,14 @@ Proc::Proc(Ident* ident, Args* ags, int lin, int col) : SubHead(lin, col)
     this->id = ident;
     ident->father = this;
     this->args = ags;
-    args->father = this;
+    if(args != NULL)
+        args->father = this;
 }
 Args:: Args(ParList* parls, int lin, int col) : Node(lin, col)
 {
     this->parList = parls;
-    parls->father = this;
+    if(parls != NULL)
+        parls->father = this;
 }
 ParList::ParList(ParDec* prDec, int lin, int col):Node(lin, col)
 {
@@ -121,12 +126,14 @@ void ParList::AddDec(ParDec *prDec)
 }
 CompStmt::CompStmt(OptionalStmts* opst, int lin, int col) : Stmt(lin, col){
     this->optitonalStmts = opst;
-    opst->father = this;
+    if(opst != NULL)
+        opst->father = this;
 }
 OptionalStmts::OptionalStmts(StmtList* stls, int lin, int col) : Node(lin, col)
 {
     this->stmtList = stls;
-    stls->father = this;
+    if(stls != NULL)
+        stls->father = this;
 }
 StmtList::StmtList(Stmt* st, int lin, int col):Node(lin, col)
 {

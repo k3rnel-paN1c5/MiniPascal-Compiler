@@ -22,7 +22,7 @@ Grammar
 
    13 sub_dec: sub_head comp_stmt
 
-   14 sub_head: KFUNC KIDENT args ':' std_type
+   14 sub_head: KFUNC KIDENT args ':' std_type ';'
    15         | KPROC KIDENT args ';'
 
    16 args: '(' param_list ')'
@@ -88,7 +88,7 @@ $end (0) 0
 ',' (44) 5 36
 '..' (46) 7
 ':' (58) 2 14 18 19
-';' (59) 1 2 11 15 19 24
+';' (59) 1 2 11 14 15 19 24
 '[' (91) 7 32
 ']' (93) 7 32
 error (256)
@@ -277,7 +277,7 @@ state 10
 
 state 11
 
-   14 sub_head: KFUNC . KIDENT args ':' std_type
+   14 sub_head: KFUNC . KIDENT args ':' std_type ';'
 
     KIDENT  shift, and go to state 19
 
@@ -353,7 +353,7 @@ state 18
 
 state 19
 
-   14 sub_head: KFUNC KIDENT . args ':' std_type
+   14 sub_head: KFUNC KIDENT . args ':' std_type ';'
 
     '('  shift, and go to state 39
 
@@ -538,7 +538,7 @@ state 39
 
 state 40
 
-   14 sub_head: KFUNC KIDENT args . ':' std_type
+   14 sub_head: KFUNC KIDENT args . ':' std_type ';'
 
     ':'  shift, and go to state 60
 
@@ -767,7 +767,7 @@ state 59
 
 state 60
 
-   14 sub_head: KFUNC KIDENT args ':' . std_type
+   14 sub_head: KFUNC KIDENT args ':' . std_type ';'
 
     KINT   shift, and go to state 32
     KREAL  shift, and go to state 33
@@ -1106,9 +1106,9 @@ state 89
 
 state 90
 
-   14 sub_head: KFUNC KIDENT args ':' std_type .
+   14 sub_head: KFUNC KIDENT args ':' std_type . ';'
 
-    $default  reduce using rule 14 (sub_head)
+    ';'  shift, and go to state 102
 
 
 state 91
@@ -1117,7 +1117,7 @@ state 91
    42 exp: KIDENT '(' exp_list . ')'
 
     ','  shift, and go to state 96
-    ')'  shift, and go to state 102
+    ')'  shift, and go to state 103
 
 
 state 92
@@ -1163,7 +1163,7 @@ state 96
     KNOT      shift, and go to state 47
     '('       shift, and go to state 48
 
-    exp  go to state 103
+    exp  go to state 104
 
 
 state 97
@@ -1178,7 +1178,7 @@ state 98
    28 stmt: KIF exp KTHEN stmt .
    29     | KIF exp KTHEN stmt . KELSE stmt
 
-    KELSE  shift, and go to state 104
+    KELSE  shift, and go to state 105
 
     $default  reduce using rule 28 (stmt)
 
@@ -1187,7 +1187,7 @@ state 99
 
     7 type: KARRAY '[' KINTNUM '..' . KINTNUM ']' KOF std_type
 
-    KINTNUM  shift, and go to state 105
+    KINTNUM  shift, and go to state 106
 
 
 state 100
@@ -1202,18 +1202,25 @@ state 101
     5 ident_list: ident_list . ',' KIDENT
    19 param_list: param_list ';' ident_list . ':' type
 
-    ':'  shift, and go to state 106
+    ':'  shift, and go to state 107
     ','  shift, and go to state 18
 
 
 state 102
+
+   14 sub_head: KFUNC KIDENT args ':' std_type ';' .
+
+    $default  reduce using rule 14 (sub_head)
+
+
+state 103
 
    42 exp: KIDENT '(' exp_list ')' .
 
     $default  reduce using rule 42 (exp)
 
 
-state 103
+state 104
 
    36 exp_list: exp_list ',' exp .
    44 exp: exp . binOp exp
@@ -1237,7 +1244,7 @@ state 103
     binOp  go to state 79
 
 
-state 104
+state 105
 
    29 stmt: KIF exp KTHEN stmt KELSE . stmt
 
@@ -1247,19 +1254,19 @@ state 104
     KIF     shift, and go to state 23
 
     comp_stmt  go to state 24
-    stmt       go to state 107
+    stmt       go to state 108
     variable   go to state 28
     proc_stmt  go to state 29
 
 
-state 105
+state 106
 
     7 type: KARRAY '[' KINTNUM '..' KINTNUM . ']' KOF std_type
 
-    ']'  shift, and go to state 108
+    ']'  shift, and go to state 109
 
 
-state 106
+state 107
 
    19 param_list: param_list ';' ident_list ':' . type
 
@@ -1268,32 +1275,32 @@ state 106
     KBOOL   shift, and go to state 34
     KARRAY  shift, and go to state 35
 
-    type      go to state 109
+    type      go to state 110
     std_type  go to state 37
 
 
-state 107
+state 108
 
    29 stmt: KIF exp KTHEN stmt KELSE stmt .
 
     $default  reduce using rule 29 (stmt)
 
 
-state 108
+state 109
 
     7 type: KARRAY '[' KINTNUM '..' KINTNUM ']' . KOF std_type
 
-    KOF  shift, and go to state 110
+    KOF  shift, and go to state 111
 
 
-state 109
+state 110
 
    19 param_list: param_list ';' ident_list ':' type .
 
     $default  reduce using rule 19 (param_list)
 
 
-state 110
+state 111
 
     7 type: KARRAY '[' KINTNUM '..' KINTNUM ']' KOF . std_type
 
@@ -1301,10 +1308,10 @@ state 110
     KREAL  shift, and go to state 33
     KBOOL  shift, and go to state 34
 
-    std_type  go to state 111
+    std_type  go to state 112
 
 
-state 111
+state 112
 
     7 type: KARRAY '[' KINTNUM '..' KINTNUM ']' KOF std_type .
 

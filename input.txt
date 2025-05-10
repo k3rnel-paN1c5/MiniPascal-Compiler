@@ -1,0 +1,34 @@
+program Factorial; 
+var cnt, fact : Integer;
+var x: Array[1..5] of Real;
+var t, y : boolean;
+function sum(a, b : integer) : integer ;
+begin
+    a := a+b
+end;
+Procedure Mult(a, b: integer; c : real) ;
+begin
+    a := a*b
+end;
+
+begin
+    // thiss is a commnt
+    cnt := 5;
+    fact := 1;
+    x[1]:=6.5;
+    x[4] := fact/ 5.0;
+    t := true;
+    while cnt > 0 do
+        {
+            multi 
+            line 
+            comment
+        }
+        begin
+        fact := fact * cnt;
+        cnt := cnt - 1
+        end;
+    Write(fact)
+end
+
+

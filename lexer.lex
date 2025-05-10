@@ -22,10 +22,10 @@ ALPHA [a-zA-Z]
     col = 0;    
 }
 "//".*  {
-    cout  << "One-Line Comment\n";
+    //cout  << "One-Line Comment\n";
 }
 "{"[^}]*"}"  {
-    cout  << "Multi-Line Comment\n";
+    //cout  << "Multi-Line Comment\n";
 }
 
 [Pp][Rr][Oo][Gg][Rr][Aa][Mm] {
@@ -106,7 +106,7 @@ ALPHA [a-zA-Z]
     col += yyleng;
     return KAND;
 }
-[Bb][Oo][Ll][Ee][Aa][Nn] {
+[Bb][Oo][Oo][Ll][Ee][Aa][Nn] {
     col += yyleng;
     return KBOOL;
 }
@@ -134,7 +134,8 @@ ALPHA [a-zA-Z]
     yylval.tInt = new Integer(atoi(yytext), lin, col);
     return KINTNUM;
 }
-(({DIGIT}+\.{DIGIT}*([e|E][+-]?{DIGIT}+)?)|(\.{DIGIT}+([e|E][+-]?{DIGIT}+)?)|({DIGIT}+[e|E][+-]?{DIGIT}+)) {
+
+(({DIGIT}+\.{DIGIT}+([e|E][+-]?{DIGIT}+)?)|(\.{DIGIT}+([e|E][+-]?{DIGIT}+)?)|({DIGIT}+[e|E][+-]?{DIGIT}+)) {
     yylval.tReal = new Real(atof(yytext), lin, col);
     return KREALNUM;
 }
@@ -188,7 +189,7 @@ ALPHA [a-zA-Z]
     return *yytext;
 }
 
-[(),{};:] {
+[(),{};:]|"["|"]" {
     col += yyleng;
     return *yytext;
 }

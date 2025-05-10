@@ -119,6 +119,7 @@ program: KPROGRAM KIDENT ';' declarations sub_declarations comp_stmt
     {
         $$ = new Prog($2, $4, $5, $6, lin, col);
         root =  $$;
+        cout  << "*****Finished Parsing Successfully***\n";
     }
 ;
 declarations: declarations KVAR ident_list ':' type ';' 
@@ -138,6 +139,7 @@ ident_list: KIDENT
     }
     | ident_list ',' KIDENT
     {
+        $$ = $1;
         $$->AddIdent($3);
     }
 ;
@@ -170,6 +172,7 @@ sub_declarations: sub_declarations sub_dec ';'
     }
     | /* empty */
     {
+        //cout << "reduced sub_declarations to empty\n";
         $$ = new SubDecs(lin, col);
     }
 ;
@@ -178,7 +181,7 @@ sub_dec: sub_head comp_stmt
         $$ = new SubDec($1, $2, lin, col);
     }
 ;
-sub_head: KFUNC KIDENT args ':' std_type
+sub_head: KFUNC KIDENT args ':' std_type ';'
     {
         $$ = new Func($2, $3, $5, lin, col);
     }
@@ -193,7 +196,7 @@ args: '(' param_list ')'
     }
     | /* empty */
     {
-        cout << "args reduced to empty\n";
+        //cout << "args reduced to empty\n";
     }
 ;
 param_list: ident_list ':' type 
@@ -219,7 +222,7 @@ optional_stmts: stmt_list
     }
     | /* empty */
     {
-        cout << "Reduced optional_stmts to empty\n";
+        //cout << "Reduced optional_stmts to empty\n";
     }
 ;
 stmt_list: stmt 
