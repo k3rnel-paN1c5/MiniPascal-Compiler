@@ -25,7 +25,13 @@ int main(int argc, char* argv[]) {
     }
     yyin = input;
 
+    // Parsing
     yyparse(); 
+
+    //print visitor
+    Visitor* v = new PrintVisitor();
+    root->accept(v);
+    
     fclose(input);
     return 0;
 }

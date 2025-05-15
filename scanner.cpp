@@ -1176,7 +1176,7 @@ YY_RULE_SETUP
 {
     col += yyleng;
     cout <<"Lexical Error at column: " << col << " row: " << lin+1  << endl;
-    exit();
+    return 1;
     }
 	YY_BREAK
 case 45:

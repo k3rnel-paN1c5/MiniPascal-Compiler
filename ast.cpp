@@ -296,3 +296,195 @@ FuncCall::FuncCall(Ident * iden, ExpList *exls, int lin, int col) : Exp(lin, col
     this->id = iden;
     this->exps =exls;
 }
+
+void Node::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Stmt::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Prog::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Ident::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Decs::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void ParDec::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void IdentList::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void SubDecs::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void SubDec::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void SubHead::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Func::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Args::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void ParList::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Proc::accept(Visitor * v) {
+    v->Visit(this);
+}
+void FuncCall::accept(Visitor * v) {
+    v->Visit(this);
+}
+void CompStmt::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void OptionalStmts::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void StmtList::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Var::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Exp::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Assign::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void ProcStmt::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void ExpList::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void IfThen::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void IfThenElse::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void While::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Type::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void StdType::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void IdExp::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Integer::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Real::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Bool::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Array::accept(Visitor * v) {
+    v->Visit(this);
+}
+void ArrayElement::accept(Visitor * v) {
+    v->Visit(this);
+}
+void BinOp::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Add::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Sub::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Mult::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Divide::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Mod::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void GT::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void LT::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void GE::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void LE::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void ET::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void NE::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void And::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Or::accept(Visitor * v) {
+    v->Visit(this);
+}
+
+void Not::accept(Visitor * v) {
+    v->Visit(this);
+}
