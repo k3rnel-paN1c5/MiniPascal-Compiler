@@ -638,10 +638,11 @@ class Symbol
 {
 public:
 
-    string name; ///< Symbol name (identifier)
-    int kind; ///< Symbol kind (variable, function, class, etc.)
-    int type;  ///< Data type (int, float, etc.)
-    int location;  ///< Memory location for code generation
+    string Name; ///< Symbol name (identifier)
+    int Kind; ///< Symbol kind (variable, function, class, etc.)
+    int Type;  ///< Data type (int, float, etc.)
+    int Location;  ///< Memory location for code generation
+    Symbol(string name, int kind, int type, int location);
 };
 
 /**
