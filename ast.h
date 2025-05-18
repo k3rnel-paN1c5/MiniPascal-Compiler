@@ -64,6 +64,7 @@ enum OpType {
     OP_GT, OP_GE, OP_LT, OP_LE, OP_ET, OP_NE,
     OP_AND, OP_OR
 };
+string TypeEnumToString(TypeEnum );
 class Node 
 {
 public:
@@ -478,6 +479,8 @@ public:
 
 class PrintVisitor : public Visitor {
 public:
+    int level;
+    PrintVisitor();
     virtual void Visit(Node*);
     virtual void Visit(Stmt*);
     virtual void Visit(Prog*);

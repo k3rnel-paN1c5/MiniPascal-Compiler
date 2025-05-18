@@ -45,8 +45,6 @@ IdentList::IdentList(Ident* id, int lin, int col) : Node(lin, col)
 {
     this->identLst = new vector<Ident*>;
     this->AddIdent(id);
-    this->identLst->push_back(id);
-    id->father = this;
 }
 void IdentList::AddIdent(Ident* id){
     this->identLst->push_back(id);

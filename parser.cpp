@@ -1532,7 +1532,7 @@ yyreduce:
 #line 119 "parser.y"
     {
         (yyval.tProg) = new Prog((yyvsp[(2) - (6)].tIdent), (yyvsp[(4) - (6)].tDecs), (yyvsp[(5) - (6)].tSubdecs), (yyvsp[(6) - (6)].tCompstmt), lin, col);
-        root =  (yyval.tProg);
+        root = (yyval.tProg);
         cout  << "**********Finished Parsing Successfully**********\n";
     ;}
     break;

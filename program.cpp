@@ -5,7 +5,7 @@
 #include <iostream>
 extern int yydebug;
 extern int yyparse();
-extern Func* root;
+extern Prog* root;
 extern FILE* yyin;
 
 
