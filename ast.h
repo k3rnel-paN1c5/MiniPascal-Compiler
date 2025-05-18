@@ -2,6 +2,8 @@
 #define AST_H
 
 #include <vector>
+#include "hash_fun.h"
+#include "hash_table.h"
 using namespace std;
 
 class Node;
@@ -423,6 +425,7 @@ public:
     virtual void  accept(Visitor* ); 
 };
 
+//* Visitor Design Pattern
 class Visitor {
 public:
     virtual void Visit(Node*) = 0;
@@ -531,4 +534,27 @@ public:
     virtual void Visit(Or*);
     virtual void Visit(Not*);
 };
+
+//* Symbol Table
+
+class Symbol
+{
+public:
+    string Name;
+    int Kind;
+    int type;
+};
+typedef CHashTable<Symbol> HashTab;
+class Scope
+{
+public:
+    HashTab *hashTab = new HashTab();
+};
+
+class SymbolTable{
+    Scope* rootScope;
+    vector<Scope* > *Scopes;
+    Symbol AddSymbole();
+};
+
 #endif
