@@ -1,3 +1,20 @@
+/**
+ * @file ast.h
+ * @brief Abstract Syntax Tree (AST) definition for a Pascal-like programming language
+ *
+ * This header defines the complete AST class hierarchy for parsing and representing
+ * the structure of a Pascal-like programming language. It includes classes for 
+ * different language constructs such as expressions, statements, declarations, 
+ * and supports the Visitor design pattern for traversing the AST.
+ *
+ * Key components include:
+ * - Node: Base class for all AST nodes
+ * - Various expression and statement classes (Exp, Stmt, etc.)
+ * - Type system representation (StdType, Array)
+ * - Visitor interface for AST traversal
+ * - Symbol table classes for semantic analysis
+ */
+
 #ifndef AST_H
 #define AST_H
 
@@ -6,6 +23,7 @@
 #include "hash_table.h"
 using namespace std;
 
+// Forward declarations of all AST node 
 class Node;
 class Stmt;
 class Prog;
@@ -55,42 +73,99 @@ class Or;
 class Not;
 class Visitor;
 
+/**
+ * @enum TypeEnum
+ * @brief Represents the basic types supported in the language
+ */
 enum TypeEnum 
 {
-    INTTYPE,
-    REALTYPE,
-    BOOLTYPE
+    INTTYPE, ///< Integer type
+    REALTYPE, ///< Real (floating point) type
+    BOOLTYPE  ///< Boolean type
 };
+
+/**
+ * @enum OpType
+ * @brief Represents all binary and comparison operators in the language
+ */
 enum OpType {
-    OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_MOD,
-    OP_GT, OP_GE, OP_LT, OP_LE, OP_ET, OP_NE,
-    OP_AND, OP_OR
+    OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_MOD, //< Arithmetic operators
+    OP_GT, OP_GE, OP_LT, OP_LE, OP_ET, OP_NE, //< Comparison operators
+    OP_AND, OP_OR ///< Logical operators
 };
+
+/**
+ * @brief Converts a TypeEnum value to its string representation
+ * @param type The TypeEnum to convert
+ * @return String representation of the type
+ */
 string TypeEnumToString(TypeEnum );
+
+/**
+ * @class Node
+ * @brief Base class for all AST nodes
+ * 
+ * Provides common attributes like line and column for error reporting,
+ * and implements the Visitor pattern through the accept method.
+ */
 class Node 
 {
 public:
-    int line;
-    int column;
-    Node *father;
-    Node(int, int);
-    virtual void  accept(Visitor* ); 
+    int line; ///< Source line number for error 
+    int column; ///< Source column number for error 
+    Node *father; ///< Parent node in the AST
+    /**
+     * @brief Constructor for Node
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
+    Node(int lin, int col);
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void  accept(Visitor* v); 
 };
+
+/**
+ * @class Prog
+ * @brief Represents the entire program
+ * 
+ * Root node of the AST that contains program name, declarations,
+ * sub-declarations (functions/procedures), and the main compound statement.
+ */
 class Prog : public Node 
 {
 public: 
-    Ident *name;
-    Decs *declarations;
-    SubDecs *subDeclarations;
-    CompStmt *compoundStatment;
+    Ident *name;                  ///< Program name
+    Decs *declarations;           ///< Variable declarations
+    SubDecs *subDeclarations;     ///< Function and procedure declarations
+    CompStmt *compoundStatment;   ///< Main program body
+    /**
+     * @brief Constructor for Prog
+     * @param n for Program name
+     * @param decl variable declarations
+     * @param subdecl function and procedure declarations
+     * @param comst Main program body
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Prog(Ident *, Decs *, SubDecs *, CompStmt *, int, int);
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
     virtual void  accept(Visitor* );
  };
 
+/**
+ * @class Ident
+ * @brief Represents an identifier (variable, function, procedure name)
+ */
 class Ident : public Node
 {
 public:
-    string name;
+    string name; ///< The identifier name
     Ident(string, int, int);
     virtual void  accept(Visitor* ); 
 };
@@ -426,6 +501,15 @@ public:
 };
 
 //* Visitor Design Pattern
+
+/**
+ * @class Visitor
+ * @brief Abstract visitor interface for the Visitor pattern
+ * 
+ * Defines visit methods for each node type in the AST.
+ * Concrete visitors implement these methods to perform
+ * operations on the AST (e.g., printing, type checking).
+ */
 class Visitor {
 public:
     virtual void Visit(Node*) = 0;
@@ -479,10 +563,16 @@ public:
     virtual void Visit(Not*) = 0;
 };
 
-
+/**
+ * @class PrintVisitor
+ * @brief Concrete visitor that prints the AST structure
+ * 
+ * Implements the Visitor interface to traverse the AST and
+ * print each node, creating a textual representation of the tree.
+ */
 class PrintVisitor : public Visitor {
 public:
-    int level;
+    int level; ///< Current indentation level for pretty 
     PrintVisitor();
     virtual void Visit(Node*);
     virtual void Visit(Stmt*);
@@ -537,23 +627,55 @@ public:
 
 //* Symbol Table
 
+/**
+ * @class Symbol
+ * @brief Represents an entry in the symbol table
+ * 
+ * Contains information about a declared identifier such as
+ * its name, kind (variable, function, etc.), type, and memory location.
+ */
 class Symbol
 {
 public:
-    string Name;
-    int Kind;
-    int type;
+
+    string name; ///< Symbol name (identifier)
+    int kind; ///< Symbol kind (variable, function, class, etc.)
+    int type;  ///< Data type (int, float, etc.)
+    int location;  ///< Memory location for code generation
 };
-typedef CHashTable<Symbol> HashTab;
+
+/**
+ * @typedef HashTable
+ * @brief Type alias for the hash table used in each scope
+ */
+typedef CHashTable<Symbol> HashTable;
+
+/**
+ * @class Scope
+ * @brief Represents a single scope in the program
+ * 
+ * Contains a hash table of symbols defined in this scope.
+ */
 class Scope
 {
 public:
-    HashTab *hashTab = new HashTab();
+    HashTable *hashTab = new HashTable(); ///< Hash table for this scope
 };
 
+/**
+ * @class SymbolTable
+ * @brief Manages the symbol tables for different scopes
+ * 
+ * Maintains the global (root) scope and a list of inner scopes
+ * for handling nested blocks and function/procedure scopes.
+ */
 class SymbolTable{
-    Scope* rootScope;
-    vector<Scope* > *Scopes;
+    Scope* rootScope; ///< Global scope of the program
+    vector<Scope* > *Scopes;  ///< List of inner scopes
+    /**
+     * @brief Adds a symbol to the appropriate scope
+     * @return The added symbol
+     */
     Symbol AddSymbole();
 };
 
