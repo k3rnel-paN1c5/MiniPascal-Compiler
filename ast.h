@@ -170,37 +170,99 @@ public:
     virtual void  accept(Visitor* ); 
 };
 
+/**
+ * @class Decs
+ * @brief Represents a collection of variable declarations
+ * 
+ * Contains a vector of parameter declarations (ParDec) that define
+ * variables in a program, function, or procedure.
+ */
 class Decs : public Node 
 {
 public:
-    vector<ParDec *> * decs;
+    vector<ParDec *> * decs; ///< List of parameter declarations
+    /**
+     * @brief Constructor for Decs
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Decs(int, int);
+    /**
+     * @brief Adds a parameter declaration to the list
+     * @param parDec The parameter declaration to add
+     */
     void AddDec(ParDec*); 
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class ParDec
+ * @brief Represents a parameter declaration
+ * 
+ * Contains an identifier list and a type, defining one or more
+ * variables of the same type in a declaration statement.
+ */
 class ParDec : public Node
 {
 public:
-    IdentList* identList;
-    Type* tp;
+    IdentList* identList; ///< List of identifiers being declared
+    Type* tp; ///< Type of the declared identifiers
+    /**
+     * @brief Constructor for ParDec
+     * @param idlst List of identifiers being declared
+     * @param typ Type of the declared identifiers
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     ParDec(IdentList*, Type *, int, int);
     
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class IdentList
+ * @brief Represents a list of identifiers
+ * 
+ * Contains a vector of identifiers that are being declared
+ * with the same type in a declaration statement.
+ */
 class IdentList : public Node
 {
 public:
-    vector<Ident *> *identLst;
+    vector<Ident *> *identLst; ///< List of identifiers
+    /**
+     * @brief Constructor for IdentList
+     * @param id Initial identifier in the list
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     IdentList(Ident*, int, int);
+    /**
+     * @brief Adds an identifier to the list
+     * @param id The identifier to add
+     */
     void AddIdent(Ident* );
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class Type
+ * @brief Base class for type representations
+ * 
+ * Abstract base class for different types in the language.
+ */
 class Type : public Node
 {
 public:
+    /**
+     * @brief Constructor for Type
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Type(int, int);
     virtual void  accept(Visitor* ); 
 };
+
 class StdType : public Type
 {
 public:
@@ -218,151 +280,425 @@ public:
     virtual void  accept(Visitor* ); 
 };
 
+/**
+ * @class SubDecs
+ * @brief Represents a collection of subprogram declarations
+ * 
+ * Contains a vector of function and procedure declarations (SubDec)
+ * that define the subprograms in a Pascal program.
+ */
 class SubDecs : public Node 
 {
 public:
-    vector<SubDec*>* subdecs;
+    vector<SubDec*>* subdecs; ///< List of subprogram declarations
+    /**
+     * @brief Constructor for SubDecs
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     SubDecs(int, int);
+    /**
+     * @brief Adds a subprogram declaration to the list
+     * @param sd The subprogram declaration to add
+     */
     void AddDec(SubDec*);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class SubDec
+ * @brief Represents a subprogram declaration
+ * 
+ * Contains a subprogram header and a compound statement that
+ * define a function or procedure in a Pascal program.
+ */
 class SubDec : public Node 
 {
 public: 
-    SubHead* subHead;
-    CompStmt* compStmt;
+    SubHead* subHead; ///< Subprogram header (function or procedure)
+    CompStmt* compStmt; ///< Compound statement forming the subprogram body
+    /**
+     * @brief Constructor for SubDec
+     * @param head Subprogram header
+     * @param cmst Compound statement forming the subprogram body
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     SubDec(SubHead*, CompStmt*, int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class SubHead
+ * @brief Base class for subprogram headers
+ * 
+ * Abstract base class for function and procedure headers.
+ */
 class SubHead : public Node
 {
 public:
+    /**
+     * @brief Constructor for SubHead
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     SubHead(int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class Func
+ * @brief Represents a function declaration header
+ * 
+ * Contains the function name, arguments, and return type.
+ */
 class Func : public SubHead 
 {
 public:
-    Ident* id;
-    Args* args;
-    StdType* typ;
+    Ident* id; ///< Function name
+    Args* args; ///< Function arguments
+    StdType* typ; ///< Function return type
+    /**
+     * @brief Constructor for Func
+     * @param ident Function name
+     * @param ags Function arguments
+     * @param tp Function return type
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Func(Ident*, Args*, StdType*, int, int);
     virtual void  accept(Visitor* ); 
 };
+/**
+ * @class Proc
+ * @brief Represents a procedure declaration header
+ * 
+ * Contains the procedure name and arguments.
+ */
 class Proc : public SubHead 
 {
 public:
-    Ident* id;
-    Args* args;
+    Ident* id;  ///< Procedure name
+    Args* args; ///< Procedure arguments
+    /**
+     * @brief Constructor for Proc
+     * @param ident Procedure name
+     * @param ags Procedure arguments
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Proc(Ident*, Args*, int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class Args
+ * @brief Represents the arguments of a subprogram
+ * 
+ * Contains a parameter list that defines the formal parameters
+ * of a function or procedure.
+ */
 class Args : public Node 
 {
 public:
-    ParList* parList;
+    ParList* parList; ///< List of parameters
+    /**
+     * @brief Constructor for Args
+     * @param parls List of parameters
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Args(ParList*, int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class ParList
+ * @brief Represents a list of parameters
+ * 
+ * Contains a vector of parameter declarations that define
+ * the formal parameters of a function or procedure.
+ */
 class ParList : public Node
 {
 public:
-    vector<ParDec*> * parList;
+    vector<ParDec*> * parList; ///< List of parameter declarations
+    /**
+     * @brief Constructor for ParList
+     * @param prDec Initial parameter declaration
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     ParList(ParDec*, int, int);
+    /**
+     * @brief Adds a parameter declaration to the list
+     * @param prDec The parameter declaration to add
+     */
     void AddDec(ParDec*);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class OptionalStmts
+ * @brief Represents an optional list of statements
+ * 
+ * Contains a statement list that may be empty in certain
+ * language constructs like compound statements.
+ */
 class OptionalStmts : public Node
 {
     public:
-    StmtList* stmtList;
+    StmtList* stmtList; ///< List of statements (may be null)
+    /**
+     * @brief Constructor for OptionalStmts
+     * @param stls List of statements (may be null)
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     OptionalStmts(StmtList*,int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class StmtList
+ * @brief Represents a list of statements
+ * 
+ * Contains a vector of statements that form a sequence
+ * of executable code in the program.
+ */
 class StmtList : public Node 
 {
     public:
-    vector<Stmt*> * stmts;
+    vector<Stmt*> * stmts; ///< List of statements
+    /**
+     * @brief Constructor for StmtList
+     * @param st Initial statement in the list
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     StmtList(Stmt*, int, int);
+    /**
+     * @brief Adds a statement to the list
+     * @param st The statement to add
+     */
     void AddStmt(Stmt*);
     virtual void  accept(Visitor* ); 
 };
+/**
+ * @class Stmt
+ * @brief Base class for statements
+ * 
+ * Abstract base class for different types of statements in the language.
+ */
 class Stmt : public Node 
 {
-    public:     
+    public:    
+    /**
+     * @brief Constructor for Stmt
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */ 
     Stmt(int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class CompStmt
+ * @brief Represents a compound statement
+ * 
+ * Contains a list of statements enclosed in begin-end blocks.
+ */
 class CompStmt : public Stmt 
 {
 public:
-    OptionalStmts* optitonalStmts;
+    OptionalStmts* optitonalStmts; ///< List of statements (may be empty)
+    /**
+     * @brief Constructor for CompStmt
+     * @param opst List of statements (may be empty)
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     CompStmt(OptionalStmts*, int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class Assign
+ * @brief Represents an assignment statement
+ * 
+ * Contains a variable and an expression to be assigned to it.
+ */
 class Assign : public Stmt
 {
 public:
-    Var* var;
-    Exp* exp;
+    Var* var; ///< Target variable
+    Exp* exp; ///< Expression to assign
+    /**
+     * @brief Constructor for Assign
+     * @param vr Target variable
+     * @param ex Expression to assign
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Assign(Var*, Exp*, int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class ProcStmt
+ * @brief Represents a procedure call statement
+ * 
+ * Contains a procedure name and a list of arguments.
+ */
 class ProcStmt : public Stmt
 {
 public:
-    Ident* id;
-    ExpList* expls;
+    Ident* id; ///< Procedure name
+    ExpList* expls; ///< List of argument expressions
+    /**
+     * @brief Constructor for ProcStmt
+     * @param ident Procedure name
+     * @param exls List of argument expressions
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     ProcStmt(Ident*, ExpList*, int, int);
     virtual void  accept(Visitor* ); 
 };
+/**
+ * @class ExpList
+ * @brief Represents a list of expressions
+ * 
+ * Contains a vector of expressions used as arguments in
+ * function or procedure calls.
+ */
 class ExpList : public Node
 {
 public:
-    vector<Exp*> * expList;
+    vector<Exp*> * expList; ///< List of expressions
+    /**
+     * @brief Constructor for ExpList
+     * @param ex Initial expression in the list
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     ExpList(Exp*, int, int);
+    /**
+     * @brief Adds an expression to the list
+     * @param ex The expression to add
+     */
     void AddExp(Exp*);
     virtual void  accept(Visitor* ); 
 };
+/**
+ * @class Exp
+ * @brief Base class for expressions
+ * 
+ * Abstract base class for different types of expressions in the language.
+ */
 class Exp : public Node
 {
 public:
+/**
+     * @brief Constructor for Exp
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Exp(int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class IdExp
+ * @brief Represents an identifier expression
+ * 
+ * Contains an identifier that refers to a variable in an expression.
+ */
 class IdExp : public Exp
 {
 public:
-    Ident* id;
+    Ident* id; ///< Variable identifier
+    /**
+     * @brief Constructor for IdExp
+     * @param ident Variable identifier
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     IdExp(Ident*, int, int);
     virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class Integer
+ * @brief Represents an integer literal expression
+ * 
+ * Contains an integer value.
+ */
 class Integer : public Exp
 {
 public:
-    int val;
+    int val; ///< Integer value
+    /**
+     * @brief Constructor for Integer
+     * @param value Integer value
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Integer(int, int, int);
     virtual void  accept(Visitor* ); 
 };
+/**
+ * @class Real
+ * @brief Represents a real (floating point) literal expression
+ * 
+ * Contains a floating point value.
+ */
 class Real : public Exp
 {
 public:
-    float val;
+    float val; ///< Floating point value
+    /**
+     * @brief Constructor for Real
+     * @param value Floating point value
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Real(float, int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class Bool
+ * @brief Represents a boolean literal expression
+ * 
+ * Contains a boolean value.
+ */
 class Bool : public Exp
 {
 public:
-    bool val;
+    bool val; ///< Boolean value
+    /**
+     * @brief Constructor for Bool
+     * @param value Boolean value
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Bool(bool, int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class FuncCall
+ * @brief Represents a function call expression
+ * 
+ * Contains an identifier and a list of expressions that
+ * represent the arguments to a function call.
+ */
 class FuncCall : public Exp
 {
 public:
-    Ident* id;
-    ExpList* exps;
+    Ident* id; ///< Function identifier
+    ExpList* exps;  ///< List of argument expressions
     FuncCall(Ident*, ExpList*, int, int);
     virtual void  accept(Visitor* ); 
 };
@@ -485,6 +821,13 @@ public:
     virtual void  accept(Visitor* ); 
 };
 
+/**
+ * @class Var
+ * @brief Represents a variable reference
+ * 
+ * Contains an identifier that refers to a variable in the program.
+ * Base class for more complex variable references like array elements.
+ */
 class Var : public Node
 {
 public:
@@ -492,6 +835,14 @@ public:
     Var(Ident*, int, int);
     virtual void  accept(Visitor* ); 
 };
+
+/**
+ * @class ArrayElement
+ * @brief Represents an array element access
+ * 
+ * Contains an identifier and an index expression that
+ * refers to an element in an array.
+ */
 class ArrayElement : public Var
 {
 public:
@@ -633,6 +984,8 @@ public:
  * 
  * Contains information about a declared identifier such as
  * its name, kind (variable, function, etc.), type, and memory location.
+ * This class is used during semantic analysis and code generation phases
+ * to track all declared identifiers and their properties.
  */
 class Symbol
 {
@@ -648,6 +1001,9 @@ public:
 /**
  * @typedef HashTable
  * @brief Type alias for the hash table used in each scope
+ * 
+ * Uses the CHashTable template class to store Symbol objects,
+ * providing efficient symbol lookup within a scope.
  */
 typedef CHashTable<Symbol> HashTable;
 
@@ -667,8 +1023,15 @@ public:
  * @class SymbolTable
  * @brief Manages the symbol tables for different scopes
  * 
- * Maintains the global (root) scope and a list of inner scopes
- * for handling nested blocks and function/procedure scopes.
+ * The SymbolTable class is responsible for managing all scopes in the program,
+ * including the global scope and nested scopes. It provides functionality for:
+ * - Creating new scopes
+ * - Adding symbols to scopes
+ * - Looking up symbols across scope boundaries
+ * - Managing scope hierarchy
+ * 
+ * This class is crucial for semantic analysis and ensuring proper
+ * variable scoping rules are followed.
  */
 class SymbolTable{
     Scope* rootScope; ///< Global scope of the program
@@ -676,6 +1039,7 @@ class SymbolTable{
     /**
      * @brief Adds a symbol to the appropriate scope
      * @return The added symbol
+     * @throws SemanticError if symbol is already defined in current scope
      */
     Symbol AddSymbole();
 };

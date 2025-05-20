@@ -72,6 +72,10 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "__hash_table": "cpp",
-        "__split_buffer": "cpp"
+        "__split_buffer": "cpp",
+        "list": "cpp",
+        "__tree": "cpp",
+        "__node_handle": "cpp",
+        "__memory": "cpp"
     }
 }
