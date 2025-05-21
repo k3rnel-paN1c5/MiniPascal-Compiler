@@ -124,7 +124,11 @@ public:
      * @brief Virtual accept method for the Visitor pattern
      * @param v The visitor object
      */
-    virtual void  accept(Visitor* v); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -155,7 +159,7 @@ public:
      * @brief Virtual accept method for the Visitor pattern
      * @param v The visitor object
      */
-    virtual void  accept(Visitor* );
+    virtual void accept(Visitor* );
  };
 
 /**
@@ -167,7 +171,11 @@ class Ident : public Node
 public:
     string name; ///< The identifier name
     Ident(string, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -192,7 +200,11 @@ public:
      * @param parDec The parameter declaration to add
      */
     void AddDec(ParDec*); 
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -216,7 +228,11 @@ public:
      */
     ParDec(IdentList*, Type *, int, int);
     
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -242,7 +258,11 @@ public:
      * @param id The identifier to add
      */
     void AddIdent(Ident* );
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -260,24 +280,65 @@ public:
      * @param col Column number in source code
      */
     Type(int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
+/**
+ * @class StdType
+ * @brief Represents a standard type in the language
+ * 
+ * Contains a TypeEnum value that specifies which standard type
+ * (integer, real, or boolean) this node represents.
+ */
 class StdType : public Type
 {
 public:
-    TypeEnum type;
+    TypeEnum type; ///< The standard type (INTTYPE, REALTYPE, or BOOLTYPE)
+    /**
+     * @brief Constructor for StdType
+     * @param tp The TypeEnum value representing the standard type
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     StdType(TypeEnum, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class Array
+ * @brief Represents an array type in the language
+ * 
+ * Contains the array bounds (begin and end indices) and the
+ * standard type of the array elements.
+ */
 class Array : public Type
 {
 public:
-    int beginIndex;
-    int endIndex;
-    StdType* stdType;
+    int beginIndex; ///< Starting index of the array
+    int endIndex; ///< Ending index of the array
+    StdType* stdType; ///< Type of the array elements
+    /**
+     * @brief Constructor for Array
+     * @param beg Starting index of the array
+     * @param end Ending index of the array
+     * @param tp Type of the array elements
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Array(int, int, StdType* , int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -302,7 +363,11 @@ public:
      * @param sd The subprogram declaration to add
      */
     void AddDec(SubDec*);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -325,7 +390,11 @@ public:
      * @param col Column number in source code
      */
     SubDec(SubHead*, CompStmt*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -343,7 +412,11 @@ public:
      * @param col Column number in source code
      */
     SubHead(int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -367,7 +440,11 @@ public:
      * @param col Column number in source code
      */
     Func(Ident*, Args*, StdType*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 /**
  * @class Proc
@@ -388,7 +465,11 @@ public:
      * @param col Column number in source code
      */
     Proc(Ident*, Args*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -409,7 +490,11 @@ public:
      * @param col Column number in source code
      */
     Args(ParList*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -435,7 +520,11 @@ public:
      * @param prDec The parameter declaration to add
      */
     void AddDec(ParDec*);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -456,7 +545,11 @@ class OptionalStmts : public Node
      * @param col Column number in source code
      */
     OptionalStmts(StmtList*,int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -482,7 +575,11 @@ class StmtList : public Node
      * @param st The statement to add
      */
     void AddStmt(Stmt*);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 /**
  * @class Stmt
@@ -499,7 +596,11 @@ class Stmt : public Node
      * @param col Column number in source code
      */ 
     Stmt(int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -519,7 +620,11 @@ public:
      * @param col Column number in source code
      */
     CompStmt(OptionalStmts*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -541,7 +646,11 @@ public:
      * @param col Column number in source code
      */
     Assign(Var*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -563,7 +672,11 @@ public:
      * @param col Column number in source code
      */
     ProcStmt(Ident*, ExpList*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 /**
  * @class ExpList
@@ -588,7 +701,11 @@ public:
      * @param ex The expression to add
      */
     void AddExp(Exp*);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 /**
  * @class Exp
@@ -605,7 +722,11 @@ public:
      * @param col Column number in source code
      */
     Exp(int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -625,6 +746,10 @@ public:
      * @param col Column number in source code
      */
     IdExp(Ident*, int, int);
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
     virtual void accept(Visitor* ); 
 };
 
@@ -645,7 +770,11 @@ public:
      * @param col Column number in source code
      */
     Integer(int, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 /**
  * @class Real
@@ -664,7 +793,11 @@ public:
      * @param col Column number in source code
      */
     Real(float, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -684,7 +817,11 @@ public:
      * @param col Column number in source code
      */
     Bool(bool, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -699,126 +836,469 @@ class FuncCall : public Exp
 public:
     Ident* id; ///< Function identifier
     ExpList* exps;  ///< List of argument expressions
+    /**
+     * @brief Constructor for FuncCall
+     * @param ident Function identifier
+     * @param exls List of argument expressions
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     FuncCall(Ident*, ExpList*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class Not
+ * @brief Represents a logical NOT operation
+ * 
+ * Contains an expression to be negated.
+ */
 class Not: public Exp
 {
 public:
-    Exp* exp;
+    Exp* exp; ///< Expression to negate
+    /**
+     * @brief Constructor for Not
+     * @param e Expression to negate
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Not(Exp* , int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class BinOp
+ * @brief Base class for binary operations
+ * 
+ * Contains left and right expressions for a binary operation.
+ * This is the parent class for all specific binary operations.
+ */
 class BinOp : public Exp 
 {
 public:
-    Exp* leftExp;
-    Exp* rightExp;
+    Exp* leftExp; ///< Left operand expression
+    Exp* rightExp; ///< Right operand expression
+    /**
+     * @brief Constructor for BinOp
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     BinOp(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+/**
+ * @class Add
+ * @brief Represents an addition operation
+ * 
+ * Binary operation for adding two expressions.
+ */
 class Add : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for Add
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Add(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class Sub
+ * @brief Represents a subtraction operation
+ * 
+ * Binary operation for subtracting the right expression from the left.
+ */
 class Sub : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for Sub
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Sub(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+/**
+ * @class Mult
+ * @brief Represents a multiplication operation
+ * 
+ * Binary operation for multiplying two expressions.
+ */
 class Mult : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for Mult
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Mult(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+/**
+ * @class Divide
+ * @brief Represents a division operation
+ * 
+ * Binary operation for dividing the left expression by the right.
+ */
 class Divide : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for Divide
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Divide(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class Mod
+ * @brief Represents a modulo operation
+ * 
+ * Binary operation for computing the remainder when dividing
+ * the left expression by the right.
+ */
+
 class Mod : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for Mod
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Mod(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class GT
+ * @brief Represents a greater than comparison
+ * 
+ * Binary operation for checking if the left expression is
+ * greater than the right expression.
+ */
 class GT : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for GT
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     GT(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class LT
+ * @brief Represents a less than comparison
+ * 
+ * Binary operation for checking if the left expression is
+ * less than the right expression.
+ */
 class LT : public BinOp 
 {
 public:
+     /**
+     * @brief Constructor for LT
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     LT(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class GE
+ * @brief Represents a greater than or equal comparison
+ * 
+ * Binary operation for checking if the left expression is
+ * greater than or equal to the right expression.
+ */
 class GE : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for GE
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     GE(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class LE
+ * @brief Represents a less than or equal comparison
+ * 
+ * Binary operation for checking if the left expression is
+ * less than or equal to the right expression.
+ */
 class LE : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for LE
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     LE(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class ET
+ * @brief Represents an equality comparison
+ * 
+ * Binary operation for checking if the left expression is
+ * equal to the right expression.
+ */
 class ET : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for ET
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     ET(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class NE
+ * @brief Represents a not equal comparison
+ * 
+ * Binary operation for checking if the left expression is
+ * not equal to the right expression.
+ */
 class NE : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for NE
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     NE(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class And
+ * @brief Represents a logical AND operation
+ * 
+ * Binary operation for the logical AND of two expressions.
+ */
 class And : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for And
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     And(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class Or
+ * @brief Represents a logical OR operation
+ * 
+ * Binary operation for the logical OR of two expressions.
+ */
 class Or : public BinOp 
 {
 public:
+    /**
+     * @brief Constructor for Or
+     * @param lexp Left operand expression
+     * @param rexp Right operand expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     Or(Exp*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class IfThen
+ * @brief Represents an if-then statement
+ * 
+ * Contains a condition expression and a statement to execute
+ * if the condition is true.
+ */
 class IfThen : public Stmt
 {
 public: 
-    Exp* expr;
-    Stmt* stmt;
+    Exp* expr; ///< Condition expression
+    Stmt* stmt; ///< Statement to execute if condition is true
+    /**
+     * @brief Constructor for IfThen
+     * @param exp Condition expression
+     * @param st Statement to execute if condition is true
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     IfThen(Exp* , Stmt*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+/**
+ * @class IfThenElse
+ * @brief Represents an if-then-else statement
+ * 
+ * Contains a condition expression, a statement to execute if the
+ * condition is true, and a statement to execute if the condition is false.
+ */
 class IfThenElse : public Stmt
 {
 public: 
-    Exp* expr;
-    Stmt* trueStmt;
-    Stmt* falseStmt;
+    Exp* expr; ///< Condition expression
+    Stmt* trueStmt; ///< Statement to execute if condition is true
+    Stmt* falseStmt; ///< Statement to execute if condition is false
+    /**
+     * @brief Constructor for IfThenElse
+     * @param exp Condition expression
+     * @param frstSt Statement to execute if condition is true
+     * @param scndSt Statement to execute if condition is false
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     IfThenElse(Exp* , Stmt*, Stmt*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class While
+ * @brief Represents a while loop statement
+ * 
+ * Contains a condition expression and a statement to execute
+ * repeatedly as long as the condition is true.
+ */
 class While : public Stmt
 {
 public: 
-    Exp* expr;
-    Stmt* stmt;
+    Exp* expr; ///< Loop condition expression
+    Stmt* stmt; ///< Statement to execute while condition is true
+    /**
+     * @brief Constructor for While
+     * @param exp Loop condition expression
+     * @param st Statement to execute while condition is true
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     While(Exp* , Stmt*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -833,7 +1313,11 @@ class Var : public Node
 public:
     Ident* id;
     Var(Ident*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 /**
@@ -846,9 +1330,20 @@ public:
 class ArrayElement : public Var
 {
 public:
-    Exp* index;
+    Exp* index;  ///< Index expression
+    /**
+     * @brief Constructor for ArrayElement
+     * @param ident Array identifier
+     * @param ind Index expression
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     ArrayElement(Ident*, Exp*, int, int);
-    virtual void  accept(Visitor* ); 
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
 };
 
 //* Visitor Design Pattern
