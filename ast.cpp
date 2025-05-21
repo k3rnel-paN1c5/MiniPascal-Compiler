@@ -23,6 +23,7 @@ Prog::Prog(Ident * n, Decs * decl, SubDecs * subdecl, CompStmt * comst, int lin,
 Ident::Ident(string n, int lin, int col)  : Node(lin, col)
 {
     this->name = n;
+    this->symbol = NULL;
 }
 
 Decs::Decs(int lin, int col) : Node(lin, col)
@@ -485,4 +486,66 @@ void Or::accept(Visitor * v) {
 
 void Not::accept(Visitor * v) {
     v->Visit(this);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//* Symbol Table
+
+Symbol::Symbol(string name, int kind, int type)
+{
+    this->Name = name;
+    this->Kind = kind;
+    this->Type = type;
+}
+
+Scope::Scope()
+{
+    this->hashTab = new HashTable();
+}
+
+SymbolTable::SymbolTable(){
+    this->Scopes = new vector<Scope*>();
+    this->Scopes->push_back(new Scope());
+    this->currentScope = this->Scopes->at(0);
+}
+
+bool SymbolTable::AddSymbol(Ident *ident, int kind, int type)
+{
+    Symbol* newSymbol = new Symbol(ident->name, kind, type);
+
+    string key;
+    switch(kind){
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+    }
+
+    Symbol* temp = this->currentScope->hashTab->GetMember(key);
+
+    if(temp){
+        cout << "Redifinition Varriable: " << ident->name << endl;
+		return false;
+    }
+    this->currentScope->hashTab->AddKey(key, newSymbol);
+    ident->symbol = newSymbol;
+    return false;
+}
+
+Symbol *SymbolTable::LookUpSymbol(Ident *ident)
+{
+    string key;
+    Symbol* sym;
+    
+    return nullptr;
+}
+
+void SymbolTable::NewScope()
+{
+}
+
+void SymbolTable::CloseScope()
+{
 }

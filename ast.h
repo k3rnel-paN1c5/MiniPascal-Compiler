@@ -170,6 +170,7 @@ class Ident : public Node
 {
 public:
     string name; ///< The identifier name
+    Symbol* symbol; ///< Corresponding symbol in symbol table
     Ident(string, int, int);
     /**
      * @brief Virtual accept method for the Visitor pattern
@@ -1471,6 +1472,7 @@ public:
     virtual void Visit(Not*);
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //* Symbol Table
 
 /**
@@ -1490,7 +1492,7 @@ public:
     int Kind; ///< Symbol kind (variable, function, class, etc.)
     int Type;  ///< Data type (int, float, etc.)
     int Location;  ///< Memory location for code generation
-    Symbol(string name, int kind, int type, int location);
+    Symbol(string name, int kind, int type);
 };
 
 /**
@@ -1511,7 +1513,8 @@ typedef CHashTable<Symbol> HashTable;
 class Scope
 {
 public:
-    HashTable *hashTab = new HashTable(); ///< Hash table for this scope
+    HashTable *hashTab; ///< Hash table for this scope
+    Scope();
 };
 
 /**
@@ -1529,14 +1532,18 @@ public:
  * variable scoping rules are followed.
  */
 class SymbolTable{
-    Scope* rootScope; ///< Global scope of the program
+    Scope* currentScope; ///< current scope 
     vector<Scope* > *Scopes;  ///< List of inner scopes
     /**
      * @brief Adds a symbol to the appropriate scope
      * @return The added symbol
      * @throws SemanticError if symbol is already defined in current scope
      */
-    Symbol AddSymbole();
+    SymbolTable();
+    bool AddSymbol(Ident* ident, int kind, int type);
+    Symbol* LookUpSymbol(Ident* ident);
+    void NewScope();
+    void CloseScope();
 };
 
 #endif
