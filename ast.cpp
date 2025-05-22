@@ -516,11 +516,17 @@ bool SymbolTable::AddSymbol(Ident *ident, int kind, int type)
     string key;
     switch(kind){
         case 1:
+            key = 'l' + ident->name; //local var
             break;
         case 2:
+            key = 'g' + ident->name; // global var
             break;
-        case 3:
-            break;
+        // case 3:
+        //     key = 'f' + ident->name; // function
+        //     break;
+        // case 4:
+        //     key = 'c' + ident->name; // class
+        //     break;
     }
 
     Symbol* temp = this->currentScope->hashTab->GetMember(key);
@@ -531,21 +537,41 @@ bool SymbolTable::AddSymbol(Ident *ident, int kind, int type)
     }
     this->currentScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
-    return false;
+    return true;
 }
 
 Symbol *SymbolTable::LookUpSymbol(Ident *ident)
 {
     string key;
     Symbol* sym;
-    
-    return nullptr;
+    // first look if there exist a local variable with that name
+    key = 'l' + ident->name;
+    sym = this->currentScope->hashTab->GetMember(key);
+    if(sym){
+        ident->symbol = sym;
+        return sym;
+    }
+    key = 'g' + ident->name;
+    sym = this->Scopes->at(this->Scopes->size() - 2)->hashTab->GetMember(key);
+		if (sym != NULL)
+		{
+			ident->symbol = sym;
+			return sym;
+		}
+		else
+		{
+			cout << "Undeclared Variable: " << ident->name << endl;
+			return NULL;
+		}
 }
 
 void SymbolTable::NewScope()
 {
+    this->Scopes->push_back(new Scope());
+    this->currentScope  = this->Scopes->at(this->Scopes->size() - 1);
 }
 
 void SymbolTable::CloseScope()
 {
+    this->currentScope = this->Scopes->at(0);
 }

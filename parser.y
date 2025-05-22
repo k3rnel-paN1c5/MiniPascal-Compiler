@@ -3,11 +3,15 @@
     #include <iostream>
     using std::endl;
     using std::cout;
+
     extern int yylex();
     extern int yyerror(const char*);
     extern int yydebug;
+    
     extern int lin, col;
     Prog* root;
+
+    SymbolTable *symbolTable = new SymbolTable();
 %}
 
 %union {
