@@ -123,7 +123,6 @@ program: KPROGRAM KIDENT ';' declarations sub_declarations comp_stmt
     {
         $$ = new Prog($2, $4, $5, $6, lin, col);
         root = $$;
-        cout  << "**********Finished Parsing Successfully**********\n";
     }
 ;
 declarations: declarations KVAR ident_list ':' type ';' 

@@ -1476,6 +1476,27 @@ public:
 //* Symbol Table
 
 /**
+ * @enum SymbolKind
+ * @brief Represents The kind of symbols (local variable, global variable, function, pocedure, parameter)
+ */
+enum SymbolKind {
+    PARAM_VAR = 1, ///< parameter variable
+    GLOBAL_VAR = 2, ///< global variable
+    FUNC = 3, ///< function symbol
+    PROC = 4, ///< procedure symbol
+    LOCAL_VAR = 5 //In case i added local variables
+};
+
+class FunctionSignature{
+    string name;
+    vector<TypeEnum> paramTypes;
+    TypeEnum returnType;
+
+    FunctionSignature(string n, vector<TypeEnum> params, TypeEnum ret = (TypeEnum)-1);
+    string getSignatureString();
+    bool matches(vector<TypeEnum> callParams);
+};
+/**
  * @class Symbol
  * @brief Represents an entry in the symbol table
  * 
@@ -1489,10 +1510,12 @@ class Symbol
 public:
 
     string Name; ///< Symbol name (identifier)
-    int Kind; ///< Symbol kind (variable, function, class, etc.)
+    SymbolKind Kind; ///< Symbol kind (variable, function, etc.)
     int Type;  ///< Data type (int, float, etc.)
     int Location;  ///< Memory location for code generation
-    Symbol(string name, int kind, int type);
+    FunctionSignature* funcSig;
+    Symbol(string name, SymbolKind kind, int type);
+    Symbol(string name, SymbolKind kind, FunctionSignature* sig);
 };
 
 /**
@@ -1532,15 +1555,12 @@ public:
  * variable scoping rules are followed.
  */
 class SymbolTable{
+public:
+    Scope* rootScope; ///< root program scope
     Scope* currentScope; ///< current scope 
     vector<Scope* > *Scopes;  ///< List of inner scopes
-    /**
-     * @brief Adds a symbol to the appropriate scope
-     * @return The added symbol
-     * @throws SemanticError if symbol is already defined in current scope
-     */
     SymbolTable();
-    bool AddSymbol(Ident* ident, int kind, int type);
+    bool AddSymbol(Ident* ident, SymbolKind kind, int type);
     Symbol* LookUpSymbol(Ident* ident);
     void NewScope();
     void CloseScope();

@@ -491,7 +491,7 @@ void Not::accept(Visitor * v) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //* Symbol Table
 
-Symbol::Symbol(string name, int kind, int type)
+Symbol::Symbol(string name, SymbolKind kind, int type)
 {
     this->Name = name;
     this->Kind = kind;
@@ -507,9 +507,10 @@ SymbolTable::SymbolTable(){
     this->Scopes = new vector<Scope*>();
     this->Scopes->push_back(new Scope());
     this->currentScope = this->Scopes->at(0);
+    this->rootScope = this->currentScope;
 }
 
-bool SymbolTable::AddSymbol(Ident *ident, int kind, int type)
+bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, int type)
 {
     Symbol* newSymbol = new Symbol(ident->name, kind, type);
 
