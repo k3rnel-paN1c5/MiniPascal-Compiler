@@ -491,16 +491,57 @@ void Not::accept(Visitor * v) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //* Symbol Table
 
+Errors* errorStack = new Errors();
+
+FunctionSignature::FunctionSignature(string n, vector<TypeEnum> params, TypeEnum ret = (TypeEnum)-1){
+    this->name = n;
+    this->returnType = ret;
+    this->paramTypes= params;
+}
+
+string FunctionSignature::getSignatureString(){
+    string res = this->name + '@';
+    for(int i = 0; i <  this->paramTypes.size(); i++){
+        if(i > 0) res += ",";
+        res += TypeEnumToString(this->paramTypes[i]);
+    }
+    if(this->returnType != (TypeEnum)-1)
+        res += ("@" + TypeEnumToString(returnType));
+    return res;
+}
+
+bool FunctionSignature::matches(vector<TypeEnum> callParams){
+    int n = this->paramTypes.size();
+    if(callParams.size()!=n)
+        return false;
+    for(int i = 0; i < n; i++)
+        if(this->paramTypes[i] != callParams[i])
+            return false;
+    return true;
+}
 Symbol::Symbol(string name, SymbolKind kind, int type)
 {
     this->Name = name;
     this->Kind = kind;
     this->Type = type;
+    this->funcSig = NULL;
 }
-
+Symbol::Symbol(string name, SymbolKind kind, FunctionSignature* sig)
+{
+    this->Name = name;
+    this->Kind = kind;
+    this->Type = -1;
+    this->funcSig = sig;
+}
 Scope::Scope()
 {
     this->hashTab = new HashTable();
+    this->Parent = NULL;
+    this->Children = new vector<Scope*>;
+}
+void Scope::AddChildScope(Scope*  s){
+    this->Children->push_back(s);
+    s->Parent = this;
 }
 
 SymbolTable::SymbolTable(){
@@ -512,41 +553,72 @@ SymbolTable::SymbolTable(){
 
 bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, int type)
 {
-    Symbol* newSymbol = new Symbol(ident->name, kind, type);
-
+    
     string key;
     switch(kind){
-        case 1:
-            key = 'l' + ident->name; //local var
-            break;
-        case 2:
-            key = 'g' + ident->name; // global var
-            break;
-        // case 3:
-        //     key = 'f' + ident->name; // function
-        //     break;
-        // case 4:
-        //     key = 'c' + ident->name; // class
-        //     break;
+        case PARAM_VAR:
+        key = "par" + ident->name; //parameter var for function or procedure
+        break;
+        case GLOBAL_VAR:
+        key = 'g' + ident->name; // global var
+        break;
+        case LOCAL_VAR:
+        key = 'l' + ident->name;
+        break;
+        default:
+        return false;
+        break;
     }
-
+    
     Symbol* temp = this->currentScope->hashTab->GetMember(key);
-
+    
     if(temp){
-        cout << "Redifinition Varriable: " << ident->name << endl;
+        errorStack->AddError("Redifintion Of Variable" + ident->name, ident->line, ident->column);
 		return false;
     }
+    Symbol* newSymbol = new Symbol(ident->name, kind, type);
     this->currentScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
     return true;
+}
+
+bool SymbolTable::AddSymbol(Ident* ident, SymbolKind kind, FunctionSignature* sig){
+    string key;
+    switch (kind)
+    {
+    case FUNC:
+        key = "f";
+        break;
+    case PROC:
+        key = "p";
+        break;
+    default:
+        return false;
+        break;
+    }
+    key = key + sig->getSignatureString();
+    Symbol* temp = this->currentScope->hashTab->GetMember(key);
+    
+    if(temp){
+        if(kind == PROC)
+            errorStack->AddError("Redifinition of Procedure: " + ident->name, ident->line, ident->column);
+		else
+            errorStack->AddError("Redifinition of Function: " + ident->name, ident->line, ident->column);
+        return false;
+    }
+    Symbol* newSymbol = new Symbol(ident->name, kind, sig);
+    this->currentScope->hashTab->AddKey(key, newSymbol);
+    ident->symbol = newSymbol;
+    return true;
+
 }
 
 Symbol *SymbolTable::LookUpSymbol(Ident *ident)
 {
     string key;
     Symbol* sym;
-    // first look if there exist a local variable with that name
-    key = 'l' + ident->name;
+    // first look if there exist a parameter variable with that name
+    key = "par" + ident->name;
     sym = this->currentScope->hashTab->GetMember(key);
     if(sym){
         ident->symbol = sym;
@@ -554,25 +626,34 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
     }
     key = 'g' + ident->name;
     sym = this->Scopes->at(this->Scopes->size() - 2)->hashTab->GetMember(key);
-		if (sym != NULL)
-		{
+		if (sym != NULL){
 			ident->symbol = sym;
 			return sym;
-		}
-		else
-		{
-			cout << "Undeclared Variable: " << ident->name << endl;
-			return NULL;
-		}
+        }
+
+        errorStack->AddError("Undeclared Variable: " + ident->name, ident->line, ident->column );
+        return NULL;
+}
+
+Symbol* SymbolTable::LookUpSymbol(Ident* ident, SymbolKind kind, vector<TypeEnum> paramTypes){
+
+    if(kind == FUNC)
+        errorStack->AddError("Undeclared Function: " + ident->name, ident->line, ident->column );
+    else
+        errorStack->AddError("Undeclared Procedure: " + ident->name, ident->line, ident->column );
+
+    return NULL;
 }
 
 void SymbolTable::NewScope()
 {
-    this->Scopes->push_back(new Scope());
-    this->currentScope  = this->Scopes->at(this->Scopes->size() - 1);
+    Scope* newScope = new Scope();
+    this->Scopes->push_back(newScope);
+    this->currentScope->AddChildScope(newScope);
+    this->currentScope  = newScope;
 }
 
 void SymbolTable::CloseScope()
 {
-    this->currentScope = this->Scopes->at(0);
+    this->currentScope = this->currentScope->Parent;
 }

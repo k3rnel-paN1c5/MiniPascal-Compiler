@@ -7,7 +7,7 @@ string TypeEnumToString(TypeEnum t){
     switch (t)
     {
     case  INTTYPE:
-        return  "INT Type";
+        return  "INTEGER Type";
         break;
     case  REALTYPE:
         return  "REAL Type";

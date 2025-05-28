@@ -129,7 +129,9 @@ declarations: declarations KVAR ident_list ':' type ';'
     {
         $$ = $1;
         ParDec* parDec = new ParDec($3, $5, lin, col);
-        $$->AddDec(parDec);
+        $$->AddDec(parDec); 
+        for(int i = 0; i < $3->identLst->size(); i++)
+            symbolTable->AddSymbol($3->identLst->at(0), GLOBAL_VAR, $5);
     }
     | /* empty */
     {
@@ -172,6 +174,7 @@ sub_declarations: sub_declarations sub_dec ';'
     {
         $$ = $1;
         $$->AddDec($2);
+        
     }
     | /* empty */
     {

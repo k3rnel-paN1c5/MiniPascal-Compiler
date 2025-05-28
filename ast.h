@@ -1484,10 +1484,11 @@ enum SymbolKind {
     GLOBAL_VAR = 2, ///< global variable
     FUNC = 3, ///< function symbol
     PROC = 4, ///< procedure symbol
-    LOCAL_VAR = 5 //In case i added local variables
+    LOCAL_VAR = 5 ///< In case i added local variables
 };
 
 class FunctionSignature{
+public:
     string name;
     vector<TypeEnum> paramTypes;
     TypeEnum returnType;
@@ -1536,8 +1537,11 @@ typedef CHashTable<Symbol> HashTable;
 class Scope
 {
 public:
+    Scope* Parent;
     HashTable *hashTab; ///< Hash table for this scope
+    vector<Scope*> *Children;
     Scope();
+    void AddChildScope(Scope*  s);
 };
 
 /**
@@ -1561,9 +1565,27 @@ public:
     vector<Scope* > *Scopes;  ///< List of inner scopes
     SymbolTable();
     bool AddSymbol(Ident* ident, SymbolKind kind, int type);
+    bool AddSymbol(Ident* ident, SymbolKind kind, FunctionSignature* sig);
     Symbol* LookUpSymbol(Ident* ident);
+    Symbol* LookUpSymbol(Ident* ident, vector<TypeEnum> paramTypes);
     void NewScope();
     void CloseScope();
+};
+
+class Error : public Node
+{
+public:
+	string Message;
+	Error(string message, int lin, int col);
+};
+
+class Errors
+{
+public:
+	vector<Error *> *errorStack;
+	Errors();
+	void AddError(string message, int lin, int col);
+	void Print();
 };
 
 #endif
