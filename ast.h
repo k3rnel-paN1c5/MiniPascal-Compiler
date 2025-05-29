@@ -546,6 +546,7 @@ public:
 };
 class LocalDec: public Node
 {
+public:
     IdentList* identlist;
     Type* tp;
     LocalDec(IdentList*, Type*, int, int);

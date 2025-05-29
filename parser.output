@@ -22,7 +22,7 @@ Grammar
 
    13 @1: /* empty */
 
-   14 sub_dec: sub_head @1 local_dec comp_stmt
+   14 sub_dec: @1 sub_head local_dec comp_stmt
 
    15 sub_head: KFUNC KIDENT args ':' std_type ';'
    16         | KPROC KIDENT args ';'
@@ -259,13 +259,13 @@ state 8
     1 program: KPROGRAM KIDENT ';' declarations sub_declarations . comp_stmt
    11 sub_declarations: sub_declarations . sub_dec ';'
 
-    KFUNC   shift, and go to state 11
-    KPROC   shift, and go to state 12
-    KBEGIN  shift, and go to state 13
+    KBEGIN  shift, and go to state 11
 
-    sub_dec    go to state 14
-    sub_head   go to state 15
-    comp_stmt  go to state 16
+    $default  reduce using rule 13 (@1)
+
+    sub_dec    go to state 12
+    @1         go to state 13
+    comp_stmt  go to state 14
 
 
 state 9
@@ -280,1109 +280,1110 @@ state 10
     2 declarations: declarations KVAR ident_list . ':' type ';'
     5 ident_list: ident_list . ',' KIDENT
 
-    ':'  shift, and go to state 17
-    ','  shift, and go to state 18
+    ':'  shift, and go to state 15
+    ','  shift, and go to state 16
 
 
 state 11
 
-   15 sub_head: KFUNC . KIDENT args ':' std_type ';'
+   23 comp_stmt: KBEGIN . optional_stmts KEND
 
-    KIDENT  shift, and go to state 19
+    KWHILE  shift, and go to state 17
+    KIDENT  shift, and go to state 18
+    KBEGIN  shift, and go to state 11
+    KIF     shift, and go to state 19
+
+    $default  reduce using rule 25 (optional_stmts)
+
+    comp_stmt       go to state 20
+    optional_stmts  go to state 21
+    stmt_list       go to state 22
+    stmt            go to state 23
+    variable        go to state 24
+    proc_stmt       go to state 25
 
 
 state 12
 
-   16 sub_head: KPROC . KIDENT args ';'
+   11 sub_declarations: sub_declarations sub_dec . ';'
 
-    KIDENT  shift, and go to state 20
+    ';'  shift, and go to state 26
 
 
 state 13
 
-   23 comp_stmt: KBEGIN . optional_stmts KEND
+   14 sub_dec: @1 . sub_head local_dec comp_stmt
 
-    KWHILE  shift, and go to state 21
-    KIDENT  shift, and go to state 22
-    KBEGIN  shift, and go to state 13
-    KIF     shift, and go to state 23
+    KFUNC  shift, and go to state 27
+    KPROC  shift, and go to state 28
 
-    $default  reduce using rule 25 (optional_stmts)
-
-    comp_stmt       go to state 24
-    optional_stmts  go to state 25
-    stmt_list       go to state 26
-    stmt            go to state 27
-    variable        go to state 28
-    proc_stmt       go to state 29
+    sub_head  go to state 29
 
 
 state 14
-
-   11 sub_declarations: sub_declarations sub_dec . ';'
-
-    ';'  shift, and go to state 30
-
-
-state 15
-
-   14 sub_dec: sub_head . @1 local_dec comp_stmt
-
-    $default  reduce using rule 13 (@1)
-
-    @1  go to state 31
-
-
-state 16
 
     1 program: KPROGRAM KIDENT ';' declarations sub_declarations comp_stmt .
 
     $default  reduce using rule 1 (program)
 
 
-state 17
+state 15
 
     2 declarations: declarations KVAR ident_list ':' . type ';'
 
-    KINT    shift, and go to state 32
-    KREAL   shift, and go to state 33
-    KBOOL   shift, and go to state 34
-    KARRAY  shift, and go to state 35
+    KINT    shift, and go to state 30
+    KREAL   shift, and go to state 31
+    KBOOL   shift, and go to state 32
+    KARRAY  shift, and go to state 33
 
-    type      go to state 36
-    std_type  go to state 37
+    type      go to state 34
+    std_type  go to state 35
 
 
-state 18
+state 16
 
     5 ident_list: ident_list ',' . KIDENT
 
-    KIDENT  shift, and go to state 38
+    KIDENT  shift, and go to state 36
 
 
-state 19
-
-   15 sub_head: KFUNC KIDENT . args ':' std_type ';'
-
-    '('  shift, and go to state 39
-
-    $default  reduce using rule 18 (args)
-
-    args  go to state 40
-
-
-state 20
-
-   16 sub_head: KPROC KIDENT . args ';'
-
-    '('  shift, and go to state 39
-
-    $default  reduce using rule 18 (args)
-
-    args  go to state 41
-
-
-state 21
+state 17
 
    33 stmt: KWHILE . exp KDO stmt
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp  go to state 49
+    exp  go to state 44
 
 
-state 22
+state 18
 
    34 variable: KIDENT .
    35         | KIDENT . '[' exp ']'
    36 proc_stmt: KIDENT .
    37          | KIDENT . '(' exp_list ')'
 
-    '['  shift, and go to state 50
-    '('  shift, and go to state 51
+    '['  shift, and go to state 45
+    '('  shift, and go to state 46
 
     KASSIGN   reduce using rule 34 (variable)
     $default  reduce using rule 36 (proc_stmt)
 
 
-state 23
+state 19
 
    31 stmt: KIF . exp KTHEN stmt
    32     | KIF . exp KTHEN stmt KELSE stmt
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp  go to state 52
+    exp  go to state 47
 
 
-state 24
+state 20
 
    30 stmt: comp_stmt .
 
     $default  reduce using rule 30 (stmt)
 
 
-state 25
+state 21
 
    23 comp_stmt: KBEGIN optional_stmts . KEND
 
-    KEND  shift, and go to state 53
+    KEND  shift, and go to state 48
 
 
-state 26
+state 22
 
    24 optional_stmts: stmt_list .
    27 stmt_list: stmt_list . ';' stmt
 
-    ';'  shift, and go to state 54
+    ';'  shift, and go to state 49
 
     $default  reduce using rule 24 (optional_stmts)
 
 
-state 27
+state 23
 
    26 stmt_list: stmt .
 
     $default  reduce using rule 26 (stmt_list)
 
 
-state 28
+state 24
 
    28 stmt: variable . KASSIGN exp
 
-    KASSIGN  shift, and go to state 55
+    KASSIGN  shift, and go to state 50
 
 
-state 29
+state 25
 
    29 stmt: proc_stmt .
 
     $default  reduce using rule 29 (stmt)
 
 
-state 30
+state 26
 
    11 sub_declarations: sub_declarations sub_dec ';' .
 
     $default  reduce using rule 11 (sub_declarations)
 
 
-state 31
+state 27
 
-   14 sub_dec: sub_head @1 . local_dec comp_stmt
+   15 sub_head: KFUNC . KIDENT args ':' std_type ';'
+
+    KIDENT  shift, and go to state 51
+
+
+state 28
+
+   16 sub_head: KPROC . KIDENT args ';'
+
+    KIDENT  shift, and go to state 52
+
+
+state 29
+
+   14 sub_dec: @1 sub_head . local_dec comp_stmt
 
     $default  reduce using rule 22 (local_dec)
 
-    local_dec  go to state 56
+    local_dec  go to state 53
 
 
-state 32
+state 30
 
     8 std_type: KINT .
 
     $default  reduce using rule 8 (std_type)
 
 
-state 33
+state 31
 
     9 std_type: KREAL .
 
     $default  reduce using rule 9 (std_type)
 
 
-state 34
+state 32
 
    10 std_type: KBOOL .
 
     $default  reduce using rule 10 (std_type)
 
 
-state 35
+state 33
 
     7 type: KARRAY . '[' KINTNUM '..' KINTNUM ']' KOF std_type
 
-    '['  shift, and go to state 57
+    '['  shift, and go to state 54
 
 
-state 36
+state 34
 
     2 declarations: declarations KVAR ident_list ':' type . ';'
 
-    ';'  shift, and go to state 58
+    ';'  shift, and go to state 55
 
 
-state 37
+state 35
 
     6 type: std_type .
 
     $default  reduce using rule 6 (type)
 
 
-state 38
+state 36
 
     5 ident_list: ident_list ',' KIDENT .
 
     $default  reduce using rule 5 (ident_list)
 
 
-state 39
-
-   17 args: '(' . param_list ')'
-
-    KIDENT  shift, and go to state 9
-
-    ident_list  go to state 59
-    param_list  go to state 60
-
-
-state 40
-
-   15 sub_head: KFUNC KIDENT args . ':' std_type ';'
-
-    ':'  shift, and go to state 61
-
-
-state 41
-
-   16 sub_head: KPROC KIDENT args . ';'
-
-    ';'  shift, and go to state 62
-
-
-state 42
+state 37
 
    40 exp: KIDENT .
    45    | KIDENT . '(' exp_list ')'
 
-    '('  shift, and go to state 63
+    '('  shift, and go to state 56
 
     $default  reduce using rule 40 (exp)
 
 
-state 43
+state 38
 
    41 exp: KINTNUM .
 
     $default  reduce using rule 41 (exp)
 
 
-state 44
+state 39
 
    42 exp: KREALNUM .
 
     $default  reduce using rule 42 (exp)
 
 
-state 45
+state 40
 
    43 exp: KTRUE .
 
     $default  reduce using rule 43 (exp)
 
 
-state 46
+state 41
 
    44 exp: KFALSE .
 
     $default  reduce using rule 44 (exp)
 
 
-state 47
+state 42
 
    48 exp: KNOT . exp
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp  go to state 64
+    exp  go to state 57
 
 
-state 48
+state 43
 
    46 exp: '(' . exp ')'
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp  go to state 65
+    exp  go to state 58
 
 
-state 49
+state 44
 
    33 stmt: KWHILE exp . KDO stmt
    47 exp: exp . binOp exp
 
-    KDO      shift, and go to state 66
-    KMOD     shift, and go to state 67
-    KOR      shift, and go to state 68
-    KAND     shift, and go to state 69
-    KGT      shift, and go to state 70
-    KLT      shift, and go to state 71
-    KGE      shift, and go to state 72
-    KLE      shift, and go to state 73
-    KET      shift, and go to state 74
-    KNE      shift, and go to state 75
-    KMULT    shift, and go to state 76
-    KADD     shift, and go to state 77
-    KSUB     shift, and go to state 78
-    KDIVIDE  shift, and go to state 79
+    KDO      shift, and go to state 59
+    KMOD     shift, and go to state 60
+    KOR      shift, and go to state 61
+    KAND     shift, and go to state 62
+    KGT      shift, and go to state 63
+    KLT      shift, and go to state 64
+    KGE      shift, and go to state 65
+    KLE      shift, and go to state 66
+    KET      shift, and go to state 67
+    KNE      shift, and go to state 68
+    KMULT    shift, and go to state 69
+    KADD     shift, and go to state 70
+    KSUB     shift, and go to state 71
+    KDIVIDE  shift, and go to state 72
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 50
+state 45
 
    35 variable: KIDENT '[' . exp ']'
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp  go to state 81
+    exp  go to state 74
 
 
-state 51
+state 46
 
    37 proc_stmt: KIDENT '(' . exp_list ')'
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp_list  go to state 82
-    exp       go to state 83
+    exp_list  go to state 75
+    exp       go to state 76
 
 
-state 52
+state 47
 
    31 stmt: KIF exp . KTHEN stmt
    32     | KIF exp . KTHEN stmt KELSE stmt
    47 exp: exp . binOp exp
 
-    KTHEN    shift, and go to state 84
-    KMOD     shift, and go to state 67
-    KOR      shift, and go to state 68
-    KAND     shift, and go to state 69
-    KGT      shift, and go to state 70
-    KLT      shift, and go to state 71
-    KGE      shift, and go to state 72
-    KLE      shift, and go to state 73
-    KET      shift, and go to state 74
-    KNE      shift, and go to state 75
-    KMULT    shift, and go to state 76
-    KADD     shift, and go to state 77
-    KSUB     shift, and go to state 78
-    KDIVIDE  shift, and go to state 79
+    KTHEN    shift, and go to state 77
+    KMOD     shift, and go to state 60
+    KOR      shift, and go to state 61
+    KAND     shift, and go to state 62
+    KGT      shift, and go to state 63
+    KLT      shift, and go to state 64
+    KGE      shift, and go to state 65
+    KLE      shift, and go to state 66
+    KET      shift, and go to state 67
+    KNE      shift, and go to state 68
+    KMULT    shift, and go to state 69
+    KADD     shift, and go to state 70
+    KSUB     shift, and go to state 71
+    KDIVIDE  shift, and go to state 72
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 53
+state 48
 
    23 comp_stmt: KBEGIN optional_stmts KEND .
 
     $default  reduce using rule 23 (comp_stmt)
 
 
-state 54
+state 49
 
    27 stmt_list: stmt_list ';' . stmt
 
-    KWHILE  shift, and go to state 21
-    KIDENT  shift, and go to state 22
-    KBEGIN  shift, and go to state 13
-    KIF     shift, and go to state 23
+    KWHILE  shift, and go to state 17
+    KIDENT  shift, and go to state 18
+    KBEGIN  shift, and go to state 11
+    KIF     shift, and go to state 19
 
-    comp_stmt  go to state 24
-    stmt       go to state 85
-    variable   go to state 28
-    proc_stmt  go to state 29
+    comp_stmt  go to state 20
+    stmt       go to state 78
+    variable   go to state 24
+    proc_stmt  go to state 25
 
 
-state 55
+state 50
 
    28 stmt: variable KASSIGN . exp
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp  go to state 86
+    exp  go to state 79
 
 
-state 56
+state 51
 
-   14 sub_dec: sub_head @1 local_dec . comp_stmt
+   15 sub_head: KFUNC KIDENT . args ':' std_type ';'
+
+    '('  shift, and go to state 80
+
+    $default  reduce using rule 18 (args)
+
+    args  go to state 81
+
+
+state 52
+
+   16 sub_head: KPROC KIDENT . args ';'
+
+    '('  shift, and go to state 80
+
+    $default  reduce using rule 18 (args)
+
+    args  go to state 82
+
+
+state 53
+
+   14 sub_dec: @1 sub_head local_dec . comp_stmt
    21 local_dec: local_dec . KVAR ident_list ':' type ';'
 
-    KVAR    shift, and go to state 87
-    KBEGIN  shift, and go to state 13
+    KVAR    shift, and go to state 83
+    KBEGIN  shift, and go to state 11
 
-    comp_stmt  go to state 88
+    comp_stmt  go to state 84
 
 
-state 57
+state 54
 
     7 type: KARRAY '[' . KINTNUM '..' KINTNUM ']' KOF std_type
 
-    KINTNUM  shift, and go to state 89
+    KINTNUM  shift, and go to state 85
 
 
-state 58
+state 55
 
     2 declarations: declarations KVAR ident_list ':' type ';' .
 
     $default  reduce using rule 2 (declarations)
 
 
-state 59
-
-    5 ident_list: ident_list . ',' KIDENT
-   19 param_list: ident_list . ':' type
-
-    ':'  shift, and go to state 90
-    ','  shift, and go to state 18
-
-
-state 60
-
-   17 args: '(' param_list . ')'
-   20 param_list: param_list . ';' ident_list ':' type
-
-    ';'  shift, and go to state 91
-    ')'  shift, and go to state 92
-
-
-state 61
-
-   15 sub_head: KFUNC KIDENT args ':' . std_type ';'
-
-    KINT   shift, and go to state 32
-    KREAL  shift, and go to state 33
-    KBOOL  shift, and go to state 34
-
-    std_type  go to state 93
-
-
-state 62
-
-   16 sub_head: KPROC KIDENT args ';' .
-
-    $default  reduce using rule 16 (sub_head)
-
-
-state 63
+state 56
 
    45 exp: KIDENT '(' . exp_list ')'
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp_list  go to state 94
-    exp       go to state 83
+    exp_list  go to state 86
+    exp       go to state 76
 
 
-state 64
+state 57
 
    47 exp: exp . binOp exp
    48    | KNOT exp .
 
-    KMOD     shift, and go to state 67
-    KGT      shift, and go to state 70
-    KLT      shift, and go to state 71
-    KGE      shift, and go to state 72
-    KLE      shift, and go to state 73
-    KET      shift, and go to state 74
-    KNE      shift, and go to state 75
-    KMULT    shift, and go to state 76
-    KADD     shift, and go to state 77
-    KSUB     shift, and go to state 78
-    KDIVIDE  shift, and go to state 79
+    KMOD     shift, and go to state 60
+    KGT      shift, and go to state 63
+    KLT      shift, and go to state 64
+    KGE      shift, and go to state 65
+    KLE      shift, and go to state 66
+    KET      shift, and go to state 67
+    KNE      shift, and go to state 68
+    KMULT    shift, and go to state 69
+    KADD     shift, and go to state 70
+    KSUB     shift, and go to state 71
+    KDIVIDE  shift, and go to state 72
 
     $default  reduce using rule 48 (exp)
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 65
+state 58
 
    46 exp: '(' exp . ')'
    47    | exp . binOp exp
 
-    KMOD     shift, and go to state 67
-    KOR      shift, and go to state 68
-    KAND     shift, and go to state 69
-    KGT      shift, and go to state 70
-    KLT      shift, and go to state 71
-    KGE      shift, and go to state 72
-    KLE      shift, and go to state 73
-    KET      shift, and go to state 74
-    KNE      shift, and go to state 75
-    KMULT    shift, and go to state 76
-    KADD     shift, and go to state 77
-    KSUB     shift, and go to state 78
-    KDIVIDE  shift, and go to state 79
-    ')'      shift, and go to state 95
+    KMOD     shift, and go to state 60
+    KOR      shift, and go to state 61
+    KAND     shift, and go to state 62
+    KGT      shift, and go to state 63
+    KLT      shift, and go to state 64
+    KGE      shift, and go to state 65
+    KLE      shift, and go to state 66
+    KET      shift, and go to state 67
+    KNE      shift, and go to state 68
+    KMULT    shift, and go to state 69
+    KADD     shift, and go to state 70
+    KSUB     shift, and go to state 71
+    KDIVIDE  shift, and go to state 72
+    ')'      shift, and go to state 87
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 66
+state 59
 
    33 stmt: KWHILE exp KDO . stmt
 
-    KWHILE  shift, and go to state 21
-    KIDENT  shift, and go to state 22
-    KBEGIN  shift, and go to state 13
-    KIF     shift, and go to state 23
+    KWHILE  shift, and go to state 17
+    KIDENT  shift, and go to state 18
+    KBEGIN  shift, and go to state 11
+    KIF     shift, and go to state 19
 
-    comp_stmt  go to state 24
-    stmt       go to state 96
-    variable   go to state 28
-    proc_stmt  go to state 29
+    comp_stmt  go to state 20
+    stmt       go to state 88
+    variable   go to state 24
+    proc_stmt  go to state 25
 
 
-state 67
+state 60
 
    53 binOp: KMOD .
 
     $default  reduce using rule 53 (binOp)
 
 
-state 68
+state 61
 
    61 binOp: KOR .
 
     $default  reduce using rule 61 (binOp)
 
 
-state 69
+state 62
 
    60 binOp: KAND .
 
     $default  reduce using rule 60 (binOp)
 
 
-state 70
+state 63
 
    54 binOp: KGT .
 
     $default  reduce using rule 54 (binOp)
 
 
-state 71
+state 64
 
    56 binOp: KLT .
 
     $default  reduce using rule 56 (binOp)
 
 
-state 72
+state 65
 
    55 binOp: KGE .
 
     $default  reduce using rule 55 (binOp)
 
 
-state 73
+state 66
 
    57 binOp: KLE .
 
     $default  reduce using rule 57 (binOp)
 
 
-state 74
+state 67
 
    58 binOp: KET .
 
     $default  reduce using rule 58 (binOp)
 
 
-state 75
+state 68
 
    59 binOp: KNE .
 
     $default  reduce using rule 59 (binOp)
 
 
-state 76
+state 69
 
    51 binOp: KMULT .
 
     $default  reduce using rule 51 (binOp)
 
 
-state 77
+state 70
 
    49 binOp: KADD .
 
     $default  reduce using rule 49 (binOp)
 
 
-state 78
+state 71
 
    50 binOp: KSUB .
 
     $default  reduce using rule 50 (binOp)
 
 
-state 79
+state 72
 
    52 binOp: KDIVIDE .
 
     $default  reduce using rule 52 (binOp)
 
 
-state 80
+state 73
 
    47 exp: exp binOp . exp
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp  go to state 97
+    exp  go to state 89
 
 
-state 81
+state 74
 
    35 variable: KIDENT '[' exp . ']'
    47 exp: exp . binOp exp
 
-    KMOD     shift, and go to state 67
-    KOR      shift, and go to state 68
-    KAND     shift, and go to state 69
-    KGT      shift, and go to state 70
-    KLT      shift, and go to state 71
-    KGE      shift, and go to state 72
-    KLE      shift, and go to state 73
-    KET      shift, and go to state 74
-    KNE      shift, and go to state 75
-    KMULT    shift, and go to state 76
-    KADD     shift, and go to state 77
-    KSUB     shift, and go to state 78
-    KDIVIDE  shift, and go to state 79
-    ']'      shift, and go to state 98
+    KMOD     shift, and go to state 60
+    KOR      shift, and go to state 61
+    KAND     shift, and go to state 62
+    KGT      shift, and go to state 63
+    KLT      shift, and go to state 64
+    KGE      shift, and go to state 65
+    KLE      shift, and go to state 66
+    KET      shift, and go to state 67
+    KNE      shift, and go to state 68
+    KMULT    shift, and go to state 69
+    KADD     shift, and go to state 70
+    KSUB     shift, and go to state 71
+    KDIVIDE  shift, and go to state 72
+    ']'      shift, and go to state 90
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 82
+state 75
 
    37 proc_stmt: KIDENT '(' exp_list . ')'
    39 exp_list: exp_list . ',' exp
 
-    ','  shift, and go to state 99
-    ')'  shift, and go to state 100
+    ','  shift, and go to state 91
+    ')'  shift, and go to state 92
 
 
-state 83
+state 76
 
    38 exp_list: exp .
    47 exp: exp . binOp exp
 
-    KMOD     shift, and go to state 67
-    KOR      shift, and go to state 68
-    KAND     shift, and go to state 69
-    KGT      shift, and go to state 70
-    KLT      shift, and go to state 71
-    KGE      shift, and go to state 72
-    KLE      shift, and go to state 73
-    KET      shift, and go to state 74
-    KNE      shift, and go to state 75
-    KMULT    shift, and go to state 76
-    KADD     shift, and go to state 77
-    KSUB     shift, and go to state 78
-    KDIVIDE  shift, and go to state 79
+    KMOD     shift, and go to state 60
+    KOR      shift, and go to state 61
+    KAND     shift, and go to state 62
+    KGT      shift, and go to state 63
+    KLT      shift, and go to state 64
+    KGE      shift, and go to state 65
+    KLE      shift, and go to state 66
+    KET      shift, and go to state 67
+    KNE      shift, and go to state 68
+    KMULT    shift, and go to state 69
+    KADD     shift, and go to state 70
+    KSUB     shift, and go to state 71
+    KDIVIDE  shift, and go to state 72
 
     $default  reduce using rule 38 (exp_list)
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 84
+state 77
 
    31 stmt: KIF exp KTHEN . stmt
    32     | KIF exp KTHEN . stmt KELSE stmt
 
-    KWHILE  shift, and go to state 21
-    KIDENT  shift, and go to state 22
-    KBEGIN  shift, and go to state 13
-    KIF     shift, and go to state 23
+    KWHILE  shift, and go to state 17
+    KIDENT  shift, and go to state 18
+    KBEGIN  shift, and go to state 11
+    KIF     shift, and go to state 19
 
-    comp_stmt  go to state 24
-    stmt       go to state 101
-    variable   go to state 28
-    proc_stmt  go to state 29
+    comp_stmt  go to state 20
+    stmt       go to state 93
+    variable   go to state 24
+    proc_stmt  go to state 25
 
 
-state 85
+state 78
 
    27 stmt_list: stmt_list ';' stmt .
 
     $default  reduce using rule 27 (stmt_list)
 
 
-state 86
+state 79
 
    28 stmt: variable KASSIGN exp .
    47 exp: exp . binOp exp
 
-    KMOD     shift, and go to state 67
-    KOR      shift, and go to state 68
-    KAND     shift, and go to state 69
-    KGT      shift, and go to state 70
-    KLT      shift, and go to state 71
-    KGE      shift, and go to state 72
-    KLE      shift, and go to state 73
-    KET      shift, and go to state 74
-    KNE      shift, and go to state 75
-    KMULT    shift, and go to state 76
-    KADD     shift, and go to state 77
-    KSUB     shift, and go to state 78
-    KDIVIDE  shift, and go to state 79
+    KMOD     shift, and go to state 60
+    KOR      shift, and go to state 61
+    KAND     shift, and go to state 62
+    KGT      shift, and go to state 63
+    KLT      shift, and go to state 64
+    KGE      shift, and go to state 65
+    KLE      shift, and go to state 66
+    KET      shift, and go to state 67
+    KNE      shift, and go to state 68
+    KMULT    shift, and go to state 69
+    KADD     shift, and go to state 70
+    KSUB     shift, and go to state 71
+    KDIVIDE  shift, and go to state 72
 
     $default  reduce using rule 28 (stmt)
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 87
+state 80
+
+   17 args: '(' . param_list ')'
+
+    KIDENT  shift, and go to state 9
+
+    ident_list  go to state 94
+    param_list  go to state 95
+
+
+state 81
+
+   15 sub_head: KFUNC KIDENT args . ':' std_type ';'
+
+    ':'  shift, and go to state 96
+
+
+state 82
+
+   16 sub_head: KPROC KIDENT args . ';'
+
+    ';'  shift, and go to state 97
+
+
+state 83
 
    21 local_dec: local_dec KVAR . ident_list ':' type ';'
 
     KIDENT  shift, and go to state 9
 
-    ident_list  go to state 102
+    ident_list  go to state 98
 
 
-state 88
+state 84
 
-   14 sub_dec: sub_head @1 local_dec comp_stmt .
+   14 sub_dec: @1 sub_head local_dec comp_stmt .
 
     $default  reduce using rule 14 (sub_dec)
 
 
-state 89
+state 85
 
     7 type: KARRAY '[' KINTNUM . '..' KINTNUM ']' KOF std_type
 
-    '..'  shift, and go to state 103
+    '..'  shift, and go to state 99
 
 
-state 90
-
-   19 param_list: ident_list ':' . type
-
-    KINT    shift, and go to state 32
-    KREAL   shift, and go to state 33
-    KBOOL   shift, and go to state 34
-    KARRAY  shift, and go to state 35
-
-    type      go to state 104
-    std_type  go to state 37
-
-
-state 91
-
-   20 param_list: param_list ';' . ident_list ':' type
-
-    KIDENT  shift, and go to state 9
-
-    ident_list  go to state 105
-
-
-state 92
-
-   17 args: '(' param_list ')' .
-
-    $default  reduce using rule 17 (args)
-
-
-state 93
-
-   15 sub_head: KFUNC KIDENT args ':' std_type . ';'
-
-    ';'  shift, and go to state 106
-
-
-state 94
+state 86
 
    39 exp_list: exp_list . ',' exp
    45 exp: KIDENT '(' exp_list . ')'
 
-    ','  shift, and go to state 99
-    ')'  shift, and go to state 107
+    ','  shift, and go to state 91
+    ')'  shift, and go to state 100
 
 
-state 95
+state 87
 
    46 exp: '(' exp ')' .
 
     $default  reduce using rule 46 (exp)
 
 
-state 96
+state 88
 
    33 stmt: KWHILE exp KDO stmt .
 
     $default  reduce using rule 33 (stmt)
 
 
-state 97
+state 89
 
    47 exp: exp . binOp exp
    47    | exp binOp exp .
 
     $default  reduce using rule 47 (exp)
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 98
+state 90
 
    35 variable: KIDENT '[' exp ']' .
 
     $default  reduce using rule 35 (variable)
 
 
-state 99
+state 91
 
    39 exp_list: exp_list ',' . exp
 
-    KIDENT    shift, and go to state 42
-    KINTNUM   shift, and go to state 43
-    KREALNUM  shift, and go to state 44
-    KTRUE     shift, and go to state 45
-    KFALSE    shift, and go to state 46
-    KNOT      shift, and go to state 47
-    '('       shift, and go to state 48
+    KIDENT    shift, and go to state 37
+    KINTNUM   shift, and go to state 38
+    KREALNUM  shift, and go to state 39
+    KTRUE     shift, and go to state 40
+    KFALSE    shift, and go to state 41
+    KNOT      shift, and go to state 42
+    '('       shift, and go to state 43
 
-    exp  go to state 108
+    exp  go to state 101
 
 
-state 100
+state 92
 
    37 proc_stmt: KIDENT '(' exp_list ')' .
 
     $default  reduce using rule 37 (proc_stmt)
 
 
-state 101
+state 93
 
    31 stmt: KIF exp KTHEN stmt .
    32     | KIF exp KTHEN stmt . KELSE stmt
 
-    KELSE  shift, and go to state 109
+    KELSE  shift, and go to state 102
 
     $default  reduce using rule 31 (stmt)
 
 
-state 102
+state 94
+
+    5 ident_list: ident_list . ',' KIDENT
+   19 param_list: ident_list . ':' type
+
+    ':'  shift, and go to state 103
+    ','  shift, and go to state 16
+
+
+state 95
+
+   17 args: '(' param_list . ')'
+   20 param_list: param_list . ';' ident_list ':' type
+
+    ';'  shift, and go to state 104
+    ')'  shift, and go to state 105
+
+
+state 96
+
+   15 sub_head: KFUNC KIDENT args ':' . std_type ';'
+
+    KINT   shift, and go to state 30
+    KREAL  shift, and go to state 31
+    KBOOL  shift, and go to state 32
+
+    std_type  go to state 106
+
+
+state 97
+
+   16 sub_head: KPROC KIDENT args ';' .
+
+    $default  reduce using rule 16 (sub_head)
+
+
+state 98
 
     5 ident_list: ident_list . ',' KIDENT
    21 local_dec: local_dec KVAR ident_list . ':' type ';'
 
-    ':'  shift, and go to state 110
-    ','  shift, and go to state 18
+    ':'  shift, and go to state 107
+    ','  shift, and go to state 16
 
 
-state 103
+state 99
 
     7 type: KARRAY '[' KINTNUM '..' . KINTNUM ']' KOF std_type
 
-    KINTNUM  shift, and go to state 111
+    KINTNUM  shift, and go to state 108
 
 
-state 104
-
-   19 param_list: ident_list ':' type .
-
-    $default  reduce using rule 19 (param_list)
-
-
-state 105
-
-    5 ident_list: ident_list . ',' KIDENT
-   20 param_list: param_list ';' ident_list . ':' type
-
-    ':'  shift, and go to state 112
-    ','  shift, and go to state 18
-
-
-state 106
-
-   15 sub_head: KFUNC KIDENT args ':' std_type ';' .
-
-    $default  reduce using rule 15 (sub_head)
-
-
-state 107
+state 100
 
    45 exp: KIDENT '(' exp_list ')' .
 
     $default  reduce using rule 45 (exp)
 
 
-state 108
+state 101
 
    39 exp_list: exp_list ',' exp .
    47 exp: exp . binOp exp
 
-    KMOD     shift, and go to state 67
-    KOR      shift, and go to state 68
-    KAND     shift, and go to state 69
-    KGT      shift, and go to state 70
-    KLT      shift, and go to state 71
-    KGE      shift, and go to state 72
-    KLE      shift, and go to state 73
-    KET      shift, and go to state 74
-    KNE      shift, and go to state 75
-    KMULT    shift, and go to state 76
-    KADD     shift, and go to state 77
-    KSUB     shift, and go to state 78
-    KDIVIDE  shift, and go to state 79
+    KMOD     shift, and go to state 60
+    KOR      shift, and go to state 61
+    KAND     shift, and go to state 62
+    KGT      shift, and go to state 63
+    KLT      shift, and go to state 64
+    KGE      shift, and go to state 65
+    KLE      shift, and go to state 66
+    KET      shift, and go to state 67
+    KNE      shift, and go to state 68
+    KMULT    shift, and go to state 69
+    KADD     shift, and go to state 70
+    KSUB     shift, and go to state 71
+    KDIVIDE  shift, and go to state 72
 
     $default  reduce using rule 39 (exp_list)
 
-    binOp  go to state 80
+    binOp  go to state 73
 
 
-state 109
+state 102
 
    32 stmt: KIF exp KTHEN stmt KELSE . stmt
 
-    KWHILE  shift, and go to state 21
-    KIDENT  shift, and go to state 22
-    KBEGIN  shift, and go to state 13
-    KIF     shift, and go to state 23
+    KWHILE  shift, and go to state 17
+    KIDENT  shift, and go to state 18
+    KBEGIN  shift, and go to state 11
+    KIF     shift, and go to state 19
 
-    comp_stmt  go to state 24
-    stmt       go to state 113
-    variable   go to state 28
-    proc_stmt  go to state 29
+    comp_stmt  go to state 20
+    stmt       go to state 109
+    variable   go to state 24
+    proc_stmt  go to state 25
 
 
-state 110
+state 103
+
+   19 param_list: ident_list ':' . type
+
+    KINT    shift, and go to state 30
+    KREAL   shift, and go to state 31
+    KBOOL   shift, and go to state 32
+    KARRAY  shift, and go to state 33
+
+    type      go to state 110
+    std_type  go to state 35
+
+
+state 104
+
+   20 param_list: param_list ';' . ident_list ':' type
+
+    KIDENT  shift, and go to state 9
+
+    ident_list  go to state 111
+
+
+state 105
+
+   17 args: '(' param_list ')' .
+
+    $default  reduce using rule 17 (args)
+
+
+state 106
+
+   15 sub_head: KFUNC KIDENT args ':' std_type . ';'
+
+    ';'  shift, and go to state 112
+
+
+state 107
 
    21 local_dec: local_dec KVAR ident_list ':' . type ';'
 
-    KINT    shift, and go to state 32
-    KREAL   shift, and go to state 33
-    KBOOL   shift, and go to state 34
-    KARRAY  shift, and go to state 35
+    KINT    shift, and go to state 30
+    KREAL   shift, and go to state 31
+    KBOOL   shift, and go to state 32
+    KARRAY  shift, and go to state 33
 
-    type      go to state 114
-    std_type  go to state 37
+    type      go to state 113
+    std_type  go to state 35
 
 
-state 111
+state 108
 
     7 type: KARRAY '[' KINTNUM '..' KINTNUM . ']' KOF std_type
 
-    ']'  shift, and go to state 115
+    ']'  shift, and go to state 114
 
 
-state 112
-
-   20 param_list: param_list ';' ident_list ':' . type
-
-    KINT    shift, and go to state 32
-    KREAL   shift, and go to state 33
-    KBOOL   shift, and go to state 34
-    KARRAY  shift, and go to state 35
-
-    type      go to state 116
-    std_type  go to state 37
-
-
-state 113
+state 109
 
    32 stmt: KIF exp KTHEN stmt KELSE stmt .
 
     $default  reduce using rule 32 (stmt)
 
 
-state 114
+state 110
+
+   19 param_list: ident_list ':' type .
+
+    $default  reduce using rule 19 (param_list)
+
+
+state 111
+
+    5 ident_list: ident_list . ',' KIDENT
+   20 param_list: param_list ';' ident_list . ':' type
+
+    ':'  shift, and go to state 115
+    ','  shift, and go to state 16
+
+
+state 112
+
+   15 sub_head: KFUNC KIDENT args ':' std_type ';' .
+
+    $default  reduce using rule 15 (sub_head)
+
+
+state 113
 
    21 local_dec: local_dec KVAR ident_list ':' type . ';'
 
-    ';'  shift, and go to state 117
+    ';'  shift, and go to state 116
+
+
+state 114
+
+    7 type: KARRAY '[' KINTNUM '..' KINTNUM ']' . KOF std_type
+
+    KOF  shift, and go to state 117
 
 
 state 115
 
-    7 type: KARRAY '[' KINTNUM '..' KINTNUM ']' . KOF std_type
+   20 param_list: param_list ';' ident_list ':' . type
 
-    KOF  shift, and go to state 118
+    KINT    shift, and go to state 30
+    KREAL   shift, and go to state 31
+    KBOOL   shift, and go to state 32
+    KARRAY  shift, and go to state 33
+
+    type      go to state 118
+    std_type  go to state 35
 
 
 state 116
-
-   20 param_list: param_list ';' ident_list ':' type .
-
-    $default  reduce using rule 20 (param_list)
-
-
-state 117
 
    21 local_dec: local_dec KVAR ident_list ':' type ';' .
 
     $default  reduce using rule 21 (local_dec)
 
 
-state 118
+state 117
 
     7 type: KARRAY '[' KINTNUM '..' KINTNUM ']' KOF . std_type
 
-    KINT   shift, and go to state 32
-    KREAL  shift, and go to state 33
-    KBOOL  shift, and go to state 34
+    KINT   shift, and go to state 30
+    KREAL  shift, and go to state 31
+    KBOOL  shift, and go to state 32
 
     std_type  go to state 119
+
+
+state 118
+
+   20 param_list: param_list ';' ident_list ':' type .
+
+    $default  reduce using rule 20 (param_list)
 
 
 state 119

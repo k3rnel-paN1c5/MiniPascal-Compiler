@@ -243,7 +243,7 @@ param_list: ident_list ':' type
         ParDec* parDec = new ParDec($1, $3, lin, col);
         $$ = new ParList(parDec, lin, col);
         for(int i = 0; i < $1->identLst->size(); i++){
-            SymbolTable->AddSymbol(ident_list->identLst->at(0)->name,  PARAM_VAR, $3)
+            symbolTable->AddSymbol($1->identLst->at(0),  PARAM_VAR, $3);
         }
     }
     | param_list ';' ident_list ':' type
@@ -253,19 +253,22 @@ param_list: ident_list ':' type
         $$->AddDec(parDec);
 
         for(int i = 0; i < $3->identLst->size(); i++){
-            SymbolTable->AddSymbol(ident_list->identLst->at(0)->name,  PARAM_VAR, $5)
+            symbolTable->AddSymbol($3->identLst->at(0),  PARAM_VAR, $5);
         }
     }
 ;
 local_dec: local_dec KVAR ident_list ':' type ';' 
         {
+            $$ = $1;
+            LocalDec* newDec = new LocalDec($3, $5,lin, col);
+            $$->AddDec(newDec);
             for(int i = 0; i < $3->identLst->size(); i++){
-                SymbolTable->AddSymbol($3->identLst->at(i)->name, LOCAL_VAR);
+                symbolTable->AddSymbol($3->identLst->at(i), LOCAL_VAR, $5);
             }
         }
         | /* empty */
         {
-
+            $$ = new LocalDecs(lin, col);
         }
 ;
 
@@ -321,12 +324,12 @@ stmt: variable KASSIGN exp
 variable: KIDENT
     {
         $$ = new Var($1, lin, col);
-        symbolTable->LookUpSymbole($1);
+        symbolTable->LookUpSymbol($1);
     }
     | KIDENT '[' exp ']'
     {   
-        $$ = new ArrayElement($1, $3, lin, col)
-        symbolTable->LookUpSymbole($1);
+        $$ = new ArrayElement($1, $3, lin, col);
+        symbolTable->LookUpSymbol($1);
     }
 ;
 proc_stmt: KIDENT
