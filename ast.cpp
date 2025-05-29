@@ -558,7 +558,7 @@ void Not::accept(Visitor *v)
 
 Errors *errorStack = new Errors();
 
-FunctionSignature::FunctionSignature(string n, vector<TypeEnum> params, TypeEnum ret = (TypeEnum)-1)
+FunctionSignature::FunctionSignature(string n, vector<Type*>* params, Type* ret)
 {
     this->name = n;
     this->returnType = ret;
@@ -568,21 +568,22 @@ FunctionSignature::FunctionSignature(string n, vector<TypeEnum> params, TypeEnum
 string FunctionSignature::getSignatureString()
 {
     string res = this->name + '@';
-    for (int i = 0; i < this->paramTypes.size(); i++)
+    for (int i = 0; i < this->paramTypes->size(); i++)
     {
         if (i > 0)
             res += ",";
-        res += TypeEnumToString(this->paramTypes[i]);
+            //todo fix this
+        // res += TypeEnumToString(this->paramTypes[i]);
     }
     // if (this->returnType != (TypeEnum)-1)
     //     res += ("@" + TypeEnumToString(returnType));
     return res;
 }
-
-bool FunctionSignature::matches(vector<TypeEnum> callParams)
+//todo  fix this
+bool FunctionSignature::matches(vector<Type*>* callParams)
 {
-    int n = this->paramTypes.size();
-    if (callParams.size() != n)
+    int n = this->paramTypes->size();
+    if (callParams->size() != n)
         return false;
     for (int i = 0; i < n; i++)
         if (this->paramTypes[i] != callParams[i])

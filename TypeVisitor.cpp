@@ -1,9 +1,8 @@
 #include "ast.h"
 #include <iostream>
 using namespace std;
-#include "ast.h"
-#include <iostream>
-using namespace std;
+
+extern SymbolTable* symbolTable;
 
 
 TypeVisitor::TypeVisitor()

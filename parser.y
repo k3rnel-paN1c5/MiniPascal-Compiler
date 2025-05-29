@@ -197,25 +197,41 @@ sub_declarations: sub_declarations sub_dec ';'
         $$ = new SubDecs(lin, col);
     }
 ;
-sub_dec: sub_head  { symbolTable->NewScope(); } local_dec comp_stmt
+sub_dec: { symbolTable->NewScope(); } sub_head local_dec comp_stmt
     {
-        $$ = new SubDec($1, $3, $4, lin, col);
+        $$ = new SubDec($2, $3, $4, lin, col);
         symbolTable->CloseScope();
     }
 ;
 sub_head: KFUNC KIDENT args ':' std_type ';'
     {
-
         $$ = new Func($2, $3, $5, lin, col);
+        vector<Type*>* prs = new vector<Type*>;
+        for(int i = 0; i < $3->parList->parList->size(); i++){
+            for(int j = 0; j  < $3->parList->parList->at(i)->identList->identLst->size(); j++){
+                prs->push_back($3->parList->parList->at(i)->tp);
+            }
+        }
+        FunctionSignature* newSig = new FunctionSignature($2->name, prs, $5);
+        symbolTable->AddSymbol($2, FUNC, newSig);
     }
     | KPROC KIDENT args ';'
     {
         $$ = new Proc($2, $3, lin, col);
+        vector<Type*>* prs = new vector<Type*>;
+        for(int i = 0; i < $3->parList->parList->size(); i++){
+            for(int j = 0; j  < $3->parList->parList->at(i)->identList->identLst->size(); j++){
+                prs->push_back($3->parList->parList->at(i)->tp);
+            }
+        }
+        FunctionSignature* newSig = new FunctionSignature($2->name, prs);
+        symbolTable->AddSymbol($2, PROC, newSig);
     }
 ;
 args: '(' param_list ')' 
     {
         $$ =  new Args($2, lin, col);
+
     }
     | /* empty */
     {
@@ -226,17 +242,26 @@ param_list: ident_list ':' type
     {
         ParDec* parDec = new ParDec($1, $3, lin, col);
         $$ = new ParList(parDec, lin, col);
+        for(int i = 0; i < $1->identLst->size(); i++){
+            SymbolTable->AddSymbol(ident_list->identLst->at(0)->name,  PARAM_VAR, $3)
+        }
     }
     | param_list ';' ident_list ':' type
     {
         $$ = $1;
         ParDec* parDec = new ParDec($3, $5, lin, col);
         $$->AddDec(parDec);
+
+        for(int i = 0; i < $3->identLst->size(); i++){
+            SymbolTable->AddSymbol(ident_list->identLst->at(0)->name,  PARAM_VAR, $5)
+        }
     }
 ;
 local_dec: local_dec KVAR ident_list ':' type ';' 
         {
-
+            for(int i = 0; i < $3->identLst->size(); i++){
+                SymbolTable->AddSymbol($3->identLst->at(i)->name, LOCAL_VAR);
+            }
         }
         | /* empty */
         {
@@ -296,10 +321,12 @@ stmt: variable KASSIGN exp
 variable: KIDENT
     {
         $$ = new Var($1, lin, col);
+        symbolTable->LookUpSymbole($1);
     }
     | KIDENT '[' exp ']'
     {   
         $$ = new ArrayElement($1, $3, lin, col)
+        symbolTable->LookUpSymbole($1);
     }
 ;
 proc_stmt: KIDENT

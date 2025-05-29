@@ -546,12 +546,12 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint16 yyrline[] =
 {
        0,   124,   124,   130,   139,   143,   147,   153,   157,   176,
-     180,   184,   189,   196,   200,   200,   206,   211,   216,   221,
-     225,   230,   237,   242,   247,   252,   257,   261,   265,   271,
-     275,   279,   283,   287,   291,   296,   300,   305,   309,   314,
-     318,   324,   328,   332,   336,   340,   344,   348,   352,   370,
-     376,   377,   378,   379,   380,   381,   382,   383,   384,   385,
-     386,   387,   388
+     180,   184,   189,   196,   200,   200,   206,   218,   231,   236,
+     240,   245,   252,   257,   262,   267,   272,   276,   280,   286,
+     290,   294,   298,   302,   306,   311,   315,   320,   324,   329,
+     333,   339,   343,   347,   351,   355,   359,   363,   367,   385,
+     391,   392,   393,   394,   395,   396,   397,   398,   399,   400,
+     401,   402,   403
 };
 #endif
 
@@ -1664,34 +1664,49 @@ yyreduce:
   case 16:
 #line 207 "parser.y"
     {
-
         (yyval.tSubhead) = new Func((yyvsp[(2) - (6)].tIdent), (yyvsp[(3) - (6)].tArgs), (yyvsp[(5) - (6)].tStdtype), lin, col);
+        vector<Type*>* prs = new vector<Type*>;
+        for(int i = 0; i < (yyvsp[(3) - (6)].tArgs)->parList->parList->size(); i++){
+            for(int j = 0; j  < (yyvsp[(3) - (6)].tArgs)->parList->parList->at(i)->identList->identLst->size(); j++){
+                prs->push_back((yyvsp[(3) - (6)].tArgs)->parList->parList->at(i)->tp);
+            }
+        }
+        FunctionSignature* newSig = new FunctionSignature((yyvsp[(2) - (6)].tIdent)->name, prs, (yyvsp[(5) - (6)].tStdtype));
+        symbolTable->AddSymbol((yyvsp[(2) - (6)].tIdent), FUNC, newSig);
     ;}
     break;
 
   case 17:
-#line 212 "parser.y"
+#line 219 "parser.y"
     {
         (yyval.tSubhead) = new Proc((yyvsp[(2) - (4)].tIdent), (yyvsp[(3) - (4)].tArgs), lin, col);
+        vector<Type*>* prs = new vector<Type*>;
+        for(int i = 0; i < (yyvsp[(3) - (4)].tArgs)->parList->parList->size(); i++){
+            for(int j = 0; j  < (yyvsp[(3) - (4)].tArgs)->parList->parList->at(i)->identList->identLst->size(); j++){
+                prs->push_back((yyvsp[(3) - (4)].tArgs)->parList->parList->at(i)->tp);
+            }
+        }
+        FunctionSignature* newSig = new FunctionSignature((yyvsp[(2) - (4)].tIdent)->name, prs);
+        symbolTable->AddSymbol((yyvsp[(2) - (4)].tIdent), PROC, newSig);
     ;}
     break;
 
   case 18:
-#line 217 "parser.y"
+#line 232 "parser.y"
     {
         (yyval.tArgs) =  new Args((yyvsp[(2) - (3)].tParlist), lin, col);
     ;}
     break;
 
   case 19:
-#line 221 "parser.y"
+#line 236 "parser.y"
     {
         //cout << "args reduced to empty\n";
     ;}
     break;
 
   case 20:
-#line 226 "parser.y"
+#line 241 "parser.y"
     {
         ParDec* parDec = new ParDec((yyvsp[(1) - (3)].tIdentlist), (yyvsp[(3) - (3)].tType), lin, col);
         (yyval.tParlist) = new ParList(parDec, lin, col);
@@ -1699,7 +1714,7 @@ yyreduce:
     break;
 
   case 21:
-#line 231 "parser.y"
+#line 246 "parser.y"
     {
         (yyval.tParlist) = (yyvsp[(1) - (5)].tParlist);
         ParDec* parDec = new ParDec((yyvsp[(3) - (5)].tIdentlist), (yyvsp[(5) - (5)].tType), lin, col);
@@ -1708,49 +1723,49 @@ yyreduce:
     break;
 
   case 22:
-#line 238 "parser.y"
+#line 253 "parser.y"
     {
 
         ;}
     break;
 
   case 23:
-#line 242 "parser.y"
+#line 257 "parser.y"
     {
 
         ;}
     break;
 
   case 24:
-#line 248 "parser.y"
+#line 263 "parser.y"
     {
         (yyval.tCompstmt) = new CompStmt((yyvsp[(2) - (3)].tOptionalstmts), lin, col);
     ;}
     break;
 
   case 25:
-#line 253 "parser.y"
+#line 268 "parser.y"
     {
         (yyval.tOptionalstmts) = new OptionalStmts((yyvsp[(1) - (1)].tStmtlist), lin, col);
     ;}
     break;
 
   case 26:
-#line 257 "parser.y"
+#line 272 "parser.y"
     {
         //cout << "Reduced optional_stmts to empty\n";
     ;}
     break;
 
   case 27:
-#line 262 "parser.y"
+#line 277 "parser.y"
     {
         (yyval.tStmtlist) = new StmtList((yyvsp[(1) - (1)].tStmt), lin, col);
     ;}
     break;
 
   case 28:
-#line 266 "parser.y"
+#line 281 "parser.y"
     {
         (yyval.tStmtlist) = (yyvsp[(1) - (3)].tStmtlist);
         (yyval.tStmtlist)->AddStmt ((yyvsp[(3) - (3)].tStmt));
@@ -1758,84 +1773,84 @@ yyreduce:
     break;
 
   case 29:
-#line 272 "parser.y"
+#line 287 "parser.y"
     {
         (yyval.tStmt) = new Assign((yyvsp[(1) - (3)].tVar), (yyvsp[(3) - (3)].tExp), lin, col);
     ;}
     break;
 
   case 30:
-#line 276 "parser.y"
+#line 291 "parser.y"
     {
         (yyval.tStmt) = (yyvsp[(1) - (1)].tProcstmt);
     ;}
     break;
 
   case 31:
-#line 280 "parser.y"
+#line 295 "parser.y"
     {
         (yyval.tStmt) = (yyvsp[(1) - (1)].tCompstmt);
     ;}
     break;
 
   case 32:
-#line 284 "parser.y"
+#line 299 "parser.y"
     {
         (yyval.tStmt) = new IfThen((yyvsp[(2) - (4)].tExp), (yyvsp[(4) - (4)].tStmt), lin, col);
     ;}
     break;
 
   case 33:
-#line 288 "parser.y"
+#line 303 "parser.y"
     {
         (yyval.tStmt) = new IfThenElse((yyvsp[(2) - (6)].tExp), (yyvsp[(4) - (6)].tStmt), (yyvsp[(6) - (6)].tStmt), lin, col);
     ;}
     break;
 
   case 34:
-#line 292 "parser.y"
+#line 307 "parser.y"
     {
         (yyval.tStmt) = new While((yyvsp[(2) - (4)].tExp), (yyvsp[(4) - (4)].tStmt), lin, col);
     ;}
     break;
 
   case 35:
-#line 297 "parser.y"
+#line 312 "parser.y"
     {
         (yyval.tVar) = new Var((yyvsp[(1) - (1)].tIdent), lin, col);
     ;}
     break;
 
   case 36:
-#line 301 "parser.y"
+#line 316 "parser.y"
     {   
         (yyval.tVar) = new ArrayElement((yyvsp[(1) - (4)].tIdent), (yyvsp[(3) - (4)].tExp), lin, col)
     ;}
     break;
 
   case 37:
-#line 306 "parser.y"
+#line 321 "parser.y"
     {
         (yyval.tProcstmt) = new ProcStmt((yyvsp[(1) - (1)].tIdent), NULL, lin, col);
     ;}
     break;
 
   case 38:
-#line 310 "parser.y"
+#line 325 "parser.y"
     {
         (yyval.tProcstmt) = new ProcStmt((yyvsp[(1) - (4)].tIdent), (yyvsp[(3) - (4)].tExplist), lin, col);
     ;}
     break;
 
   case 39:
-#line 315 "parser.y"
+#line 330 "parser.y"
     {
         (yyval.tExplist) = new ExpList((yyvsp[(1) - (1)].tExp), lin, col);
     ;}
     break;
 
   case 40:
-#line 319 "parser.y"
+#line 334 "parser.y"
     {
         (yyval.tExplist) = (yyvsp[(1) - (3)].tExplist);
         (yyval.tExplist)->AddExp((yyvsp[(3) - (3)].tExp));
@@ -1843,56 +1858,56 @@ yyreduce:
     break;
 
   case 41:
-#line 325 "parser.y"
+#line 340 "parser.y"
     {
         (yyval.tExp) = new IdExp((yyvsp[(1) - (1)].tIdent), lin, col)
     ;}
     break;
 
   case 42:
-#line 329 "parser.y"
+#line 344 "parser.y"
     {
         (yyval.tExp) = (yyvsp[(1) - (1)].tInt);
     ;}
     break;
 
   case 43:
-#line 333 "parser.y"
+#line 348 "parser.y"
     {
         (yyval.tExp) = (yyvsp[(1) - (1)].tReal);
     ;}
     break;
 
   case 44:
-#line 337 "parser.y"
+#line 352 "parser.y"
     {
         (yyval.tExp) = (yyvsp[(1) - (1)].tBool);
     ;}
     break;
 
   case 45:
-#line 341 "parser.y"
+#line 356 "parser.y"
     {
         (yyval.tExp) = (yyvsp[(1) - (1)].tBool);
     ;}
     break;
 
   case 46:
-#line 345 "parser.y"
+#line 360 "parser.y"
     {
         (yyval.tExp) = new FuncCall((yyvsp[(1) - (4)].tIdent), (yyvsp[(3) - (4)].tExplist), lin, col);
     ;}
     break;
 
   case 47:
-#line 349 "parser.y"
+#line 364 "parser.y"
     {
         (yyval.tExp) = (yyvsp[(2) - (3)].tExp);
     ;}
     break;
 
   case 48:
-#line 353 "parser.y"
+#line 368 "parser.y"
     {
        switch ((yyvsp[(2) - (3)].tOp)) {
             case OP_ADD:  (yyval.tExp) = new Add((yyvsp[(1) - (3)].tExp), (yyvsp[(3) - (3)].tExp), lin, col); break;
@@ -1913,80 +1928,80 @@ yyreduce:
     break;
 
   case 49:
-#line 371 "parser.y"
+#line 386 "parser.y"
     {
         (yyval.tExp) = new Not((yyvsp[(2) - (2)].tExp), lin, col);
     ;}
     break;
 
   case 50:
-#line 376 "parser.y"
+#line 391 "parser.y"
     { (yyval.tOp) = OP_ADD; ;}
     break;
 
   case 51:
-#line 377 "parser.y"
+#line 392 "parser.y"
     { (yyval.tOp) = OP_SUB; ;}
     break;
 
   case 52:
-#line 378 "parser.y"
+#line 393 "parser.y"
     { (yyval.tOp) = OP_MULT; ;}
     break;
 
   case 53:
-#line 379 "parser.y"
+#line 394 "parser.y"
     { (yyval.tOp) = OP_DIV; ;}
     break;
 
   case 54:
-#line 380 "parser.y"
+#line 395 "parser.y"
     { (yyval.tOp) = OP_MOD; ;}
     break;
 
   case 55:
-#line 381 "parser.y"
+#line 396 "parser.y"
     { (yyval.tOp) = OP_GT; ;}
     break;
 
   case 56:
-#line 382 "parser.y"
+#line 397 "parser.y"
     { (yyval.tOp) = OP_GE; ;}
     break;
 
   case 57:
-#line 383 "parser.y"
+#line 398 "parser.y"
     { (yyval.tOp) = OP_LT; ;}
     break;
 
   case 58:
-#line 384 "parser.y"
+#line 399 "parser.y"
     { (yyval.tOp) = OP_LE; ;}
     break;
 
   case 59:
-#line 385 "parser.y"
+#line 400 "parser.y"
     { (yyval.tOp) = OP_ET; ;}
     break;
 
   case 60:
-#line 386 "parser.y"
+#line 401 "parser.y"
     { (yyval.tOp) = OP_NE; ;}
     break;
 
   case 61:
-#line 387 "parser.y"
+#line 402 "parser.y"
     { (yyval.tOp) = OP_AND; ;}
     break;
 
   case 62:
-#line 388 "parser.y"
+#line 403 "parser.y"
     { (yyval.tOp) = OP_OR; ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1990 "parser.cpp"
+#line 2005 "parser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2200,7 +2215,7 @@ yyreturn:
 }
 
 
-#line 392 "parser.y"
+#line 407 "parser.y"
 
 
 int yyerror(const char* s){

@@ -1561,20 +1561,20 @@ public:
 enum SymbolKind {
     PARAM_VAR = 1, ///< parameter variable
     GLOBAL_VAR = 2, ///< global variable
-    FUNC = 3, ///< function symbol
-    PROC = 4, ///< procedure symbol
-    LOCAL_VAR = 5 ///< local variables for functions
+    LOCAL_VAR = 3, ///< local variables for functions
+    FUNC = 4, ///< function symbol
+    PROC = 5 ///< procedure symbol
 };
 
 class FunctionSignature{
 public:
     string name;
-    vector<TypeEnum> paramTypes;
-    TypeEnum returnType;
+    vector<Type*>* paramTypes;
+    Type* returnType;
 
-    FunctionSignature(string n, vector<TypeEnum> params, TypeEnum ret);
+    FunctionSignature(string n, vector<Type*>* params, Type* ret = NULL);
     string getSignatureString();
-    bool matches(vector<TypeEnum> callParams);
+    bool matches(vector<Type*>* callParams);
 };
 /**
  * @class Symbol
