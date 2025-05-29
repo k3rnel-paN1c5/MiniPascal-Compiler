@@ -34,6 +34,8 @@ class IdentList;
 class SubDecs;
 class SubDec;
 class SubHead;
+class LocalDecs;
+class LocalDec;
 class Func;
 class Args;
 class ParList;
@@ -72,6 +74,7 @@ class And;
 class Or;
 class Not;
 class Visitor;
+class Symbol;
 
 /**
  * @enum TypeEnum
@@ -81,7 +84,10 @@ enum TypeEnum
 {
     INTTYPE, ///< Integer type
     REALTYPE, ///< Real (floating point) type
-    BOOLTYPE  ///< Boolean type
+    BOOLTYPE,  ///< Boolean type
+    INT_ARRAY,
+    REAL_ARRAY,
+    BOOL_ARRAY
 };
 
 /**
@@ -382,15 +388,17 @@ class SubDec : public Node
 {
 public: 
     SubHead* subHead; ///< Subprogram header (function or procedure)
+    LocalDecs* localDecs; ///< Local variables for function scope
     CompStmt* compStmt; ///< Compound statement forming the subprogram body
     /**
      * @brief Constructor for SubDec
      * @param head Subprogram header
+     * @param locdecs Locael variable declaration
      * @param cmst Compound statement forming the subprogram body
      * @param lin Line number in source code
      * @param col Column number in source code
      */
-    SubDec(SubHead*, CompStmt*, int, int);
+    SubDec(SubHead*, LocalDecs*, CompStmt*, int, int);
     /**
      * @brief Virtual accept method for the Visitor pattern
      * @param v The visitor object
@@ -527,7 +535,23 @@ public:
      */
     virtual void accept(Visitor* ); 
 };
+class LocalDecs: public Node
+{
+public: 
+    vector<LocalDec*>* localDecs;
+    LocalDecs(int, int);
+    void AddDec(LocalDec*);
 
+    virtual void accept(Visitor* ); 
+};
+class LocalDec: public Node
+{
+    IdentList* identlist;
+    Type* tp;
+    LocalDec(IdentList*, Type*, int, int);
+
+    virtual void accept(Visitor* ); 
+};
 /**
  * @class OptionalStmts
  * @brief Represents an optional list of statements
@@ -1471,6 +1495,61 @@ public:
     virtual void Visit(Or*);
     virtual void Visit(Not*);
 };
+class TypeVisitor : public Visitor {
+public:
+    TypeVisitor();
+    virtual void Visit(Node*);
+    virtual void Visit(Stmt*);
+    virtual void Visit(Prog*);
+    virtual void Visit(Ident*);
+    virtual void Visit(Decs*);
+    virtual void Visit(ParDec*);
+    virtual void Visit(IdentList*);
+    virtual void Visit(SubDecs*);
+    virtual void Visit(SubDec*);
+    virtual void Visit(SubHead*);
+    virtual void Visit(Func*);
+    virtual void Visit(Args*);
+    virtual void Visit(ParList*);
+    virtual void Visit(Proc*);
+    virtual void Visit(FuncCall*);
+    virtual void Visit(CompStmt*);
+    virtual void Visit(OptionalStmts*);
+    virtual void Visit(StmtList*);
+    virtual void Visit(Var*);
+    virtual void Visit(Exp*);
+    virtual void Visit(Assign*);
+    virtual void Visit(ProcStmt*);
+    virtual void Visit(ExpList*);
+    virtual void Visit(IfThen*);
+    virtual void Visit(IfThenElse*);
+    virtual void Visit(While*);
+    virtual void Visit(Type*);
+    virtual void Visit(StdType*);
+    virtual void Visit(IdExp*);
+    virtual void Visit(Integer*);
+    virtual void Visit(Real*);
+    virtual void Visit(Bool*);
+    virtual void Visit(Array*);
+    virtual void Visit(ArrayElement*);
+    virtual void Visit(BinOp*);
+    virtual void Visit(Add*);
+    virtual void Visit(Sub*);
+    virtual void Visit(Mult*);
+    virtual void Visit(Divide*);
+    virtual void Visit(Mod*);
+    virtual void Visit(GT*);
+    virtual void Visit(LT*);
+    virtual void Visit(GE*);
+    virtual void Visit(LE*);
+    virtual void Visit(ET*);
+    virtual void Visit(NE*);
+    virtual void Visit(And*);
+    virtual void Visit(Or*);
+    virtual void Visit(Not*);
+};
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //* Symbol Table
@@ -1484,7 +1563,7 @@ enum SymbolKind {
     GLOBAL_VAR = 2, ///< global variable
     FUNC = 3, ///< function symbol
     PROC = 4, ///< procedure symbol
-    LOCAL_VAR = 5 ///< In case i added local variables
+    LOCAL_VAR = 5 ///< local variables for functions
 };
 
 class FunctionSignature{
@@ -1493,7 +1572,7 @@ public:
     vector<TypeEnum> paramTypes;
     TypeEnum returnType;
 
-    FunctionSignature(string n, vector<TypeEnum> params, TypeEnum ret = (TypeEnum)-1);
+    FunctionSignature(string n, vector<TypeEnum> params, TypeEnum ret);
     string getSignatureString();
     bool matches(vector<TypeEnum> callParams);
 };
@@ -1512,10 +1591,10 @@ public:
 
     string Name; ///< Symbol name (identifier)
     SymbolKind Kind; ///< Symbol kind (variable, function, etc.)
-    int Type;  ///< Data type (int, float, etc.)
+    Type* DataType;  ///< Data type (int, float, etc.)
     int Location;  ///< Memory location for code generation
     FunctionSignature* funcSig;
-    Symbol(string name, SymbolKind kind, int type);
+    Symbol(string name, SymbolKind kind, Type* type);
     Symbol(string name, SymbolKind kind, FunctionSignature* sig);
 };
 
@@ -1564,10 +1643,10 @@ public:
     Scope* currentScope; ///< current scope 
     vector<Scope* > *Scopes;  ///< List of inner scopes
     SymbolTable();
-    bool AddSymbol(Ident* ident, SymbolKind kind, int type);
+    bool AddSymbol(Ident* ident, SymbolKind kind, Type* type);
     bool AddSymbol(Ident* ident, SymbolKind kind, FunctionSignature* sig);
     Symbol* LookUpSymbol(Ident* ident);
-    Symbol* LookUpSymbol(Ident* ident, vector<TypeEnum> paramTypes);
+    Symbol* LookUpSymbol(Ident* ident, SymbolKind kind, vector<TypeEnum> paramTypes);
     void NewScope();
     void CloseScope();
 };

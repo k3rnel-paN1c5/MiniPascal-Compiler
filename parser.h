@@ -124,7 +124,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 13 "parser.y"
+#line 17 "parser.y"
 {
     // AST Nodes
     Prog* tProg;
@@ -136,6 +136,7 @@ typedef union YYSTYPE
     Array* tArray;
     SubDecs* tSubdecs;
     SubDec* tSubdec;
+    LocalDecs* tLocalDec;
     SubHead* tSubhead;
     Func* tFunc;
     Proc* tProc;
@@ -158,7 +159,7 @@ typedef union YYSTYPE
     enum OpType tOp;
 }
 /* Line 1529 of yacc.c.  */
-#line 162 "parser.h"
+#line 163 "parser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

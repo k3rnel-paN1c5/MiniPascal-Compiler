@@ -25,6 +25,7 @@
     Array* tArray;
     SubDecs* tSubdecs;
     SubDec* tSubdec;
+    LocalDecs* tLocalDec;
     SubHead* tSubhead;
     Func* tFunc;
     Proc* tProc;
@@ -85,6 +86,7 @@
 %type <tDecs> declarations
 %type <tSubdecs> sub_declarations
 %type <tSubdec> sub_dec
+%type <tLocalDec> local_dec
 %type <tSubhead> sub_head
 %type <tIdentlist> ident_list
 %type <tType> type
@@ -131,7 +133,7 @@ declarations: declarations KVAR ident_list ':' type ';'
         ParDec* parDec = new ParDec($3, $5, lin, col);
         $$->AddDec(parDec); 
         for(int i = 0; i < $3->identLst->size(); i++)
-            symbolTable->AddSymbol($3->identLst->at(0), GLOBAL_VAR, $5);
+            symbolTable->AddSymbol($3->identLst->at(i), GLOBAL_VAR, $5);
     }
     | /* empty */
     {
@@ -154,6 +156,20 @@ type: std_type
     }
     | KARRAY '[' KINTNUM '..' KINTNUM ']' KOF std_type
     {
+        switch($8->type)
+        {
+            case INTTYPE:
+                $8->type = INT_ARRAY;
+                break;
+            case REALTYPE:
+                $8->type = REAL_ARRAY;
+                break;
+            case BOOLTYPE:
+                $8->type = BOOL_ARRAY;
+                break;
+            default:
+                cout <<"Error in Array rule\n";
+        }
         $$ = new Array($3->val, $5->val, $8, lin, col);
     }
 ;
@@ -178,17 +194,18 @@ sub_declarations: sub_declarations sub_dec ';'
     }
     | /* empty */
     {
-        //cout << "reduced sub_declarations to empty\n";
         $$ = new SubDecs(lin, col);
     }
 ;
-sub_dec: sub_head comp_stmt
+sub_dec: sub_head  { symbolTable->NewScope(); } local_dec comp_stmt
     {
-        $$ = new SubDec($1, $2, lin, col);
+        $$ = new SubDec($1, $3, $4, lin, col);
+        symbolTable->CloseScope();
     }
 ;
 sub_head: KFUNC KIDENT args ':' std_type ';'
     {
+
         $$ = new Func($2, $3, $5, lin, col);
     }
     | KPROC KIDENT args ';'
@@ -217,6 +234,16 @@ param_list: ident_list ':' type
         $$->AddDec(parDec);
     }
 ;
+local_dec: local_dec KVAR ident_list ':' type ';' 
+        {
+
+        }
+        | /* empty */
+        {
+
+        }
+;
+
 comp_stmt: KBEGIN optional_stmts KEND
     {
         $$ = new CompStmt($2, lin, col);
