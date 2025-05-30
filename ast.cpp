@@ -571,10 +571,9 @@ FunctionSignature::FunctionSignature(string n, vector<Type*>* params, TypeEnum r
 
 string FunctionSignature::getSignatureString()
 {
-    string res = this->name;
+    string res = this->name + '@';
     if(this->paramTypes==NULL)
         return res;
-    res += '@';
     for (int i = 0; i < this->paramTypes->size(); i++)
     {
         if (i > 0)
@@ -730,15 +729,15 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, FunctionSignature *si
         return false;
     }
     Symbol *newSymbol = new Symbol(ident->name, kind, sig);
-    this->currentScope->hashTab->AddKey(key, newSymbol);
+    this->rootScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
-    cout <<"Added Function/Procedure key: " << key <<endl;
+    cout <<"Added Function/Procedure key: " << key << " in scoope: "<<this->rootScope <<endl;
     return true;
 }
 
 Symbol *SymbolTable::LookUpSymbol(Ident *ident)
 {
-    cout << "looked up" << ident->name<<endl;
+    cout << "looked up " << ident->name<<endl;
     string key;
     Symbol *sym;
     // first look if there exist a local variable with that name in the currrent scope
@@ -805,10 +804,11 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident, SymbolKind kind, vector<TypeEnum
         cout << "Error in lookup function/procedure, invalid kind\n";
         break;
     }
-    key += ident->name;
+    key += ident->name + '@';
     if(paramTypes != NULL)
         for(int i = 0; i <  paramTypes->size(); i++){
-            //todo
+            if(i > 0) key +=',';
+            key += TypeEnumToString(paramTypes->at(i));
         }
     sym = this->rootScope->hashTab->GetMember(key);
     if(sym != NULL){
@@ -820,7 +820,7 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident, SymbolKind kind, vector<TypeEnum
         errorStack->AddError("Undeclared Function: " + ident->name, ident->line, ident->column);
     else
         errorStack->AddError("Undeclared Procedure: " + ident->name, ident->line, ident->column);
-
+    cout << key << " NOT Found, was llooking inn scope: "<<this->rootScope<<endl;
     return NULL;
 }
 

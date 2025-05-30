@@ -350,18 +350,22 @@ exp: KIDENT
     }
     | KINTNUM
     {
+        $1->type=INTTYPE;
         $$ = $1;
     }
     | KREALNUM
     {
+        $1->type=REALTYPE;
         $$ = $1;
     }
     | KTRUE
     {
+        $1->type=BOOLTYPE;
         $$ = $1;
     }
     | KFALSE
     {
+        $1->type=BOOLTYPE;
         $$ = $1;
     }
     | KIDENT '(' exp_list ')'
@@ -371,13 +375,16 @@ exp: KIDENT
         for(int i  = 0; i < $3->expList->size(); i++){
             paramCall->push_back($3->expList->at(i)->type);
         }
-        symbolTable->LookUpSymbol($1, FUNC, paramCall);
+        Symbol* s = symbolTable->LookUpSymbol($1, FUNC, paramCall);
+        $$->type = s->DataType
 
     }
     | KIDENT '(' ')'
     {
         $$ = new FuncCall($1, NULL, lin, col);
-        symbolTable->LookUpSymbol($1, FUNC, NULL);
+        Symbol* s =  symbolTable->LookUpSymbol($1, FUNC, NULL);
+        $$->type = s->DataType
+
     }
     | '(' exp ')'
     {

@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
     yydebug = 0;  // Enable debug if needed
     if (argc < 2) {
 
-        std::cerr << "If you want to take input from a file then \n Usage: " << argv[0] << " <input-file>\n";
+        std::cerr << "If you want to pass input from a file then \n Usage: " << argv[0] << " <input-file>\n";
         yyparse(); 
         return 0;
 
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     // root->accept(v1);
     // type checking
     Visitor* v2 = new TypeVisitor();
-    // root->accept(v2);
+    root->accept(v2);
     errorStack->Print();
     
     fclose(input);

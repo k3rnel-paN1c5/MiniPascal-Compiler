@@ -550,9 +550,9 @@ static const yytype_uint16 yyrline[] =
      166,   170,   175,   182,   186,   186,   192,   204,   217,   223,
      227,   235,   246,   256,   261,   266,   271,   275,   279,   285,
      289,   293,   297,   301,   305,   310,   315,   321,   326,   336,
-     340,   346,   351,   355,   359,   363,   367,   377,   382,   386,
-     404,   410,   411,   412,   413,   414,   415,   416,   417,   418,
-     419,   420,   421,   422
+     340,   346,   351,   356,   361,   366,   371,   382,   389,   393,
+     411,   417,   418,   419,   420,   421,   422,   423,   424,   425,
+     426,   427,   428,   429
 };
 #endif
 
@@ -1883,61 +1883,68 @@ yyreduce:
   case 42:
 #line 352 "parser.y"
     {
+        (yyvsp[(1) - (1)].tInt)->type=INTTYPE;
         (yyval.tExp) = (yyvsp[(1) - (1)].tInt);
     ;}
     break;
 
   case 43:
-#line 356 "parser.y"
+#line 357 "parser.y"
     {
+        (yyvsp[(1) - (1)].tReal)->type=REALTYPE;
         (yyval.tExp) = (yyvsp[(1) - (1)].tReal);
     ;}
     break;
 
   case 44:
-#line 360 "parser.y"
+#line 362 "parser.y"
     {
+        (yyvsp[(1) - (1)].tBool)->type=BOOLTYPE;
         (yyval.tExp) = (yyvsp[(1) - (1)].tBool);
     ;}
     break;
 
   case 45:
-#line 364 "parser.y"
+#line 367 "parser.y"
     {
+        (yyvsp[(1) - (1)].tBool)->type=BOOLTYPE;
         (yyval.tExp) = (yyvsp[(1) - (1)].tBool);
     ;}
     break;
 
   case 46:
-#line 368 "parser.y"
+#line 372 "parser.y"
     {
         (yyval.tExp) = new FuncCall((yyvsp[(1) - (4)].tIdent), (yyvsp[(3) - (4)].tExplist), lin, col);
         vector<TypeEnum>* paramCall = new vector<TypeEnum>;
         for(int i  = 0; i < (yyvsp[(3) - (4)].tExplist)->expList->size(); i++){
             paramCall->push_back((yyvsp[(3) - (4)].tExplist)->expList->at(i)->type);
         }
-        symbolTable->LookUpSymbol((yyvsp[(1) - (4)].tIdent), FUNC, paramCall);
+        Symbol* s = symbolTable->LookUpSymbol((yyvsp[(1) - (4)].tIdent), FUNC, paramCall);
+        (yyval.tExp)->type = s->DataType
 
     ;}
     break;
 
   case 47:
-#line 378 "parser.y"
+#line 383 "parser.y"
     {
         (yyval.tExp) = new FuncCall((yyvsp[(1) - (3)].tIdent), NULL, lin, col);
-        symbolTable->LookUpSymbol((yyvsp[(1) - (3)].tIdent), FUNC, NULL);
+        Symbol* s =  symbolTable->LookUpSymbol((yyvsp[(1) - (3)].tIdent), FUNC, NULL);
+        (yyval.tExp)->type = s->DataType
+
     ;}
     break;
 
   case 48:
-#line 383 "parser.y"
+#line 390 "parser.y"
     {
         (yyval.tExp) = (yyvsp[(2) - (3)].tExp);
     ;}
     break;
 
   case 49:
-#line 387 "parser.y"
+#line 394 "parser.y"
     {
        switch ((yyvsp[(2) - (3)].tOp)) {
             case OP_ADD:  (yyval.tExp) = new Add((yyvsp[(1) - (3)].tExp), (yyvsp[(3) - (3)].tExp), lin, col); break;
@@ -1958,80 +1965,80 @@ yyreduce:
     break;
 
   case 50:
-#line 405 "parser.y"
+#line 412 "parser.y"
     {
         (yyval.tExp) = new Not((yyvsp[(2) - (2)].tExp), lin, col);
     ;}
     break;
 
   case 51:
-#line 410 "parser.y"
+#line 417 "parser.y"
     { (yyval.tOp) = OP_ADD; ;}
     break;
 
   case 52:
-#line 411 "parser.y"
+#line 418 "parser.y"
     { (yyval.tOp) = OP_SUB; ;}
     break;
 
   case 53:
-#line 412 "parser.y"
+#line 419 "parser.y"
     { (yyval.tOp) = OP_MULT; ;}
     break;
 
   case 54:
-#line 413 "parser.y"
+#line 420 "parser.y"
     { (yyval.tOp) = OP_DIV; ;}
     break;
 
   case 55:
-#line 414 "parser.y"
+#line 421 "parser.y"
     { (yyval.tOp) = OP_MOD; ;}
     break;
 
   case 56:
-#line 415 "parser.y"
+#line 422 "parser.y"
     { (yyval.tOp) = OP_GT; ;}
     break;
 
   case 57:
-#line 416 "parser.y"
+#line 423 "parser.y"
     { (yyval.tOp) = OP_GE; ;}
     break;
 
   case 58:
-#line 417 "parser.y"
+#line 424 "parser.y"
     { (yyval.tOp) = OP_LT; ;}
     break;
 
   case 59:
-#line 418 "parser.y"
+#line 425 "parser.y"
     { (yyval.tOp) = OP_LE; ;}
     break;
 
   case 60:
-#line 419 "parser.y"
+#line 426 "parser.y"
     { (yyval.tOp) = OP_ET; ;}
     break;
 
   case 61:
-#line 420 "parser.y"
+#line 427 "parser.y"
     { (yyval.tOp) = OP_NE; ;}
     break;
 
   case 62:
-#line 421 "parser.y"
+#line 428 "parser.y"
     { (yyval.tOp) = OP_AND; ;}
     break;
 
   case 63:
-#line 422 "parser.y"
+#line 429 "parser.y"
     { (yyval.tOp) = OP_OR; ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 2035 "parser.cpp"
+#line 2042 "parser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2245,7 +2252,7 @@ yyreturn:
 }
 
 
-#line 426 "parser.y"
+#line 433 "parser.y"
 
 
 int yyerror(const char* s){
