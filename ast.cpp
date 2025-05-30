@@ -289,6 +289,7 @@ While::While(Exp *exp, Stmt *st, int lin, int col) : Stmt(lin, col)
 }
 Var::Var(Ident *ident, int lin, int col) : Node(lin, col)
 {
+    this->type = VOID;
     this->id = ident;
     ident->father = this;
 }
@@ -301,7 +302,10 @@ ArrayElement::ArrayElement(Ident *ident, Exp *ind, int lin, int col) : Var(ident
 FuncCall::FuncCall(Ident *iden, ExpList *exls, int lin, int col) : Exp(lin, col)
 {
     this->id = iden;
+    iden->father = this;
     this->exps = exls;
+    if(exls)
+        exls->father=this;
 }
 
 void Node::accept(Visitor *v)
@@ -558,7 +562,7 @@ void Not::accept(Visitor *v)
 
 Errors *errorStack = new Errors();
 
-FunctionSignature::FunctionSignature(string n, vector<Type*>* params, Type* ret)
+FunctionSignature::FunctionSignature(string n, vector<Type*>* params, TypeEnum ret)
 {
     this->name = n;
     this->returnType = ret;
@@ -567,30 +571,45 @@ FunctionSignature::FunctionSignature(string n, vector<Type*>* params, Type* ret)
 
 string FunctionSignature::getSignatureString()
 {
-    string res = this->name + '@';
+    string res = this->name;
+    if(this->paramTypes==NULL)
+        return res;
+    res += '@';
     for (int i = 0; i < this->paramTypes->size(); i++)
     {
         if (i > 0)
             res += ",";
-            //todo fix this
-        // res += TypeEnumToString(this->paramTypes[i]);
+            TypeEnum x;
+            if(dynamic_cast<StdType*>(this->paramTypes->at(i))){
+                StdType* s = dynamic_cast<StdType*>(this->paramTypes->at(i));
+                x = s->type;
+            }
+            else{
+                Array* s = dynamic_cast<Array*>(this->paramTypes->at(i));
+                x = s->stdType->type;
+
+            }
+        res += TypeEnumToString(x);
     }
-    // if (this->returnType != (TypeEnum)-1)
-    //     res += ("@" + TypeEnumToString(returnType));
+    //? don't inlude the return type in the key. Can't overload on return type
+    // if (this->returnType != NULL){
+    //     StdType* s = dynamic_cast<StdType*>(this->returnType);
+    //     res += ("@" + TypeEnumToString(s->type));
+    // }
     return res;
 }
 //todo  fix this
 bool FunctionSignature::matches(vector<Type*>* callParams)
 {
-    int n = this->paramTypes->size();
-    if (callParams->size() != n)
-        return false;
-    for (int i = 0; i < n; i++)
-        if (this->paramTypes[i] != callParams[i])
-            return false;
+    // int n = this->paramTypes->size();
+    // if (callParams->size() != n)
+    //     return false;
+    // for (int i = 0; i < n; i++)
+    //     if (this->paramTypes[i] != callParams[i])
+            // return false;
     return true;
 }
-Symbol::Symbol(string name, SymbolKind kind, Type* type)
+Symbol::Symbol(string name, SymbolKind kind, TypeEnum type)
 {
     this->Name = name;
     this->Kind = kind;
@@ -601,7 +620,7 @@ Symbol::Symbol(string name, SymbolKind kind, FunctionSignature *sig)
 {
     this->Name = name;
     this->Kind = kind;
-    this->DataType = NULL;
+    this->DataType = sig->returnType;
     this->funcSig = sig;
 }
 Scope::Scope()
@@ -646,14 +665,38 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
     }
 
     Symbol *temp = this->currentScope->hashTab->GetMember(key);
-
     if (temp)
     {
-        errorStack->AddError("Redifintion Of Variable" + ident->name, ident->line, ident->column);
+        errorStack->AddError( "Redifintion Of Variable: " + ident->name, ident->line+1, ident->column);
         return false;
     }
-    Symbol *newSymbol = new Symbol(ident->name, kind, type);
+    TypeEnum typ;
+    if(dynamic_cast<StdType*>(type)){
+        StdType* x = dynamic_cast<StdType*>(type);
+        typ = x->type;
+    }
+    else{
+        Array* x = dynamic_cast<Array*>(type);
+        switch (x->stdType->type)
+        {
+        case INTTYPE:
+            typ = INT_ARRAY;
+            break;
+        case REALTYPE:
+            typ = REAL_ARRAY;
+            break;
+        case BOOLTYPE:
+            typ = BOOL_ARRAY;
+            break;
+        default:
+            cout <<" Error in add symbol\n";
+            break;
+        }
+    }
+    Symbol *newSymbol = new Symbol(ident->name, kind, typ);
     this->currentScope->hashTab->AddKey(key, newSymbol);
+    cout << "added Symbole: {key: "<< key <<", value: " << ident->name << "} of Type " << TypeEnumToString(typ)<<endl;
+    cout << "IN scope "<< this->currentScope<<endl;
     ident->symbol = newSymbol;
     return true;
 }
@@ -674,25 +717,28 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, FunctionSignature *si
         return false;
         break;
     }
+
     key = key + sig->getSignatureString();
     Symbol *temp = this->rootScope->hashTab->GetMember(key);
 
     if (temp)
     {
         if (kind == PROC)
-            errorStack->AddError("Redifinition of Procedure: " + ident->name, ident->line, ident->column);
+            errorStack->AddError("Redifinition of Procedure: " + ident->name, ident->line+1, ident->column);
         else
-            errorStack->AddError("Redifinition of Function: " + ident->name, ident->line, ident->column);
+            errorStack->AddError("Redifinition of Function: " + ident->name, ident->line+1, ident->column);
         return false;
     }
     Symbol *newSymbol = new Symbol(ident->name, kind, sig);
     this->currentScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
+    cout <<"Added Function/Procedure key: " << key <<endl;
     return true;
 }
 
 Symbol *SymbolTable::LookUpSymbol(Ident *ident)
 {
+    cout << "looked up" << ident->name<<endl;
     string key;
     Symbol *sym;
     // first look if there exist a local variable with that name in the currrent scope
@@ -704,7 +750,7 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
         return sym;
     }
     // now look if there exist a parameter variable with that name in the currrent scope (function/procedure)
-    key = "p" + ident->name;
+    key = "par" + ident->name;
     sym = this->currentScope->hashTab->GetMember(key);
     if (sym)
     {
@@ -723,7 +769,7 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
             return sym;
         }
         // now look if there exist a parameter variable with that name in the currrent scope (function/procedure)
-        key = "p" + ident->name;
+        key = "par" + ident->name;
         sym = temp->hashTab->GetMember(key);
         if (sym)
         {
@@ -739,31 +785,31 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
         ident->symbol = sym;
         return sym;
     }
-
     errorStack->AddError("Undeclared Variable: " + ident->name, ident->line, ident->column);
     return NULL;
 }
 
-Symbol *SymbolTable::LookUpSymbol(Ident *ident, SymbolKind kind, vector<TypeEnum> paramTypes)
+Symbol *SymbolTable::LookUpSymbol(Ident *ident, SymbolKind kind, vector<TypeEnum>* paramTypes)
 {
     string key;
     Symbol *sym;
     switch (kind)
     {
     case FUNC:
-        key += 'f';
+        key = 'f';
         break;
     case PROC:
-        key += 'p';
+        key = 'p';
         break;
     default:
         cout << "Error in lookup function/procedure, invalid kind\n";
         break;
     }
     key += ident->name;
-    for(int i = 0; i <  paramTypes.size(); i++){
-        key += TypeEnumToString(paramTypes.at(i));
-    }
+    if(paramTypes != NULL)
+        for(int i = 0; i <  paramTypes->size(); i++){
+            //todo
+        }
     sym = this->rootScope->hashTab->GetMember(key);
     if(sym != NULL){
         ident->symbol = sym;
@@ -784,10 +830,12 @@ void SymbolTable::NewScope()
     this->Scopes->push_back(newScope);
     this->currentScope->AddChildScope(newScope);
     this->currentScope = newScope;
+    cout << "New Scope "<< this->currentScope<<endl;
 }
 
 void SymbolTable::CloseScope()
 {
+    cout <<"Exiting Scope " << this->currentScope<<" to Scope "<<this->currentScope->Parent<<endl;
     this->currentScope = this->currentScope->Parent;
 }
 

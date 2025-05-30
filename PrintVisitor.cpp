@@ -7,13 +7,22 @@ string TypeEnumToString(TypeEnum t){
     switch (t)
     {
     case  INTTYPE:
-        return  "INTEGER Type";
+        return  "Int";
         break;
     case  REALTYPE:
-        return  "REAL Type";
+        return  "Real";
         break;
     case  BOOLTYPE:
-        return  "BOOL Type";
+        return  "Bool";
+        break;
+    case  INT_ARRAY:
+        return  "IntArray";
+        break;
+    case  REAL_ARRAY:
+        return  "RealArray";
+        break;
+    case  BOOL_ARRAY:
+        return  "BoolArray";
         break;
     
     default:

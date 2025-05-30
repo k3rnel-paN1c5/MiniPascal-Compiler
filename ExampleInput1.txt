@@ -2,17 +2,19 @@ program Factorial;
 var cnt, fact : Integer;
 var x: Array[1..5] of Real;
 var t, y : boolean;
-function sum(a, b : integer) : integer ;
+function sum( a, b: integer) : integer ;
 begin
-    a := a+b
+   a := a+b
 end;
-Procedure Mult(a, b: integer; c : real) ;
+Procedure Mult(c, g: integer; d : real) ;
+var  test : integer;
 begin
-    a := a*b
+    c := c*d
 end;
 
 begin
     // thiss is a commnt
+    Mult(2, 3, 1.0);
     cnt := 5;
     fact := 1;
     x[1] :=6.5;

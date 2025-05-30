@@ -87,7 +87,8 @@ enum TypeEnum
     BOOLTYPE,  ///< Boolean type
     INT_ARRAY,
     REAL_ARRAY,
-    BOOL_ARRAY
+    BOOL_ARRAY,
+    VOID
 };
 
 /**
@@ -742,7 +743,8 @@ public:
 class Exp : public Node
 {
 public:
-/**
+    TypeEnum type;
+    /**
      * @brief Constructor for Exp
      * @param lin Line number in source code
      * @param col Column number in source code
@@ -1338,6 +1340,7 @@ class Var : public Node
 {
 public:
     Ident* id;
+    TypeEnum type;
     Var(Ident*, int, int);
     /**
      * @brief Virtual accept method for the Visitor pattern
@@ -1571,9 +1574,9 @@ class FunctionSignature{
 public:
     string name;
     vector<Type*>* paramTypes;
-    Type* returnType;
+    TypeEnum returnType;
 
-    FunctionSignature(string n, vector<Type*>* params, Type* ret = NULL);
+    FunctionSignature(string n, vector<Type*>* params, TypeEnum ret = VOID);
     string getSignatureString();
     bool matches(vector<Type*>* callParams);
 };
@@ -1592,10 +1595,10 @@ public:
 
     string Name; ///< Symbol name (identifier)
     SymbolKind Kind; ///< Symbol kind (variable, function, etc.)
-    Type* DataType;  ///< Data type (int, float, etc.)
+    TypeEnum DataType;  ///< Data type (int, real, bool.)
     int Location;  ///< Memory location for code generation
     FunctionSignature* funcSig;
-    Symbol(string name, SymbolKind kind, Type* type);
+    Symbol(string name, SymbolKind kind, TypeEnum type);
     Symbol(string name, SymbolKind kind, FunctionSignature* sig);
 };
 
@@ -1647,7 +1650,7 @@ public:
     bool AddSymbol(Ident* ident, SymbolKind kind, Type* type);
     bool AddSymbol(Ident* ident, SymbolKind kind, FunctionSignature* sig);
     Symbol* LookUpSymbol(Ident* ident);
-    Symbol* LookUpSymbol(Ident* ident, SymbolKind kind, vector<TypeEnum> paramTypes);
+    Symbol* LookUpSymbol(Ident* ident, SymbolKind kind, vector<TypeEnum>* paramTypes);
     void NewScope();
     void CloseScope();
 };

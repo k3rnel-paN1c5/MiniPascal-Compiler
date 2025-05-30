@@ -7,6 +7,7 @@ extern int yydebug;
 extern int yyparse();
 extern Prog* root;
 extern FILE* yyin;
+extern Errors *errorStack;
 
 
 int main(int argc, char* argv[]) {
@@ -29,8 +30,12 @@ int main(int argc, char* argv[]) {
     yyparse(); 
 
     //print visitor
-    Visitor* v = new PrintVisitor();
-    root->accept(v);
+    Visitor* v1 = new PrintVisitor();
+    // root->accept(v1);
+    // type checking
+    Visitor* v2 = new TypeVisitor();
+    // root->accept(v2);
+    errorStack->Print();
     
     fclose(input);
     return 0;
