@@ -71,11 +71,18 @@ public:
 	 */
 	void AddWarning(string message, int lin, int col);
 	/**
-	 * @brief Prints all accumulated errors to output
+	 * @brief Prints all accumulated warnings to output
 	 * 
-	 * Displays all errors and warnings in the collection with their associated
+	 * Displays all warnings in the collection with their associated
 	 * line and column information for debugging purposes.
 	 */
-	void Print();
+	void PrintWarnings();
+	/**
+	 * @brief Prints all accumulated errors to output
+	 * 
+	 * Displays all errors in the collection with their associated
+	 * line and column information for debugging purposes.
+	 */
+	void PrintErrors();
 };
 #endif
