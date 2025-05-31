@@ -694,8 +694,6 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
     }
     Symbol *newSymbol = new Symbol(ident->name, kind, typ);
     this->currentScope->hashTab->AddKey(key, newSymbol);
-    cout << "added Symbole: {key: "<< key <<", value: " << ident->name << "} of Type " << TypeEnumToString(typ)<<endl;
-    cout << "IN scope "<< this->currentScope<<endl;
     ident->symbol = newSymbol;
     return true;
 }
@@ -731,13 +729,11 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, FunctionSignature *si
     Symbol *newSymbol = new Symbol(ident->name, kind, sig);
     this->rootScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
-    cout <<"Added Function/Procedure key: " << key << " in scoope: "<<this->rootScope <<endl;
     return true;
 }
 
 Symbol *SymbolTable::LookUpSymbol(Ident *ident)
 {
-    cout << "looked up " << ident->name<<endl;
     string key;
     Symbol *sym;
     // first look if there exist a local variable with that name in the currrent scope
@@ -817,10 +813,9 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident, SymbolKind kind, vector<TypeEnum
     }
 
     if (kind == FUNC)
-        errorStack->AddError("Undeclared Function: " + ident->name, ident->line, ident->column);
+        errorStack->AddError("Undeclared Function: " + key, ident->line, ident->column);
     else
-        errorStack->AddError("Undeclared Procedure: " + ident->name, ident->line, ident->column);
-    cout << key << " NOT Found, was llooking inn scope: "<<this->rootScope<<endl;
+        errorStack->AddError("Undeclared Procedure: " + key, ident->line, ident->column);
     return NULL;
 }
 
@@ -830,12 +825,10 @@ void SymbolTable::NewScope()
     this->Scopes->push_back(newScope);
     this->currentScope->AddChildScope(newScope);
     this->currentScope = newScope;
-    cout << "New Scope "<< this->currentScope<<endl;
 }
 
 void SymbolTable::CloseScope()
 {
-    cout <<"Exiting Scope " << this->currentScope<<" to Scope "<<this->currentScope->Parent<<endl;
     this->currentScope = this->currentScope->Parent;
 }
 
@@ -855,7 +848,7 @@ void Errors::AddError(string message, int lin, int col) {
 }
 void Errors::Print(){
     for(int i = 0; i< this->errorStack->size(); i++){
-        cout << "Error at line: "<< this->errorStack->at(i)->line << " character: "<< this->errorStack->at(i)->column;
+        cout << "Error:"<< this->errorStack->at(i)->line << ":"<< this->errorStack->at(i)->column;
         cout <<" Message: " << this->errorStack->at(i)->Message<<endl;
     }
 }

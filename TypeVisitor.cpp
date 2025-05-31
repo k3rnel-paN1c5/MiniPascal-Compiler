@@ -154,7 +154,7 @@ void TypeVisitor::Visit(Assign *n)
     n->exp->accept(this);
     if(n->var->type != n->exp->type){
         if(n->var->type == REALTYPE && n->exp->type == INTTYPE){
-            cout << "Warning: Implicitly casting integer to real " <<  n->line << " " << n->column << endl;
+            cout << "Warning:"<<n->line<<":"<<n->column << " Implicitly casting integer to real\n";
             
         }
         else{
@@ -277,7 +277,7 @@ void TypeVisitor::Visit(Add *b)
     b->type = b->leftExp->type;
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             b->type = REALTYPE;
         }
         else{
@@ -296,7 +296,7 @@ void TypeVisitor::Visit(Sub *b)
     b->type = b->leftExp->type;
      if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             b->type = REALTYPE;
         }
         else{
@@ -316,7 +316,7 @@ void TypeVisitor::Visit(Mult *b)
     b->type = b->leftExp->type;
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
                 b->type = REALTYPE;
         }
         else{
@@ -335,7 +335,7 @@ void TypeVisitor::Visit(Divide *b)
     b->type = b->leftExp->type;
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             b->type = REALTYPE;
         }
         else{
@@ -367,7 +367,7 @@ void TypeVisitor::Visit(GT *b)
     b->type = BOOLTYPE;
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             
         }
         else{
@@ -385,7 +385,7 @@ void TypeVisitor::Visit(LT *b)
     b->type = BOOLTYPE;
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             
         }
         else{
@@ -405,7 +405,7 @@ void TypeVisitor::Visit(GE *b)
 
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             
         }
         else{
@@ -425,7 +425,7 @@ void TypeVisitor::Visit(LE *b)
 
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             
         }
         else{
@@ -446,7 +446,7 @@ void TypeVisitor::Visit(ET *b)
 
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             
         }
         else{
@@ -468,7 +468,7 @@ void TypeVisitor::Visit(NE *b)
     
     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
         if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
-            cout << "Warning: Implicitly casting integer to real " <<  b->line << " " << b->column <<endl;
+            cout << "Warning:"<<b->line<<":"<<b->column << " implicitly casting integer to real\n";
             
         }
         else{
