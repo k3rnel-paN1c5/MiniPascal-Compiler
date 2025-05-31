@@ -1,5 +1,8 @@
+#include "CommonTypes.h"
 #include "ast.h"
+#include "Error.h"
 #include <iostream>
+
 using namespace std;
 
 extern SymbolTable* symbolTable;
@@ -31,29 +34,17 @@ void TypeVisitor::Visit(Stmt *s)
     s->accept(this);
 }
 
-void TypeVisitor::Visit(Ident *n)
-{
+void TypeVisitor::Visit(Ident *n) {}
 
-}
+void TypeVisitor::Visit(Decs *n) {}
 
-
-void TypeVisitor::Visit(Decs *n)
-{
-
-}
-
-
-void TypeVisitor::Visit(ParDec *n)
-{
-}
+void TypeVisitor::Visit(ParDec *n) {}
 
 void TypeVisitor::Visit(IdentList *n)
 {
-
     for (int i = 0; i < n->identLst->size(); i++) {
         n->identLst->at(i)->accept(this);
     }
-
 }
 
 void TypeVisitor::Visit(SubDecs *n)
@@ -62,60 +53,27 @@ void TypeVisitor::Visit(SubDecs *n)
         n->subdecs->at(i)->accept(this);
     }
 }
+
 void TypeVisitor::Visit(SubDec *n)
 {
-
-    // n->subHead->accept(this);
     if(n->compStmt)  n->compStmt->accept(this);
-
-
 }
 
-void TypeVisitor::Visit(SubHead *n)
-{
-    // n->accept(this);
-}
+void TypeVisitor::Visit(SubHead *n) {}
 
-void TypeVisitor::Visit(Func *n)
-{
+void TypeVisitor::Visit(Func *n) {}
 
-    // if (n->args) n->args->accept(this);
-    // if (n->typ) n->typ->accept(this);
+void TypeVisitor::Visit(Args *n) {}
 
-}
+void TypeVisitor::Visit(ParList *n) {}
 
-void TypeVisitor::Visit(Args *n)
-{
+void TypeVisitor::Visit(Proc *n) {}
 
-    // n->parList->accept(this);
-
-    
-}
-
-void TypeVisitor::Visit(ParList *n)
-{
-
-
-
-    // for (int i = 0;i< n->parList->size(); i++) {
-    //     n->parList->at(i)->accept(this);
-    // }
-
-}
-
-void TypeVisitor::Visit(Proc *n)
-{
-
-    // n->args->accept(this);
-
-}
 void TypeVisitor::Visit(FuncCall* a)
 {
-
-
     a->exps->accept(this);
-
 }
+
 void TypeVisitor::Visit(CompStmt *n)
 {
     if(n->optitonalStmts) 
@@ -132,7 +90,6 @@ void TypeVisitor::Visit(StmtList *n)
     for (int i = 0; i <  n->stmts->size() ; i++) {
         n->stmts->at(i)->accept(this);
     }
-
 }
 
 void TypeVisitor::Visit(Var *n)
@@ -175,14 +132,12 @@ void TypeVisitor::Visit(ExpList *n)
     for (int i = 0; i < n->expList->size(); i++) {
         n->expList->at(i)->accept(this);
     }
-
 }
 
 void TypeVisitor::Visit(IfThen *n)
 {
     n->expr->accept(this);
     n->stmt->accept(this);
-
 }
 
 void TypeVisitor::Visit(IfThenElse *n)
@@ -190,27 +145,18 @@ void TypeVisitor::Visit(IfThenElse *n)
     n->expr->accept(this);
     n->trueStmt->accept(this);
     n->falseStmt->accept(this);
-
 }
 
 void TypeVisitor::Visit(While *n)
 {
-
     n->expr->accept(this);
     n->stmt->accept(this);
-
 }
 
 
-void TypeVisitor::Visit(Type *t)
-{
-    // t->accept(this);
-}
+void TypeVisitor::Visit(Type *t) {}
 
-void TypeVisitor::Visit(StdType *t)
-{
-    // t->accept(this);
-}
+void TypeVisitor::Visit(StdType *t) {}
 
 void TypeVisitor::Visit(IdExp *e)
 {
@@ -231,6 +177,7 @@ void TypeVisitor::Visit(Bool *n)
 {
     n->type = BOOLTYPE;
 }
+
 void TypeVisitor::Visit(Array *a)
 {
     a->stdType->accept(this);
@@ -263,11 +210,8 @@ void TypeVisitor::Visit(ArrayElement  *a)
 
 void TypeVisitor::Visit(BinOp *b)
 {
-
-
     b->leftExp->accept(this);
     b->rightExp->accept(this);
-
 }
 
 void TypeVisitor::Visit(Add *b)
@@ -285,7 +229,6 @@ void TypeVisitor::Visit(Add *b)
             return;
         }
     }
-
 }
 
 void TypeVisitor::Visit(Sub *b)
@@ -304,9 +247,7 @@ void TypeVisitor::Visit(Sub *b)
             return;
         }
     }
-
 }
-
 
 void TypeVisitor::Visit(Mult *b)
 {
@@ -324,7 +265,6 @@ void TypeVisitor::Visit(Mult *b)
             return;
         }
     }
-
 }
 
 void TypeVisitor::Visit(Divide *b)
@@ -343,7 +283,6 @@ void TypeVisitor::Visit(Divide *b)
             return;
         }
     }
-
 }
 
 void TypeVisitor::Visit(Mod *b)
@@ -356,12 +295,10 @@ void TypeVisitor::Visit(Mod *b)
         errorStack->AddError("Can't calculate  Modulo expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line, b->column);
         return;
     }
-
 }
 
 void TypeVisitor::Visit(GT *b)
 {
-
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
@@ -375,7 +312,6 @@ void TypeVisitor::Visit(GT *b)
             return;
         }
     }
-
 }
 
 void TypeVisitor::Visit(LT *b)
@@ -393,12 +329,10 @@ void TypeVisitor::Visit(LT *b)
             return;
         }
     }
-
 }
 
 void TypeVisitor::Visit(GE *b)
 {
-
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
@@ -413,12 +347,10 @@ void TypeVisitor::Visit(GE *b)
             return;
         }
     }
-
 }
 
 void TypeVisitor::Visit(LE *b)
 {
-
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
@@ -433,13 +365,11 @@ void TypeVisitor::Visit(LE *b)
             return;
         }
     }
-
 }
 
 
 void TypeVisitor::Visit(ET *b)
 {
-
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
@@ -454,13 +384,10 @@ void TypeVisitor::Visit(ET *b)
             return;
         }
     }
-
 }
 
 void TypeVisitor::Visit(NE *b)
 {
-
-
     b->leftExp->accept(this);
     b->rightExp->accept(this);
 
@@ -476,12 +403,10 @@ void TypeVisitor::Visit(NE *b)
             return;
         }
     }
-
 }
 
 void TypeVisitor::Visit(And *b)
 {
-
     b->leftExp->accept(this);
     b->rightExp->accept(this);
 
@@ -492,12 +417,10 @@ void TypeVisitor::Visit(And *b)
         return;
     
     }
-
 }
 
 void TypeVisitor::Visit(Or *b)
 {
-
     b->leftExp->accept(this);
     b->rightExp->accept(this);
 
@@ -508,12 +431,10 @@ void TypeVisitor::Visit(Or *b)
         return;
     
     }
-
 }
 
 void TypeVisitor::Visit(Not *n)
 {
-
     n->exp->accept(this);
 
     n->type = BOOLTYPE;
@@ -521,5 +442,4 @@ void TypeVisitor::Visit(Not *n)
         errorStack->AddError("Can't evaluate (Logical NOT) operator for expressions of type : " + TypeEnumToString(n->exp->type), n->line, n->column);
         return;
     }
-
 }

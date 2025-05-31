@@ -1,8 +1,10 @@
 #include "ast.h"
+#include "Error.h"
 #include "parser.h"
 #include <cstdio>    
 #include <cstdlib>
 #include <iostream>
+
 extern int yydebug;
 extern int yyparse();
 extern Prog* root;

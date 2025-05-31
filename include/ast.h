@@ -19,8 +19,7 @@
 #define AST_H
 
 #include <vector>
-#include "hash_fun.h"
-#include "hash_table.h"
+
 using namespace std;
 
 // Forward declarations of all AST node 
@@ -40,6 +39,7 @@ class Func;
 class Args;
 class ParList;
 class Proc;
+class FuncCall;
 class CompStmt;
 class OptionalStmts;
 class StmtList;
@@ -58,6 +58,7 @@ class Integer;
 class Real;
 class Bool;
 class Array;
+class ArrayElement;
 class BinOp;
 class Add;
 class Sub;
@@ -73,23 +74,14 @@ class NE;
 class And;
 class Or;
 class Not;
-class Visitor;
+
 class Symbol;
 
-/**
- * @enum TypeEnum
- * @brief Represents the basic types supported in the language
- */
-enum TypeEnum 
-{
-    INTTYPE, ///< Integer type
-    REALTYPE, ///< Real (floating point) type
-    BOOLTYPE,  ///< Boolean type
-    INT_ARRAY,
-    REAL_ARRAY,
-    BOOL_ARRAY,
-    VOID
-};
+#include "Visitor.h"
+#include "SymbolTable.h"
+#include "CommonTypes.h"
+
+
 
 /**
  * @enum OpType
@@ -536,22 +528,59 @@ public:
      */
     virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class LocalDecs
+ * @brief Represents a collection of local variable declarations
+ * 
+ * Contains a vector of local declarations that define variables
+ * within a function or procedure scope.
+ */
 class LocalDecs: public Node
 {
 public: 
-    vector<LocalDec*>* localDecs;
+    vector<LocalDec*>* localDecs;  ///< collection of local declarations
+    /**
+     * @brief Constructor for LocalDecs
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     LocalDecs(int, int);
+    /**
+     * @brief Adds a local declaration to the list
+     * @param localdec The local declaration to add
+     */
     void AddDec(LocalDec*);
-
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
     virtual void accept(Visitor* ); 
 };
+/**
+ * @class LocalDec
+ * @brief Represents a local variable declaration
+ * 
+ * Contains an identifier list and a type, defining one or more
+ * local variables of the same type within a function or procedure.
+ */
 class LocalDec: public Node
 {
 public:
-    IdentList* identlist;
-    Type* tp;
+    IdentList* identlist; ///< List of identifiers of the same type
+    Type* tp; ///< Datatype of the identifiers
+    /**
+     * @brief Constructor for LocalDec
+     * @param identlst List of identifiers being declared
+     * @param typ Type of the declared identifiers
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
     LocalDec(IdentList*, Type*, int, int);
-
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
     virtual void accept(Visitor* ); 
 };
 /**
@@ -743,7 +772,7 @@ public:
 class Exp : public Node
 {
 public:
-    TypeEnum type;
+    TypeEnum type; ///< The datatype of the value of the expression
     /**
      * @brief Constructor for Exp
      * @param lin Line number in source code
@@ -1373,302 +1402,6 @@ public:
      * @param v The visitor object
      */
     virtual void accept(Visitor* ); 
-};
-
-//* Visitor Design Pattern
-
-/**
- * @class Visitor
- * @brief Abstract visitor interface for the Visitor pattern
- * 
- * Defines visit methods for each node type in the AST.
- * Concrete visitors implement these methods to perform
- * operations on the AST (e.g., printing, type checking).
- */
-class Visitor {
-public:
-    virtual void Visit(Node*) = 0;
-    virtual void Visit(Stmt*) = 0;
-    virtual void Visit(Prog*) = 0;
-    virtual void Visit(Ident*) = 0;
-    virtual void Visit(Decs*) = 0;
-    virtual void Visit(ParDec*) = 0;
-    virtual void Visit(IdentList*) = 0;
-    virtual void Visit(SubDecs*) = 0;
-    virtual void Visit(SubDec*) = 0;
-    virtual void Visit(SubHead*) = 0;
-    virtual void Visit(Func*) = 0;
-    virtual void Visit(Args*) = 0;
-    virtual void Visit(ParList*) = 0;
-    virtual void Visit(Proc*) = 0;
-    virtual void Visit(FuncCall*) = 0;
-    virtual void Visit(CompStmt*) = 0;
-    virtual void Visit(OptionalStmts*) = 0;
-    virtual void Visit(StmtList*) = 0;
-    virtual void Visit(Var*) = 0;
-    virtual void Visit(Exp*) = 0;
-    virtual void Visit(Assign*) = 0;
-    virtual void Visit(ProcStmt*) = 0;
-    virtual void Visit(ExpList*) = 0;
-    virtual void Visit(IfThen*) = 0;
-    virtual void Visit(IfThenElse*) = 0;
-    virtual void Visit(While*) = 0;
-    virtual void Visit(Type*) = 0;
-    virtual void Visit(StdType*) = 0;
-    virtual void Visit(IdExp*) = 0;
-    virtual void Visit(Integer*) = 0;
-    virtual void Visit(Real*) = 0;
-    virtual void Visit(Bool*) = 0;
-    virtual void Visit(Array*) = 0;
-    virtual void Visit(ArrayElement*) = 0;
-    virtual void Visit(BinOp*) = 0;
-    virtual void Visit(Add*) = 0;
-    virtual void Visit(Sub*) = 0;
-    virtual void Visit(Mult*) = 0;
-    virtual void Visit(Divide*) = 0;
-    virtual void Visit(Mod*) = 0;
-    virtual void Visit(GT*) = 0;
-    virtual void Visit(LT*) = 0;
-    virtual void Visit(GE*) = 0;
-    virtual void Visit(LE*) = 0;
-    virtual void Visit(ET*) = 0;
-    virtual void Visit(NE*) = 0;
-    virtual void Visit(And*) = 0;
-    virtual void Visit(Or*) = 0;
-    virtual void Visit(Not*) = 0;
-};
-
-/**
- * @class PrintVisitor
- * @brief Concrete visitor that prints the AST structure
- * 
- * Implements the Visitor interface to traverse the AST and
- * print each node, creating a textual representation of the tree.
- */
-class PrintVisitor : public Visitor {
-public:
-    int level; ///< Current indentation level for pretty 
-    PrintVisitor();
-    virtual void Visit(Node*);
-    virtual void Visit(Stmt*);
-    virtual void Visit(Prog*);
-    virtual void Visit(Ident*);
-    virtual void Visit(Decs*);
-    virtual void Visit(ParDec*);
-    virtual void Visit(IdentList*);
-    virtual void Visit(SubDecs*);
-    virtual void Visit(SubDec*);
-    virtual void Visit(SubHead*);
-    virtual void Visit(Func*);
-    virtual void Visit(Args*);
-    virtual void Visit(ParList*);
-    virtual void Visit(Proc*);
-    virtual void Visit(FuncCall*);
-    virtual void Visit(CompStmt*);
-    virtual void Visit(OptionalStmts*);
-    virtual void Visit(StmtList*);
-    virtual void Visit(Var*);
-    virtual void Visit(Exp*);
-    virtual void Visit(Assign*);
-    virtual void Visit(ProcStmt*);
-    virtual void Visit(ExpList*);
-    virtual void Visit(IfThen*);
-    virtual void Visit(IfThenElse*);
-    virtual void Visit(While*);
-    virtual void Visit(Type*);
-    virtual void Visit(StdType*);
-    virtual void Visit(IdExp*);
-    virtual void Visit(Integer*);
-    virtual void Visit(Real*);
-    virtual void Visit(Bool*);
-    virtual void Visit(Array*);
-    virtual void Visit(ArrayElement*);
-    virtual void Visit(BinOp*);
-    virtual void Visit(Add*);
-    virtual void Visit(Sub*);
-    virtual void Visit(Mult*);
-    virtual void Visit(Divide*);
-    virtual void Visit(Mod*);
-    virtual void Visit(GT*);
-    virtual void Visit(LT*);
-    virtual void Visit(GE*);
-    virtual void Visit(LE*);
-    virtual void Visit(ET*);
-    virtual void Visit(NE*);
-    virtual void Visit(And*);
-    virtual void Visit(Or*);
-    virtual void Visit(Not*);
-};
-class TypeVisitor : public Visitor {
-public:
-    TypeVisitor();
-    virtual void Visit(Node*);
-    virtual void Visit(Stmt*);
-    virtual void Visit(Prog*);
-    virtual void Visit(Ident*);
-    virtual void Visit(Decs*);
-    virtual void Visit(ParDec*);
-    virtual void Visit(IdentList*);
-    virtual void Visit(SubDecs*);
-    virtual void Visit(SubDec*);
-    virtual void Visit(SubHead*);
-    virtual void Visit(Func*);
-    virtual void Visit(Args*);
-    virtual void Visit(ParList*);
-    virtual void Visit(Proc*);
-    virtual void Visit(FuncCall*);
-    virtual void Visit(CompStmt*);
-    virtual void Visit(OptionalStmts*);
-    virtual void Visit(StmtList*);
-    virtual void Visit(Var*);
-    virtual void Visit(Exp*);
-    virtual void Visit(Assign*);
-    virtual void Visit(ProcStmt*);
-    virtual void Visit(ExpList*);
-    virtual void Visit(IfThen*);
-    virtual void Visit(IfThenElse*);
-    virtual void Visit(While*);
-    virtual void Visit(Type*);
-    virtual void Visit(StdType*);
-    virtual void Visit(IdExp*);
-    virtual void Visit(Integer*);
-    virtual void Visit(Real*);
-    virtual void Visit(Bool*);
-    virtual void Visit(Array*);
-    virtual void Visit(ArrayElement*);
-    virtual void Visit(BinOp*);
-    virtual void Visit(Add*);
-    virtual void Visit(Sub*);
-    virtual void Visit(Mult*);
-    virtual void Visit(Divide*);
-    virtual void Visit(Mod*);
-    virtual void Visit(GT*);
-    virtual void Visit(LT*);
-    virtual void Visit(GE*);
-    virtual void Visit(LE*);
-    virtual void Visit(ET*);
-    virtual void Visit(NE*);
-    virtual void Visit(And*);
-    virtual void Visit(Or*);
-    virtual void Visit(Not*);
-};
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//* Symbol Table
-
-/**
- * @enum SymbolKind
- * @brief Represents The kind of symbols (local variable, global variable, function, pocedure, parameter)
- */
-enum SymbolKind {
-    PARAM_VAR = 1, ///< parameter variable
-    GLOBAL_VAR = 2, ///< global variable
-    LOCAL_VAR = 3, ///< local variables for functions
-    FUNC = 4, ///< function symbol
-    PROC = 5 ///< procedure symbol
-};
-
-class FunctionSignature{
-public:
-    string name;
-    vector<Type*>* paramTypes;
-    TypeEnum returnType;
-
-    FunctionSignature(string n, vector<Type*>* params, TypeEnum ret = VOID);
-    string getSignatureString();
-    bool matches(vector<Type*>* callParams);
-};
-/**
- * @class Symbol
- * @brief Represents an entry in the symbol table
- * 
- * Contains information about a declared identifier such as
- * its name, kind (variable, function, etc.), type, and memory location.
- * This class is used during semantic analysis and code generation phases
- * to track all declared identifiers and their properties.
- */
-class Symbol
-{
-public:
-
-    string Name; ///< Symbol name (identifier)
-    SymbolKind Kind; ///< Symbol kind (variable, function, etc.)
-    TypeEnum DataType;  ///< Data type (int, real, bool.)
-    int Location;  ///< Memory location for code generation
-    FunctionSignature* funcSig;
-    Symbol(string name, SymbolKind kind, TypeEnum type);
-    Symbol(string name, SymbolKind kind, FunctionSignature* sig);
-};
-
-/**
- * @typedef HashTable
- * @brief Type alias for the hash table used in each scope
- * 
- * Uses the CHashTable template class to store Symbol objects,
- * providing efficient symbol lookup within a scope.
- */
-typedef CHashTable<Symbol> HashTable;
-
-/**
- * @class Scope
- * @brief Represents a single scope in the program
- * 
- * Contains a hash table of symbols defined in this scope.
- */
-class Scope
-{
-public:
-    Scope* Parent;
-    HashTable *hashTab; ///< Hash table for this scope
-    vector<Scope*> *Children;
-    Scope();
-    void AddChildScope(Scope*  s);
-};
-
-/**
- * @class SymbolTable
- * @brief Manages the symbol tables for different scopes
- * 
- * The SymbolTable class is responsible for managing all scopes in the program,
- * including the global scope and nested scopes. It provides functionality for:
- * - Creating new scopes
- * - Adding symbols to scopes
- * - Looking up symbols across scope boundaries
- * - Managing scope hierarchy
- * 
- * This class is crucial for semantic analysis and ensuring proper
- * variable scoping rules are followed.
- */
-class SymbolTable{
-public:
-    Scope* rootScope; ///< root program scope
-    Scope* currentScope; ///< current scope 
-    vector<Scope* > *Scopes;  ///< List of inner scopes
-    SymbolTable();
-    bool AddSymbol(Ident* ident, SymbolKind kind, Type* type);
-    bool AddSymbol(Ident* ident, SymbolKind kind, FunctionSignature* sig);
-    Symbol* LookUpSymbol(Ident* ident);
-    Symbol* LookUpSymbol(Ident* ident, SymbolKind kind, vector<TypeEnum>* paramTypes);
-    void NewScope();
-    void CloseScope();
-};
-
-class Error : public Node
-{
-public:
-	string Message;
-	Error(string message, int lin, int col);
-};
-
-class Errors
-{
-public:
-	vector<Error *> *errorStack;
-	Errors();
-	void AddError(string message, int lin, int col);
-	void Print();
 };
 
 #endif

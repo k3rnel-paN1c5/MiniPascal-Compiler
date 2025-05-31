@@ -1,35 +1,8 @@
+#include "CommonTypes.h"
 #include "ast.h"
 #include <iostream>
+
 using namespace std;
-
-
-string TypeEnumToString(TypeEnum t){
-    switch (t)
-    {
-    case  INTTYPE:
-        return  "Int";
-        break;
-    case  REALTYPE:
-        return  "Real";
-        break;
-    case  BOOLTYPE:
-        return  "Bool";
-        break;
-    case  INT_ARRAY:
-        return  "IntArray";
-        break;
-    case  REAL_ARRAY:
-        return  "RealArray";
-        break;
-    case  BOOL_ARRAY:
-        return  "BoolArray";
-        break;
-    
-    default:
-        return "INVALID Enum";
-        break;
-    }
-}
 
 
 PrintVisitor::PrintVisitor()
@@ -66,7 +39,6 @@ void PrintVisitor::Visit(Ident *n)
     cout << "Identity: '"<<n->name <<"'"<<endl;
 }
 
-
 void PrintVisitor::Visit(Decs *n)
 {
     for(int i = 0; i < this->level; i++)
@@ -78,7 +50,6 @@ void PrintVisitor::Visit(Decs *n)
     }
     this->level--;
 }
-
 
 void PrintVisitor::Visit(ParDec *n)
 {
@@ -114,6 +85,7 @@ void PrintVisitor::Visit(SubDecs *n)
     }
     this->level--;
 }
+
 void PrintVisitor::Visit(SubDec *n)
 {
     for(int i = 0; i < this->level; i++)
@@ -174,6 +146,7 @@ void PrintVisitor::Visit(Proc *n)
     n->args->accept(this);
     this->level--;
 }
+
 void PrintVisitor::Visit(FuncCall* a)
 {
     for(int i = 0; i < this->level; i++)
@@ -183,6 +156,7 @@ void PrintVisitor::Visit(FuncCall* a)
     a->exps->accept(this);
     this->level++;
 }
+
 void PrintVisitor::Visit(CompStmt *n)
 {
     for(int i = 0; i < this->level; i++)
@@ -225,8 +199,6 @@ void PrintVisitor::Visit(Var *n)
 
 void PrintVisitor::Visit(Exp *e)
 {
-    // for(int i = 0; i < this->level; i++)
-    //     cout << "-- ";
     cout << "Exp" << endl;
     e->accept(this);
 }
@@ -298,11 +270,8 @@ void PrintVisitor::Visit(While *n)
     this->level--;
 }
 
-
 void PrintVisitor::Visit(Type *t)
 {
-    // for(int i = 0; i < this->level; i++)
-    //     cout << "-- ";
     cout << "Type" << endl;
     t->accept(this);
 }
@@ -341,6 +310,7 @@ void PrintVisitor::Visit(Bool *n)
         cout << "-- ";
     cout << "Bool: " << (n->val ? "true" : "false") << endl;
 }
+
 void PrintVisitor::Visit(Array *a)
 {
     for(int i = 0; i < this->level; i++)
@@ -392,7 +362,6 @@ void PrintVisitor::Visit(Sub *b)
     b->rightExp->accept(this);
     this->level--;
 }
-
 
 void PrintVisitor::Visit(Mult *b)
 {
@@ -470,7 +439,6 @@ void PrintVisitor::Visit(LE *b)
     b->rightExp->accept(this);
     this->level--;
 }
-
 
 void PrintVisitor::Visit(ET *b)
 {

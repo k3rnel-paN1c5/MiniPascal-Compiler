@@ -78,6 +78,10 @@
         "__node_handle": "cpp",
         "__memory": "cpp",
         "hash_map": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "codecvt": "cpp",
+        "execution": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp"
     }
 }

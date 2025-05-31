@@ -1,5 +1,13 @@
-# Prerequisites
+# Dependency files
 *.d
+*.dep
+
+# Build directories
+obj/
+bin/
+deps/
+build/
+out/
 
 # Compiled Object files
 *.slo
@@ -11,8 +19,17 @@
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
+
+# Memory debugging
+vgcore.*
+core
+core.*
+
+# Static and shared libraries
+*.a
+*.lib
 *.so
+*.so.*
 *.dylib
 *.dll
 
@@ -30,6 +47,8 @@
 *.exe
 *.out
 *.app
+miniPascalCompiler
+miniPascalCompiler.exe
 
 # VS Code files for those working on multiple tools
 .vscode/*
@@ -39,6 +58,41 @@
 !.vscode/extensions.json
 *.code-workspace 
 
-# Macos Finder Files
-**/.DS_Store
+# Generated Artifacts
+build/*
+
+# Temporary files
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
 .DS_Store
+Thumbs.db
+
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Test output files
+test_output/
+*.test
+test_results/
+
+# Parser generator files (if using flex/bison)
+*.tab.c
+*.tab.h
+lex.yy.c
+*.yy.c
+
+# Custom build artifacts
+dist/
+release/
+debug/
+
