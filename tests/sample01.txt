@@ -4,12 +4,12 @@ var x: Array[1..5] of Real;
 var t, y : boolean;
 function sum( a, b: integer) : integer ;
 begin
-   a := a+b
+   a := a+test
 end;
 Procedure Mult(c, g: integer; d : real) ;
 var  test : integer;
 begin
-    c := c*g
+    c := c * (g+test)
 end;
 
 begin

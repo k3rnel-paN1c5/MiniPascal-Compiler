@@ -1368,8 +1368,8 @@ public:
 class Var : public Node
 {
 public:
-    Ident* id;
-    TypeEnum type;
+    Ident* id; ///< the identifies of the variable
+    TypeEnum type; ///< the type of the variable
     Var(Ident*, int, int);
     /**
      * @brief Virtual accept method for the Visitor pattern

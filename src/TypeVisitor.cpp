@@ -96,7 +96,8 @@ void TypeVisitor::Visit(Var *n)
 {
 
     n->id->accept(this);
-    n->type = n->id->symbol->DataType;
+    if(n->id->symbol)
+        n->type = n->id->symbol->DataType;
 }
 
 void TypeVisitor::Visit(Exp *e)
@@ -160,7 +161,8 @@ void TypeVisitor::Visit(StdType *t) {}
 
 void TypeVisitor::Visit(IdExp *e)
 {
-    e->type = e->id->symbol->DataType;
+    if(e->id->symbol)
+        e->type = e->id->symbol->DataType;
 }
 
 void TypeVisitor::Visit(Integer *n)
@@ -185,6 +187,8 @@ void TypeVisitor::Visit(Array *a)
 
 void TypeVisitor::Visit(ArrayElement  *a)
 {
+    if(!a->id->symbol)
+        return;
     a->type = a->id->symbol->DataType;
     switch (a->id->symbol->DataType)
     {
@@ -199,8 +203,8 @@ void TypeVisitor::Visit(ArrayElement  *a)
         break;
         
     default:
-        a->type = VOID;
-        break;
+        errorStack->AddError(a->id->name + " is not an array", a->line, a->column);
+        return;
     }
     a->index->accept(this);
     if(a->index->type != INTTYPE){
