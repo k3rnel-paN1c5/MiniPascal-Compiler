@@ -89,7 +89,9 @@ public:
     virtual void Visit(IdentList*) = 0;
     virtual void Visit(SubDecs*) = 0;
     virtual void Visit(SubDec*) = 0;
-    virtual void Visit(SubHead*) = 0;
+    virtual void Visit(SubHead*) = 0;    
+    virtual void Visit(LocalDecs*) = 0;    
+    virtual void Visit(LocalDec*) = 0;    
     virtual void Visit(Func*) = 0;
     virtual void Visit(Args*) = 0;
     virtual void Visit(ParList*) = 0;
@@ -197,6 +199,16 @@ public:
      * @param subhead The Subprogram Header to visit
      */
     virtual void Visit(SubHead*);
+    /**
+     * @brief Visit method for Decalrations of  local variables
+     * @param localdecs The local varaible declaration to visit
+     */
+    virtual void Visit(LocalDec*);
+    /**
+     * @brief Visit method for declaration of local variable of the same type
+     * @param localdec The local declaration element to visit
+     */
+    virtual void Visit(LocalDecs*);
     /**
      * @brief Visit method for Function nodes
      * @param func The Function to visit
@@ -404,6 +416,8 @@ public:
  */
 class TypeVisitor : public Visitor {
 public:
+    Func* currentFunction; ///< To keep track of the current function context for return type checking
+    bool currentFunctionHasReturn; ///< Flag to check if current function has a return statement
     /**
      * @brief Constructor for TypeVisitor
      * 
@@ -464,6 +478,16 @@ public:
      * @brief Visit method for Function nodes
      * @param func The Function to visit
      */
+     /**
+     * @brief Visit method for Decalrations of  local variables
+     * @param localdecs The local varaible declaration to visit
+     */
+    virtual void Visit(LocalDec*);
+    /**
+     * @brief Visit method for declaration of local variable of the same type
+     * @param localdec The local declaration element to visit
+     */
+    virtual void Visit(LocalDecs*);
     virtual void Visit(Func*);
     /**
      * @brief Visit method for Arguments nodes

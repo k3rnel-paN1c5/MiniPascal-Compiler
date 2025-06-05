@@ -8,6 +8,26 @@ using namespace std;
 
 Errors *errorStack = new Errors();
 
+// Helper to get TypeEnum from Type*
+TypeEnum GetTypeEnumFromTypeNode(Type* typeNode) {
+    if (!typeNode) return VOID; // Should not happen if grammar is correct
+
+    if (auto* st = dynamic_cast<StdType*>(typeNode)) {
+        return st->type;
+    } else if (auto* at = dynamic_cast<Array*>(typeNode)) {
+        if (at->stdType) {
+            switch (at->stdType->type) {
+                case INTTYPE: return INT_ARRAY;
+                case REALTYPE: return REAL_ARRAY;
+                case BOOLTYPE: return BOOL_ARRAY;
+                default: return VOID; // Should not happen
+            }
+        }
+    }
+    return VOID; // Fallback
+}
+
+
 FunctionSignature::FunctionSignature(string n, vector<Type*>* params, TypeEnum ret)
 {
     this->name = n;
