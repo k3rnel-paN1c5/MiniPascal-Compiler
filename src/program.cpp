@@ -37,7 +37,8 @@ int main(int argc, char* argv[]) {
     // type checking
     Visitor* v2 = new TypeVisitor();
     root->accept(v2);
-    errorStack->Print();
+    errorStack->PrintWarnings();
+    errorStack->PrintErrors();
     
     fclose(input);
     return 0;

@@ -9,7 +9,7 @@ end;
 Procedure Mult(c, g: integer; d : real) ;
 var  test : integer;
 begin
-    c := c*g
+    c := c * (g+test)
 end;
 
 begin
@@ -17,20 +17,15 @@ begin
     Mult(2+4, 3, 1.0);
     cnt := (5-4);
     fact := 1;
-    x[1] := 6;
+    x[1] := 6.0;
     x[4] := 1.1 / 5;
     t := true;
     while cnt > 0 AND( NOT (fact = 0) )do
-        {
-            multi 
-            line 
-            comment
-        }
         begin
         fact := fact * cnt;
         cnt := cnt - 1
-        end;
-    Write(fact)
+        end
+    //Write(fact)
 end
 
 

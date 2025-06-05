@@ -266,7 +266,8 @@ void TypeVisitor::Visit(StdType *t) {}
 
 void TypeVisitor::Visit(IdExp *e)
 {
-    e->type = e->id->symbol->DataType;
+    if(e->id->symbol)
+        e->type = e->id->symbol->DataType;
 }
 
 void TypeVisitor::Visit(Integer *n)
@@ -291,6 +292,8 @@ void TypeVisitor::Visit(Array *a)
 
 void TypeVisitor::Visit(ArrayElement *a)
 {
+    if(!a->id->symbol)
+        return;
     a->type = a->id->symbol->DataType;
     switch (a->id->symbol->DataType)
     {
@@ -305,13 +308,12 @@ void TypeVisitor::Visit(ArrayElement *a)
         break;
 
     default:
-        a->type = VOID;
-        break;
+        errorStack->AddError(a->id->name + " is not an array", a->line+1, a->column);
+        return;
     }
     a->index->accept(this);
-    if (a->index->type != INTTYPE)
-    {
-        errorStack->AddError("array index must evaluate to integer type ", a->line, a->column);
+    if(a->index->type != INTTYPE){
+        errorStack->AddError("array index must evaluate to integer type ", a->line+1, a->column);
     }
 }
 
@@ -326,16 +328,13 @@ void TypeVisitor::Visit(Add *b)
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = b->leftExp->type;
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
             b->type = REALTYPE;
         }
-        else
-        {
-            errorStack->AddError("Can't Add expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't Add expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -347,16 +346,13 @@ void TypeVisitor::Visit(Sub *b)
     b->rightExp->accept(this);
 
     b->type = b->leftExp->type;
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+     if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
             b->type = REALTYPE;
         }
-        else
-        {
-            errorStack->AddError("Can't subtract expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't subtract expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -368,16 +364,13 @@ void TypeVisitor::Visit(Mult *b)
     b->rightExp->accept(this);
 
     b->type = b->leftExp->type;
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
-            b->type = REALTYPE;
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
+                b->type = REALTYPE;
         }
-        else
-        {
-            errorStack->AddError("Can't Multiply expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't Multiply expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -389,16 +382,13 @@ void TypeVisitor::Visit(Divide *b)
     b->rightExp->accept(this);
 
     b->type = b->leftExp->type;
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
             b->type = REALTYPE;
         }
-        else
-        {
-            errorStack->AddError("Can't Divide expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't Divide expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -410,9 +400,8 @@ void TypeVisitor::Visit(Mod *b)
     b->rightExp->accept(this);
 
     b->type = b->leftExp->type;
-    if (b->leftExp->type != INTTYPE || b->rightExp->type != INTTYPE)
-    {
-        errorStack->AddError("Can't calculate  Modulo expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+    if(b->leftExp->type != INTTYPE || b->rightExp->type != INTTYPE){
+        errorStack->AddError("Can't calculate  Modulo expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
         return;
     }
 }
@@ -422,15 +411,12 @@ void TypeVisitor::Visit(GT *b)
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (greater than) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't evaluate (greater than) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -441,15 +427,12 @@ void TypeVisitor::Visit(LT *b)
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (Less than) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't evaluate (Less than) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -461,15 +444,12 @@ void TypeVisitor::Visit(GE *b)
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
 
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (greater than or equal) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't evaluate (greater than or equal) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -481,15 +461,12 @@ void TypeVisitor::Visit(LE *b)
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
 
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (less than or equal) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't evaluate (less than or equal) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -501,15 +478,12 @@ void TypeVisitor::Visit(ET *b)
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
 
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (equals) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't evaluate (equals) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -521,16 +495,13 @@ void TypeVisitor::Visit(NE *b)
     b->rightExp->accept(this);
 
     b->type = BOOLTYPE;
-
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
-    {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            cout << "Warning:" << b->line << ":" << b->column << " implicitly casting integer to real\n";
+    
+    if(b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE){
+        if((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE)){
+            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (not equal tp) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+        else{
+            errorStack->AddError("Can't evaluate (not equal tp) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
             return;
         }
     }
@@ -542,10 +513,9 @@ void TypeVisitor::Visit(And *b)
     b->rightExp->accept(this);
 
     b->type = BOOLTYPE;
-
-    if (b->leftExp->type != BOOLTYPE || b->rightExp->type != BOOLTYPE)
-    {
-        errorStack->AddError("Can't evaluate (Logical And) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+    
+    if(b->leftExp->type != BOOLTYPE || b->rightExp->type != BOOLTYPE ){
+        errorStack->AddError("Can't evaluate (Logical And) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
         return;
     }
 }
@@ -555,11 +525,10 @@ void TypeVisitor::Visit(Or *b)
     b->leftExp->accept(this);
     b->rightExp->accept(this);
 
-    b->type = BOOLTYPE;
-
-    if (b->leftExp->type != BOOLTYPE || b->rightExp->type != BOOLTYPE)
-    {
-        errorStack->AddError("Can't evaluate (Logical Or) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line, b->column);
+     b->type = BOOLTYPE;
+    
+    if(b->leftExp->type != BOOLTYPE || b->rightExp->type != BOOLTYPE ){
+        errorStack->AddError("Can't evaluate (Logical Or) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " +   TypeEnumToString(b->leftExp->type), b->line+1, b->column);
         return;
     }
 }
@@ -569,9 +538,8 @@ void TypeVisitor::Visit(Not *n)
     n->exp->accept(this);
 
     n->type = BOOLTYPE;
-    if (n->exp->type != BOOLTYPE)
-    {
-        errorStack->AddError("Can't evaluate (Logical NOT) operator for expressions of type : " + TypeEnumToString(n->exp->type), n->line, n->column);
+    if(n->exp->type !=  BOOLTYPE){
+        errorStack->AddError("Can't evaluate (Logical NOT) operator for expressions of type : " + TypeEnumToString(n->exp->type), n->line+1, n->column);
         return;
     }
 }

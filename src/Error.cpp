@@ -27,9 +27,26 @@ void Errors::AddWarning(string message, int lin, int col)
     this->warningsStack->push_back(newWarning);
 }
 
-void Errors::Print()
+void Errors::PrintWarnings()
+{
+    int n = this->warningsStack->size();
+    if(n == 0)
+        return;
+    cout << "** Found " << n << " Warnings **" << endl;
+    for (int i = 0; i < n; i++)
+    {
+        cout << "Warnning:" << this->warningsStack->at(i)->line << ":" << this->warningsStack->at(i)->column;
+        cout << " Message: " << this->warningsStack->at(i)->Message << endl;
+    }
+    if(this->errorStack->size() == 0)
+        cout << "Not a problem, but might face unexpected behaviour" << endl;
+}
+
+void Errors::PrintErrors()
 {
     int n = this->errorStack->size();
+    if(n == 0)
+        return;
     cout << "** Found " << n << " Errors **" << endl;
     for (int i = 0; i < n; i++)
     {

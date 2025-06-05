@@ -2,6 +2,7 @@
 SRCDIR := src
 INCDIR := include
 BUILDDIR := build
+TESTDIR := tests
 
 # Compiler and Flags
 CXX := g++
@@ -27,7 +28,10 @@ NON_GENERATED_SRCS := $(filter-out $(SRCDIR)/parser.cpp $(SRCDIR)/scanner.cpp, $
 OBJS := $(patsubst $(SRCDIR)/%.cpp, $(BUILDDIR)/%.o, $(filter-out $(SRCDIR)/parser.cpp $(SRCDIR)/scanner.cpp, $(SRCS)))
 OBJS += $(BUILDDIR)/parser.o $(BUILDDIR)/scanner.o
 
-.PHONY: all clean
+# Test files
+TEST_SAMPLES := $(wildcard $(TESTDIR)/*.txt) 
+
+.PHONY: all clean test
 
 all: directories $(PARSER_CPP) $(PARSER_H) $(LEX_CPP) $(BUILDDIR)/$(TARGET)
 
@@ -70,3 +74,15 @@ clean:
 	@echo "Cleaning build directory..."
 	@rm -rf $(BUILDDIR)
 
+test: $(BUILDDIR)/$(TARGET)
+	@echo "Running tests..."
+	@for sample in $(TEST_SAMPLES); do \
+		echo "Testing $$sample..."; \
+		./$(BUILDDIR)/$(TARGET) $$sample; \
+		if [ $$? -eq 0 ]; then \
+			echo "  $$sample: PASSED"; \
+		else \
+			echo "  $$sample: FAILED"; \
+		fi; \
+	done
+	@echo "All tests complete."

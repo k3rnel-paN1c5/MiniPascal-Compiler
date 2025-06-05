@@ -234,7 +234,7 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
         ident->symbol = sym;
         return sym;
     }
-    errorStack->AddError("Undeclared Variable: " + ident->name, ident->line, ident->column);
+    errorStack->AddError("Undeclared Variable: " + ident->name, ident->line+1, ident->column);
     return NULL;
 }
 
@@ -267,9 +267,9 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident, SymbolKind kind, vector<TypeEnum
     }
 
     if (kind == FUNC)
-        errorStack->AddError("Undeclared Function: " + key, ident->line, ident->column);
+        errorStack->AddError("Undeclared Function: " + key, ident->line+1, ident->column);
     else
-        errorStack->AddError("Undeclared Procedure: " + key, ident->line, ident->column);
+        errorStack->AddError("Undeclared Procedure: " + key, ident->line+1, ident->column);
     return NULL;
 }
 
