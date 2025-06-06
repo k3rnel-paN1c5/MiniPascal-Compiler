@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     //print visitor
     Visitor* v1 = new PrintVisitor();
-    root->accept(v1);
+    // root->accept(v1);
     // type checking
     Visitor* v2 = new TypeVisitor();
     root->accept(v2);

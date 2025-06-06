@@ -11,7 +11,29 @@ extern Errors *errorStack;
 TypeVisitor::TypeVisitor()
 {
     this->currentFunction = nullptr;
-    this->currentFunctionHasReturn = false;
+}
+
+bool TypeVisitor::checkReturn(Stmt* statement) {
+    if (!statement) {
+        return false;
+    }
+
+    if (auto* assign = dynamic_cast<Assign*>(statement)) {
+        if (this->currentFunction && assign->var->id->name == this->currentFunction->id->name) {
+            return true;
+        }
+    } else if (auto* compStmt = dynamic_cast<CompStmt*>(statement)) {
+        if (compStmt->optitonalStmts && compStmt->optitonalStmts->stmtList) {
+            if(compStmt->optitonalStmts->stmtList->stmts)
+                if(compStmt->optitonalStmts->stmtList->stmts->size()!=0 && compStmt->optitonalStmts->stmtList->stmts->back())
+            // A compound statement returns if its last statement return
+            return checkReturn(compStmt->optitonalStmts->stmtList->stmts->back());
+        }
+    }  else if (auto* ifThenElse = dynamic_cast<IfThenElse*>(statement)) {
+        // An if-then-else returns if BOTH branches return.
+        return checkReturn(ifThenElse->trueStmt) && checkReturn(ifThenElse->falseStmt);
+    }
+    return false;
 }
 
 void TypeVisitor::Visit(Node *n)
@@ -109,12 +131,11 @@ void TypeVisitor::Visit(SubDec *n)
     symbolTable->NewScope();
 
     Func *previousFunctionContext = this->currentFunction;
-    bool previousFunctionHadReturn = this->currentFunctionHasReturn;
+
 
     if (funcNode)
     {
-        this->currentFunction = funcNode; // Set context for return checking
-        this->currentFunctionHasReturn = false;
+        this->currentFunction = funcNode; 
     }
     else
     {
@@ -144,10 +165,10 @@ void TypeVisitor::Visit(SubDec *n)
     }
 
     // Check for missing return in functions
-    if (funcNode && !this->currentFunctionHasReturn)
+    if (funcNode && !checkReturn(n->compStmt))
     {
         errorStack->AddError("Function '" + funcNode->id->name +
-                                 "' is missing a return assignment (e.g., " +
+                                 "': Not all paths return a vallue (e.g., " +
                                  funcNode->id->name + " := expression).",
                              funcNode->id->line + 1, funcNode->id->column);
     }
@@ -155,7 +176,6 @@ void TypeVisitor::Visit(SubDec *n)
     symbolTable->CloseScope();
 
     this->currentFunction = previousFunctionContext;
-    this->currentFunctionHasReturn = previousFunctionHadReturn;
 }
 
 void TypeVisitor::Visit(ParList *n)
@@ -275,23 +295,21 @@ void TypeVisitor::Visit(Assign *n)
         // This is a return statement
         TypeEnum expectedReturnType = this->currentFunction->typ->type;
 
-        if (n->exp->type == expectedReturnType)
+        if (n->exp->type != expectedReturnType)
         {
 
-            this->currentFunctionHasReturn = true;
-        }
-        else if (expectedReturnType == REALTYPE && n->exp->type == INTTYPE)
-        {
-            errorStack->AddWarning("Implicitly casting integer expression to real for return value of function '" + this->currentFunction->id->name + "'.", n->line + 1, n->column);
-            cout << "Warning:" << n->line + 1 << ":" << n->column << " Implicitly casting integer expression to real for return value of function '" << this->currentFunction->id->name << "'." << endl;
-            this->currentFunctionHasReturn = true;
-        }
-        else
-        {
-            errorStack->AddError("Type mismatch in return assignment for function '" + this->currentFunction->id->name +
-                                     "'. Expected " + TypeEnumToString(expectedReturnType) +
-                                     " but got " + TypeEnumToString(n->exp->type) + ".",
-                                 n->line + 1, n->column);
+            if (expectedReturnType == REALTYPE && n->exp->type == INTTYPE)
+            {
+                errorStack->AddWarning("Implicitly casting integer expression to real for return value of function '" + this->currentFunction->id->name + "'.", n->line + 1, n->column);
+                cout << "Warning:" << n->line + 1 << ":" << n->column << " Implicitly casting integer expression to real for return value of function '" << this->currentFunction->id->name << "'." << endl;
+            }
+            else
+            {
+                errorStack->AddError("Type mismatch in return assignment for function '" + this->currentFunction->id->name +
+                                         "'. Expected " + TypeEnumToString(expectedReturnType) +
+                                         " but got " + TypeEnumToString(n->exp->type) + ".",
+                                     n->line + 1, n->column);
+            }
         }
     }
     else
