@@ -1,0 +1,21 @@
+program DeclarationTest;
+
+// Test various types of declarations
+var
+  simpleInt : Integer;
+  simpleReal : Real;
+  simpleBool : Boolean;
+
+// Test multiple variables per line
+  x, y, z : Integer;
+  a, b : Real;
+
+// Test Array declarations
+  intArray : Array[1..10] of Integer;
+  realArray : Array[0..5] of Real;
+  boolArray : Array[-5..-1] of Boolean;
+
+begin
+    // A minimal body is needed for the parser to accept the program.
+    x := 1
+end

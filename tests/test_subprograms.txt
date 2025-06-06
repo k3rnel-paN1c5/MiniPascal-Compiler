@@ -1,0 +1,30 @@
+program SubprogramTest;
+
+var
+  global_var : Integer;
+
+// Procedure with no parameters
+procedure DoNothing();
+begin
+    global_var := global_var
+    // This procedure does nothing
+end;
+
+function Multiply(a: integer; b: integer) : integer;
+var
+  local_result : integer;
+begin
+   local_result := a * b;
+   Multiply := local_result
+end;
+
+// Procedure that calls another function
+procedure Calculate(x : integer);
+begin
+   global_var := Multiply(x, 2);
+   DoNothing() // Test procedure call with no args
+end;
+
+begin  // Main program body
+    Calculate(10)
+end

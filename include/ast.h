@@ -59,12 +59,13 @@ class Real;
 class Bool;
 class Array;
 class ArrayElement;
+class UnaryMinus; 
 class BinOp;
 class Add;
 class Sub;
 class Mult;
 class Divide;
-class Mod;
+class IntDiv;
 class GT;
 class LT;
 class GE;
@@ -88,7 +89,7 @@ class Symbol;
  * @brief Represents all binary and comparison operators in the language
  */
 enum OpType {
-    OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_MOD, //< Arithmetic operators
+    OP_ADD, OP_SUB, OP_MULT, OP_DIV, OP_INT_DIV, //< Arithmetic operators
     OP_GT, OP_GE, OP_LT, OP_LE, OP_ET, OP_NE, //< Comparison operators
     OP_AND, OP_OR ///< Logical operators
 };
@@ -888,6 +889,29 @@ public:
  * Contains an identifier and a list of expressions that
  * represent the arguments to a function call.
  */
+
+/**
+ * @class UnaryMinus
+ * @brief Represents a unary minus operation
+ * Contains an expression to be negated arithmetically.
+ */
+class UnaryMinus : public Exp
+{
+public:
+    Exp* exp; ///< Expression to negate
+    /**
+     * @brief Constructor for UnaryMinus
+     * @param e Expression to negate
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
+    UnaryMinus(Exp* , int, int);
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
+};
 class FuncCall : public Exp
 {
 public:
@@ -1053,24 +1077,24 @@ public:
 };
 
 /**
- * @class Mod
- * @brief Represents a modulo operation
+ * @class IntDiv
+ * @brief Represents a integer divison operation
  * 
  * Binary operation for computing the remainder when dividing
  * the left expression by the right.
  */
 
-class Mod : public BinOp 
+class IntDiv : public BinOp 
 {
 public:
     /**
-     * @brief Constructor for Mod
+     * @brief Constructor for IntDiv
      * @param lexp Left operand expression
      * @param rexp Right operand expression
      * @param lin Line number in source code
      * @param col Column number in source code
      */
-    Mod(Exp*, Exp*, int, int);
+    IntDiv(Exp*, Exp*, int, int);
     /**
      * @brief Virtual accept method for the Visitor pattern
      * @param v The visitor object

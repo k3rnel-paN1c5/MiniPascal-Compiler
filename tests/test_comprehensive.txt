@@ -1,0 +1,44 @@
+program FactorialRecursive;
+
+var
+  result, input : Integer;
+  cont : boolean;
+
+// A recursive function to calculate factorial
+function factorial(n: integer) : integer;
+begin
+  if n <= 1 then
+    factorial := 1
+  else
+    factorial := n * factorial(n - 1)
+end;
+
+// A procedure to run the test
+procedure RunTest(val : integer);
+var
+    i : integer;
+    msgPrinted : boolean;
+begin
+    { This is a multi-line comment.
+      It can span multiple lines. }
+    i := 0;
+    msgPrinted := false;
+    while i < val do
+    begin
+        i := i + 1;
+        if not msgPrinted then
+        begin
+            // This is a single line comment
+            msgPrinted := true
+        end
+    end;
+    result := factorial(val)
+end;
+
+begin
+    input := 5;
+    cont := true;
+
+    if cont then
+        RunTest(input)
+end

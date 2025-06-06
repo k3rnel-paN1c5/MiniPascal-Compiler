@@ -59,7 +59,6 @@ void TypeVisitor::Visit(SubDec *n)
     FunctionSignature *sig = nullptr;
     SymbolKind kind;
     vector<Type *> *astParamTypes = new vector<Type *>();
-
     if (funcNode)
     {
         subId = funcNode->id;
@@ -81,13 +80,17 @@ void TypeVisitor::Visit(SubDec *n)
     {
         subId = procNode->id;
         kind = PROC;
-        if (procNode->args && procNode->args->parList)
+        
+        if (procNode->args)
         {
-            for (ParDec *pd : *(procNode->args->parList->parList))
+            if (procNode->args->parList && procNode->args->parList->parList)
             {
-                for (size_t i = 0; i < pd->identList->identLst->size(); ++i)
+                for (ParDec *pd : *(procNode->args->parList->parList))
                 {
-                    astParamTypes->push_back(pd->tp);
+                    for (size_t i = 0; i < pd->identList->identLst->size(); ++i)
+                    {
+                        astParamTypes->push_back(pd->tp);
+                    }
                 }
             }
         }
@@ -354,7 +357,7 @@ void TypeVisitor::Visit(ProcStmt *n)
             argTypes->push_back(argExp->type);
         }
     }
-    
+
     Symbol *procSym = symbolTable->LookUpSymbol(n->id, PROC, argTypes);
     delete argTypes;
 }
@@ -495,7 +498,30 @@ void TypeVisitor::Visit(ArrayElement *a)
         errorStack->AddError("Missing index for array '" + a->id->name + "'.", a->line + 1, a->column);
     }
 }
-
+void TypeVisitor::Visit(UnaryMinus *n)
+{
+    n->exp->accept(this);
+    
+    if (n->exp->type == INTTYPE)
+    {
+        n->type = INTTYPE;
+    }
+    else if (n->exp->type == REALTYPE)
+    {
+        n->type = REALTYPE;
+    }
+    else if (n->exp->type != VOID) 
+    {
+        errorStack->AddError("Unary minus operator requires an integer or real expression, but got " +
+                                 TypeEnumToString(n->exp->type) + ".",
+                             n->line + 1, n->column);
+        n->type = VOID;
+    }
+    else
+    {
+        n->type = VOID;
+    }
+}
 void TypeVisitor::Visit(BinOp *b)
 {
     b->leftExp->accept(this);
@@ -627,17 +653,14 @@ void TypeVisitor::Visit(Divide *b)
         return;
     }
 
-    if (lType == INTTYPE && rType == INTTYPE)
-    {
-        b->type = INTTYPE;
-    }
-    else if ((lType == REALTYPE && rType == REALTYPE) ||
-             (lType == REALTYPE && rType == INTTYPE) ||
-             (lType == INTTYPE && rType == REALTYPE))
+    if ((lType == INTTYPE && rType == INTTYPE) ||
+        (lType == REALTYPE && rType == REALTYPE) ||
+        (lType == REALTYPE && rType == INTTYPE) ||
+        (lType == INTTYPE && rType == REALTYPE))
     {
         b->type = REALTYPE;
         if (lType == INTTYPE || rType == INTTYPE)
-        { // Only one is int
+        { //  one is int
             errorStack->AddWarning("Implicitly casting integer to real in divison", b->line + 1, b->column);
         }
     }
@@ -650,7 +673,7 @@ void TypeVisitor::Visit(Divide *b)
     }
 }
 
-void TypeVisitor::Visit(Mod *b)
+void TypeVisitor::Visit(IntDiv *b)
 {
     b->leftExp->accept(this);
     b->rightExp->accept(this);
@@ -670,7 +693,7 @@ void TypeVisitor::Visit(Mod *b)
     }
     else
     {
-        errorStack->AddError("Can't calculate  Modulo expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
+        errorStack->AddError("Can't calculate  Integer Divison for types : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
         return;
     }
 }

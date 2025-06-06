@@ -196,8 +196,10 @@ Assign::Assign(Var *vr, Exp *ex, int lin, int col) : Stmt(lin, col)
 ProcStmt::ProcStmt(Ident *ident, ExpList *exls, int lin, int col) : Stmt(lin, col)
 {
     this->id = ident;
+    if(ident)
     ident->father = this;
     this->expls = exls;
+    if(expls)
     expls->father = this;
 }
 
@@ -242,6 +244,12 @@ Not::Not(Exp *e, int lin, int col) : Exp(lin, col)
     e->father = this;
 }
 
+UnaryMinus::UnaryMinus(Exp *e, int lin, int col) : Exp(lin, col)
+{
+    this->exp = e;
+    e->father = this;
+}
+
 BinOp::BinOp(Exp *lexp, Exp *rexp, int lin, int col) : Exp(lin, col)
 {
     this->leftExp = lexp;
@@ -258,7 +266,7 @@ Mult::Mult(Exp *lexp, Exp *rexp, int lin, int col) : BinOp(lexp, rexp, lin, col)
 
 Divide::Divide(Exp *lexp, Exp *rexp, int lin, int col) : BinOp(lexp, rexp, lin, col) {}
 
-Mod::Mod(Exp *lexp, Exp *rexp, int lin, int col) : BinOp(lexp, rexp, lin, col) {}
+IntDiv::IntDiv(Exp *lexp, Exp *rexp, int lin, int col) : BinOp(lexp, rexp, lin, col) {}
 
 GT::GT(Exp *lexp, Exp *rexp, int lin, int col) : BinOp(lexp, rexp, lin, col) {}
 
@@ -531,7 +539,7 @@ void Divide::accept(Visitor *v)
     v->Visit(this);
 }
 
-void Mod::accept(Visitor *v)
+void IntDiv::accept(Visitor *v)
 {
     v->Visit(this);
 }
@@ -577,6 +585,11 @@ void Or::accept(Visitor *v)
 }
 
 void Not::accept(Visitor *v)
+{
+    v->Visit(this);
+}
+
+void UnaryMinus::accept(Visitor *v)
 {
     v->Visit(this);
 }

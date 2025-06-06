@@ -1,7 +1,7 @@
 program Factorial;
 var cnt, fact : Integer;
-var x: Array[1..5] of Real;
-var t, y : boolean;
+     x: Array[1..5] of Real;
+     t, y : boolean;
 function sum(a: integer) : integer ;
 begin
    a := a + 6;

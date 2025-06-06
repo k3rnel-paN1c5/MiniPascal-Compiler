@@ -92,7 +92,7 @@ ALPHA [a-zA-Z]
 }
 [Dd][Ii][Vv] {
     col += yyleng;
-    return KMOD;
+    return KINTDIV;
 }
 [Nn][Oo][Tt] {
     col += yyleng;

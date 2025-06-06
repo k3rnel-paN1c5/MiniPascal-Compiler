@@ -59,7 +59,7 @@ class Add;
 class Sub;
 class Mult;
 class Divide;
-class Mod;
+class IntDiv;
 class GT;
 class LT;
 class GE;
@@ -69,6 +69,7 @@ class NE;
 class And;
 class Or;
 class Not;
+class UnaryMinus;
 
 /**
  * @class Visitor
@@ -116,12 +117,13 @@ public:
     virtual void Visit(Bool*) = 0;
     virtual void Visit(Array*) = 0;
     virtual void Visit(ArrayElement*) = 0;
+    virtual void Visit(UnaryMinus*) = 0;
     virtual void Visit(BinOp*) = 0;
     virtual void Visit(Add*) = 0;
     virtual void Visit(Sub*) = 0;
     virtual void Visit(Mult*) = 0;
     virtual void Visit(Divide*) = 0;
-    virtual void Visit(Mod*) = 0;
+    virtual void Visit(IntDiv*) = 0;
     virtual void Visit(GT*) = 0;
     virtual void Visit(LT*) = 0;
     virtual void Visit(GE*) = 0;
@@ -330,6 +332,11 @@ public:
      */
     virtual void Visit(ArrayElement*);
     /**
+     * @brief Visit method for negating Operation nodes
+     * @param e The negating Operation to visit
+     */
+    virtual void Visit(UnaryMinus*);
+    /**
      * @brief Visit method for Binary Operation nodes
      * @param binop The Binary Operation to visit
      */
@@ -355,10 +362,10 @@ public:
      */
     virtual void Visit(Divide*);
     /**
-     * @brief Visit method for Modulo nodes
-     * @param mod The Modulo to visit
+     * @brief Visit method for Integer Divison nodes
+     * @param intDiv The integer divison to visit
      */
-    virtual void Visit(Mod*);
+    virtual void Visit(IntDiv*);
     /**
      * @brief Visit method for Greater Than nodes
      * @param gt The Greater Than to visit
@@ -605,6 +612,11 @@ public:
      */
     virtual void Visit(ArrayElement*);
     /**
+     * @brief Visit method for negating Operation nodes
+     * @param e The negating Operation to visit
+     */
+    virtual void Visit(UnaryMinus*);
+    /**
      * @brief Visit method for Binary Operation nodes
      * @param binop The Binary Operation to visit
      */
@@ -630,10 +642,10 @@ public:
      */
     virtual void Visit(Divide*);
     /**
-     * @brief Visit method for Modulo nodes
-     * @param mod The Modulo to visit
+     * @brief Visit method for Integer Disvion nodes
+     * @param intDiv The integerr divion to visit
      */
-    virtual void Visit(Mod*);
+    virtual void Visit(IntDiv*);
     /**
      * @brief Visit method for Greater Than nodes
      * @param gt The Greater Than to visit

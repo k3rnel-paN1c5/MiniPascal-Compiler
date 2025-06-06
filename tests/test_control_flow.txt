@@ -1,0 +1,36 @@
+program ControlFlowTest;
+
+var
+  i, limit : Integer;
+  stop : Boolean;
+
+begin
+    i := 0;
+    limit := 10;
+    stop := false;
+
+    // Simple if-then
+    if (i = 0) then
+        i := 1;
+
+    // Simple if-then-else
+    if (i > 0) then
+        i := 10
+    else
+        i := -1;
+
+    // While loop with a compound statement
+    while (i < limit) and (not stop) do
+    begin
+        i := i + 1;
+        if i = 5 then
+            stop := true
+        else
+            // Nested compound statement
+            begin
+                limit := limit + 1;
+                if limit > 15 then
+                  stop := true
+            end
+    end
+end

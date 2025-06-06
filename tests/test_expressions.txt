@@ -1,0 +1,34 @@
+program ExpressionTest;
+
+var
+  i, j, k : Integer;
+  r, s : Real;
+  p, q : Boolean;
+  a : Array[1..5] of Integer;
+
+begin
+    // Test basic arithmetic and precedence (* before +)
+    i := 1 + 2 * 3; // Should parse as 1 + (2 * 3) = 7
+
+    // Test real and integer mixing, and parenthesis
+    r := (1 + i) / 2.0;
+
+    // Test integer divison operator
+    j := 10 Div 3;
+
+    // Test relational operators
+    p := (i > j) and (r <= 5.0);
+    q := (i <> j) or (i = 6);
+
+    // Test boolean logic and NOT precedence
+    // NOT is highest, then AND, then OR
+    p := not p or q and true; // Should parse as ((not p) or (q and true))
+
+    // Test complex assignment with array elements
+    a[1] := i + j;
+    a[i - 4] := 4 * (k - j);
+
+    // Test unary minus on numbers and identifiers
+    i := -5;
+    j :=  -i
+end

@@ -66,7 +66,7 @@
 %token KTHEN
 %token KELSE
 %token KOF
-%token KMOD
+%token KINTDIV
 %token KNOT
 %token KOR
 %token KAND
@@ -101,7 +101,7 @@
 %type <tProcstmt> proc_stmt
 %type <tExplist> exp_list
 %type <tExp> exp
-%type <tOp> binOp
+// %type <tOp> binOp
 
 
 
@@ -109,28 +109,30 @@
 %nonassoc IF_PREC
 %nonassoc KELSE
 
-%left KOR 
+// %left BINOP   
+%left KOR
 %left KAND
-%left KNOT
-%left KET KNE
-%left KGT KGE KLT KLE
+%nonassoc KNOT 
+%nonassoc KET KNE KLT KGT KLE KGE
 %left KADD KSUB
-%left KMULT KDIVIDE KMOD
-%left BINOP   
+%left KMULT KDIVIDE KINTDIV
+%right KUMINUS 
 
 
 
 %%
-program: KPROGRAM KIDENT ';' declarations sub_declarations comp_stmt 
+program: KPROGRAM KIDENT ';' kw declarations sub_declarations comp_stmt 
     {
-        $$ = new Prog($2, $4, $5, $6, lin, col);
+        $$ = new Prog($2, $5, $6, $7, lin, col);
         root = $$;
     }
 ;
-declarations: declarations KVAR ident_list ':' type ';' 
+kw: KVAR | /* empty */
+;
+declarations: declarations  ident_list ':' type ';' 
     {
         $$ = $1;
-        ParDec* parDec = new ParDec($3, $5, lin, col);
+        ParDec* parDec = new ParDec($2, $4, lin, col);
         $$->AddDec(parDec); 
     }
     | /* empty */
@@ -155,6 +157,14 @@ type: std_type
     | KARRAY '[' KINTNUM '..' KINTNUM ']' KOF std_type
     {
         $$ = new Array($3->val, $5->val, $8, lin, col);
+    }
+    | KARRAY '[' KSUB KINTNUM '..' KSUB KINTNUM ']' KOF std_type
+    {
+        $$ = new Array(-1 * $4->val, -1 * $7->val, $10, lin, col);
+    }
+    | KARRAY '[' KSUB KINTNUM '..' KINTNUM ']' KOF std_type
+    {
+        $$ = new Array(-1 * $4->val, $6->val, $9, lin, col);
     }
 ;
 std_type: KINT 
@@ -181,9 +191,9 @@ sub_declarations: sub_declarations sub_dec ';'
         $$ = new SubDecs(lin, col);
     }
 ;
-sub_dec:  sub_head local_dec comp_stmt
+sub_dec:  sub_head kw local_dec comp_stmt
     {
-        $$ = new SubDec($1, $2, $3, lin, col);
+        $$ = new SubDec($1, $3, $4, lin, col);
     }
 ;
 sub_head: KFUNC KIDENT args ':' std_type ';'
@@ -200,8 +210,9 @@ args: '(' param_list ')'
         $$ =  new Args($2, lin, col);
 
     }
-    | /* empty */
+    |'(' /* empty */ ')'
     {
+        $$ = NULL;
         //cout << "args reduced to empty\n";
     }
 ;
@@ -217,14 +228,15 @@ param_list: ident_list ':' type
         $$->AddDec(parDec);
     }
 ;
-local_dec: local_dec KVAR ident_list ':' type ';' 
+local_dec: local_dec ident_list ':' type ';' 
         {
             $$ = $1;
-            LocalDec* newDec = new LocalDec($3, $5,lin, col);
+            LocalDec* newDec = new LocalDec($2, $4,lin, col);
             $$->AddDec(newDec);
         }
         | /* empty */
         {
+            // $$ = NULL;
             $$ = new LocalDecs(lin, col);
         }
 ;
@@ -314,17 +326,9 @@ exp: KIDENT
     {
         $$ = new Integer($1->val, lin, col);
     }
-    | KSUB KINTNUM
-    {
-        $$ = new Integer(-1 * $2->val, lin, col);
-    }
     | KREALNUM
     {
         $$ = new Real($1->val, lin, col);
-    }
-    | KSUB KREALNUM
-    {
-        $$ = new Real((-1.0)* $2->val, lin, col);
     }
     | KTRUE
     {
@@ -348,43 +352,23 @@ exp: KIDENT
     {
         $$ = $2;
     }
-    | exp binOp exp %prec BINOP
-    {
-       switch ($2) {
-            case OP_ADD:  $$ = new Add($1, $3, lin, col); break;
-            case OP_SUB:  $$ = new Sub($1, $3, lin, col); break;
-            case OP_MULT: $$ = new Mult($1, $3, lin, col); break;
-            case OP_DIV:  $$ = new Divide($1, $3, lin, col); break;
-            case OP_MOD:  $$ = new Mod($1, $3, lin, col); break;
-            case OP_GT:   $$ = new GT($1, $3, lin, col); break;
-            case OP_GE:   $$ = new GE($1, $3, lin, col); break;
-            case OP_LT:   $$ = new LT($1, $3, lin, col); break;
-            case OP_LE:   $$ = new LE($1, $3, lin, col); break;
-            case OP_ET:   $$ = new ET($1, $3, lin, col); break;
-            case OP_NE:   $$ = new NE($1, $3, lin, col); break;
-            case OP_AND:  $$ = new And($1, $3, lin, col); break;
-            case OP_OR:   $$ = new Or($1, $3, lin, col); break;
-        }
-    }
-    | KNOT exp
-    {
-        $$ = new Not($2, lin, col);
-    }
+    | exp KADD exp     { $$ = new Add($1, $3, lin, col); }
+    | exp KSUB exp     { $$ = new Sub($1, $3, lin, col); }
+    | exp KMULT exp    { $$ = new Mult($1, $3, lin, col); }
+    | exp KDIVIDE exp  { $$ = new Divide($1, $3, lin, col); }
+    | exp KINTDIV exp     { $$ = new IntDiv($1, $3, lin, col); }
+    | exp KOR exp      { $$ = new Or($1, $3, lin, col); }
+    | exp KAND exp     { $$ = new And($1, $3, lin, col); }
+    | exp KET exp      { $$ = new ET($1, $3, lin, col); }
+    | exp KNE exp      { $$ = new NE($1, $3, lin, col); }
+    | exp KLT exp      { $$ = new LT($1, $3, lin, col); }
+    | exp KGT exp      { $$ = new GT($1, $3, lin, col); }
+    | exp KLE exp      { $$ = new LE($1, $3, lin, col); }
+    | exp KGE exp      { $$ = new GE($1, $3, lin, col); }
+    | KNOT exp         { $$ = new Not($2, lin, col); }
+    | KSUB exp %prec KUMINUS { $$ = new UnaryMinus($2, lin, col); } 
 
-;
-binOp: KADD    { $$ = OP_ADD; }
-     | KSUB    { $$ = OP_SUB; }
-     | KMULT   { $$ = OP_MULT; }
-     | KDIVIDE { $$ = OP_DIV; }
-     | KMOD    { $$ = OP_MOD; }
-     | KGT     { $$ = OP_GT; }
-     | KGE     { $$ = OP_GE; }
-     | KLT     { $$ = OP_LT; }
-     | KLE     { $$ = OP_LE; }
-     | KET     { $$ = OP_ET; }
-     | KNE     { $$ = OP_NE; }
-     | KAND    { $$ = OP_AND; }
-     | KOR     { $$ = OP_OR; } 
+
 ;
 
 

@@ -36,7 +36,7 @@ void PrintVisitor::Visit(Ident *n)
 {
     for(int i = 0; i < this->level; i++)
         cout << "-- ";
-    cout << "Identity: '"<<n->name <<"'"<<endl;
+    cout << "Identifier: '"<<n->name <<"'"<<endl;
 }
 
 void PrintVisitor::Visit(Decs *n)
@@ -144,14 +144,17 @@ void PrintVisitor::Visit(Proc *n)
         cout << "-- ";
     cout << "Proc: " << n->id->name << endl;
     this->level++;
-    n->args->accept(this);
+    if(n->args)
+        n->args->accept(this);
     this->level--;
 }
 void PrintVisitor::Visit(LocalDecs *n)
 {
+    if(n->localDecs == nullptr || n->localDecs->size() == 0)
+    return;
     for(int i = 0; i < this->level; i++)
         cout << "-- ";
-    cout <<"Local Variable Declarations:\n";
+    cout <<"Local Variable Declarations, Size" << n->localDecs->size()<<endl;
     this->level++;
     for(int i = 0; i < n->localDecs->size(); i++){
         n->localDecs->at(i)->accept(this);
@@ -165,7 +168,7 @@ void PrintVisitor::Visit(LocalDec *n)
         cout << "-- ";
     cout << "Local Dec" <<endl;
     this->level++;
-    n->identlist->accept(this);
+    if(n->identlist) n->identlist->accept(this);
     if (n->tp) n->tp->accept(this);
     this->level--;
 
@@ -353,7 +356,15 @@ void PrintVisitor::Visit(ArrayElement  *a)
     a->index->accept(this);
     this->level = x;
 }
-
+void PrintVisitor::Visit(UnaryMinus *n)
+{
+    for(int i = 0; i < this->level; i++)
+        cout << "-- ";
+    cout << "UnaryMinus: " << endl;
+    this->level++;
+    n->exp->accept(this);
+    this->level--;
+}
 void PrintVisitor::Visit(BinOp *b)
 {
     for(int i = 0; i < this->level; i++)
@@ -409,11 +420,11 @@ void PrintVisitor::Visit(Divide *b)
     this->level--;
 }
 
-void PrintVisitor::Visit(Mod *b)
+void PrintVisitor::Visit(IntDiv *b)
 {
     for(int i = 0; i < this->level; i++)
         cout << "-- ";
-    cout << "Mod:" << endl;
+    cout << "Integer Divison:" << endl;
     this->level++;
     b->leftExp->accept(this);
     b->rightExp->accept(this);
