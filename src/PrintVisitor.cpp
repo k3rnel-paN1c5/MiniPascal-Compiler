@@ -93,6 +93,7 @@ void PrintVisitor::Visit(SubDec *n)
     cout << "Sub Dec: "<<endl;
     this->level++;
     n->subHead->accept(this);
+    if(n->localDecs) n->localDecs->accept(this);
     if(n->compStmt)  n->compStmt->accept(this);
     this->level--;
 
@@ -145,6 +146,29 @@ void PrintVisitor::Visit(Proc *n)
     this->level++;
     n->args->accept(this);
     this->level--;
+}
+void PrintVisitor::Visit(LocalDecs *n)
+{
+    for(int i = 0; i < this->level; i++)
+        cout << "-- ";
+    cout <<"Local Variable Declarations:\n";
+    this->level++;
+    for(int i = 0; i < n->localDecs->size(); i++){
+        n->localDecs->at(i)->accept(this);
+    }
+    this->level--;
+ 
+}
+void PrintVisitor::Visit(LocalDec *n)
+{
+    for(int i = 0; i < this->level; i++)
+        cout << "-- ";
+    cout << "Local Dec" <<endl;
+    this->level++;
+    n->identlist->accept(this);
+    if (n->tp) n->tp->accept(this);
+    this->level--;
+
 }
 
 void PrintVisitor::Visit(FuncCall* a)

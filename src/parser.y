@@ -132,8 +132,6 @@ declarations: declarations KVAR ident_list ':' type ';'
         $$ = $1;
         ParDec* parDec = new ParDec($3, $5, lin, col);
         $$->AddDec(parDec); 
-        for(int i = 0; i < $3->identLst->size(); i++)
-            symbolTable->AddSymbol($3->identLst->at(i), GLOBAL_VAR, $5);
     }
     | /* empty */
     {
@@ -183,35 +181,18 @@ sub_declarations: sub_declarations sub_dec ';'
         $$ = new SubDecs(lin, col);
     }
 ;
-sub_dec: { symbolTable->NewScope();} sub_head local_dec comp_stmt
+sub_dec:  sub_head local_dec comp_stmt
     {
-        $$ = new SubDec($2, $3, $4, lin, col);
-        symbolTable->CloseScope();
+        $$ = new SubDec($1, $2, $3, lin, col);
     }
 ;
 sub_head: KFUNC KIDENT args ':' std_type ';'
     {
         $$ = new Func($2, $3, $5, lin, col);
-        vector<Type*>* prs = new vector<Type*>;
-        for(int i = 0; i < $3->parList->parList->size(); i++){
-            for(int j = 0; j  < $3->parList->parList->at(i)->identList->identLst->size(); j++){
-                prs->push_back($3->parList->parList->at(i)->tp);
-            }
-        }
-        FunctionSignature* newSig = new FunctionSignature($2->name, prs, $5->type);
-        symbolTable->AddSymbol($2, FUNC, newSig);
     }
     | KPROC KIDENT args ';'
     {
         $$ = new Proc($2, $3, lin, col);
-        vector<Type*>* prs = new vector<Type*>;
-        for(int i = 0; i < $3->parList->parList->size(); i++){
-            for(int j = 0; j  < $3->parList->parList->at(i)->identList->identLst->size(); j++){
-                prs->push_back($3->parList->parList->at(i)->tp);
-            }
-        }
-        FunctionSignature* newSig = new FunctionSignature($2->name, prs);
-        symbolTable->AddSymbol($2, PROC, newSig);
     }
 ;
 args: '(' param_list ')' 
@@ -228,19 +209,12 @@ param_list: ident_list ':' type
     {
         ParDec* parDec = new ParDec($1, $3, lin, col);
         $$ = new ParList(parDec, lin, col);
-        for(int i = 0; i < $1->identLst->size(); i++){
-            symbolTable->AddSymbol($1->identLst->at(i),  PARAM_VAR, $3);
-        }
     }
     | param_list ';' ident_list ':' type
     {
         $$ = $1;
         ParDec* parDec = new ParDec($3, $5, lin, col);
         $$->AddDec(parDec);
-
-        for(int i = 0; i < $3->identLst->size(); i++){
-            symbolTable->AddSymbol($3->identLst->at(0),  PARAM_VAR, $5);
-        }
     }
 ;
 local_dec: local_dec KVAR ident_list ':' type ';' 
@@ -248,9 +222,6 @@ local_dec: local_dec KVAR ident_list ':' type ';'
             $$ = $1;
             LocalDec* newDec = new LocalDec($3, $5,lin, col);
             $$->AddDec(newDec);
-            for(int i = 0; i < $3->identLst->size(); i++){
-                symbolTable->AddSymbol($3->identLst->at(i), LOCAL_VAR, $5);
-            }
         }
         | /* empty */
         {
@@ -310,27 +281,19 @@ stmt: variable KASSIGN exp
 variable: KIDENT
     {
         $$ = new Var($1, lin, col);
-        symbolTable->LookUpSymbol($1);
     }
     | KIDENT '[' exp ']'
     {   
         $$ = new ArrayElement($1, $3, lin, col);
-        symbolTable->LookUpSymbol($1);
     }
 ;
 proc_stmt: KIDENT  '('  ')'
     {
         $$ = new ProcStmt($1, NULL, lin, col);
-        symbolTable->LookUpSymbol($1, PROC, NULL);
     }
     | KIDENT '(' exp_list ')'
     {
         $$ = new ProcStmt($1, $3, lin, col);
-        vector<TypeEnum>* paramCall = new vector<TypeEnum>;
-        for(int i  = 0; i < $3->expList->size(); i++){
-            paramCall->push_back($3->expList->at(i)->type);
-        }
-        symbolTable->LookUpSymbol($1, PROC, paramCall);
     }
 ;
 exp_list: exp 
@@ -346,44 +309,31 @@ exp_list: exp
 exp: KIDENT
     {
         $$ = new IdExp($1, lin, col);
-        symbolTable->LookUpSymbol($1);
     }
     | KINTNUM
     {
-        $1->type=INTTYPE;
         $$ = $1;
     }
     | KREALNUM
     {
-        $1->type=REALTYPE;
         $$ = $1;
     }
     | KTRUE
     {
-        $1->type=BOOLTYPE;
         $$ = $1;
     }
     | KFALSE
     {
-        $1->type=BOOLTYPE;
         $$ = $1;
     }
     | KIDENT '(' exp_list ')'
     {
         $$ = new FuncCall($1, $3, lin, col);
-        vector<TypeEnum>* paramCall = new vector<TypeEnum>;
-        for(int i  = 0; i < $3->expList->size(); i++){
-            paramCall->push_back($3->expList->at(i)->type);
-        }
-        Symbol* s = symbolTable->LookUpSymbol($1, FUNC, paramCall);
-        $$->type = s->DataType
 
     }
     | KIDENT '(' ')'
     {
         $$ = new FuncCall($1, NULL, lin, col);
-        Symbol* s =  symbolTable->LookUpSymbol($1, FUNC, NULL);
-        $$->type = s->DataType
 
     }
     | '(' exp ')'

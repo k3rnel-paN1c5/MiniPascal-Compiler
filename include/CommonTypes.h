@@ -1,8 +1,7 @@
-// include/CommonTypes.h
 #ifndef COMMON_TYPES_H
 #define COMMON_TYPES_H
 
-#include <string> // For string in TypeEnumToString
+#include <string> 
 
 /**
  * @enum TypeEnum
@@ -43,5 +42,21 @@ inline std::string TypeEnumToString(TypeEnum t){
     }
 }
 
+// TypeEnum GetTypeEnumFromTypeNode(Type* typeNode) {
+//     if (!typeNode) return VOID;
+//     if (auto* st = dynamic_cast<StdType*>(typeNode)) {
+//         return st->type;
+//     } else if (auto* at = dynamic_cast<Array*>(typeNode)) {
+//         if (at->stdType) {
+//             switch (at->stdType->type) {
+//                 case INTTYPE: return INT_ARRAY;
+//                 case REALTYPE: return REAL_ARRAY;
+//                 case BOOLTYPE: return BOOL_ARRAY;
+//                 default: return VOID;
+//             }
+//         }
+//     }
+//     return VOID; // Fallback
+// }
 
 #endif // COMMON_TYPES_H

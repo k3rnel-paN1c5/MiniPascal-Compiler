@@ -2,9 +2,15 @@ program Factorial;
 var cnt, fact : Integer;
 var x: Array[1..5] of Real;
 var t, y : boolean;
+function sum(a: integer) : integer ;
+begin
+   a := a + 6;
+   sum := a
+end;
 function sum( a, b: integer) : integer ;
 begin
-   a := a+b
+   a := a+b;
+   sum := a
 end;
 Procedure Mult(c, g: integer; d : real) ;
 var  test : integer;
@@ -18,7 +24,7 @@ begin
     cnt := (5-4);
     fact := 1;
     x[1] := 6.0;
-    x[4] := 1.1 / 5;
+    x[4] := 1.1 / 5.0;
     t := true;
     while cnt > 0 AND( NOT (fact = 0) )do
         begin
