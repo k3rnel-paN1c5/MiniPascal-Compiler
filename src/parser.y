@@ -312,11 +312,19 @@ exp: KIDENT
     }
     | KINTNUM
     {
-        $$ = $1;
+        $$ = new Integer($1->val, lin, col);
+    }
+    | KSUB KINTNUM
+    {
+        $$ = new Integer(-1 * $2->val, lin, col);
     }
     | KREALNUM
     {
-        $$ = $1;
+        $$ = new Real($1->val, lin, col);
+    }
+    | KSUB KREALNUM
+    {
+        $$ = new Real((-1.0)* $2->val, lin, col);
     }
     | KTRUE
     {

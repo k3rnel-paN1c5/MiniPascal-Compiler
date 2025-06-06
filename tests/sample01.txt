@@ -7,6 +7,7 @@ begin
    a := a + 6;
    sum := a
 end;
+//overloading
 function sum( a, b: integer) : integer ;
 begin
    a := a+b;
@@ -21,12 +22,13 @@ end;
 begin
     // thiss is a commnt
     Mult(2+4, 3, 1.0);
-    cnt := (5-4);
+    cnt := sum(-5, 7);
+    cnt := sum(cnt);
     fact := 1;
-    x[1] := 6.0;
+    x[1] := -6.0;
     x[4] := 1.1 / 5.0;
     t := true;
-    while cnt > 0 AND( NOT (fact = 0) )do
+    while cnt > 0 AND ( NOT (fact = 0) ) do
         begin
         fact := fact * cnt;
         cnt := cnt - 1
