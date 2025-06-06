@@ -48,6 +48,7 @@ Symbol::Symbol(string name, SymbolKind kind, TypeEnum type)
     this->Kind = kind;
     this->DataType = type;
     this->funcSig = NULL;
+    this->Offset = 0; // Initialize offset
 }
 
 Symbol::Symbol(string name, SymbolKind kind, FunctionSignature *sig)
@@ -56,6 +57,7 @@ Symbol::Symbol(string name, SymbolKind kind, FunctionSignature *sig)
     this->Kind = kind;
     this->DataType = sig->returnType;
     this->funcSig = sig;
+    this->Offset = 0; // Initialize offset
 }
 
 Scope::Scope()
@@ -63,6 +65,12 @@ Scope::Scope()
     this->hashTab = new HashTable();
     this->Parent = NULL;
     this->Children = new vector<Scope *>;
+    //todo : check these
+    // Initialize offsets. Parameters are at negative offsets from FP.
+    // fp[-1] is old fp, fp[-2] is return address. Params start at fp[-3].
+    this->param_offset = -3;
+    // Locals are at positive offsets from FP.
+    this->local_offset = 0;
 }
 
 void Scope::AddChildScope(Scope *s)
@@ -83,16 +91,20 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
 {
 
     string key;
+    int offset = 0;
     switch (kind)
     {
     case PARAM_VAR:
         key = "par" + ident->name; // parameter var for function or procedure
+        offset = this->currentScope->param_offset--;
         break;
     case GLOBAL_VAR:
         key = 'g' + ident->name; // global variables
+        offset = this->rootScope->local_offset++;
         break;
     case LOCAL_VAR:
         key = 'l' + ident->name; // local variable
+        offset = this->currentScope->local_offset++;
         break;
     default:
         cout << "Error in symbol table, invalid kind for a variable \n";
@@ -130,6 +142,7 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
         }
     }
     Symbol *newSymbol = new Symbol(ident->name, kind, typ);
+    newSymbol->Offset = offset;
     this->currentScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
     return true;
@@ -173,28 +186,12 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
 {
     string key;
     Symbol *sym;
-    // first look if there exist a local variable with that name in the currrent scope
-    key = "l" + ident->name;
-    sym = this->currentScope->hashTab->GetMember(key);
-    if (sym)
+    
+    Scope *scope_to_check = this->currentScope;
+    while (scope_to_check != NULL)
     {
-        ident->symbol = sym;
-        return sym;
-    }
-    // now look if there exist a parameter variable with that name in the currrent scope (function/procedure)
-    key = "par" + ident->name;
-    sym = this->currentScope->hashTab->GetMember(key);
-    if (sym)
-    {
-        ident->symbol = sym;
-        return sym;
-    }
-    Scope *temp = this->currentScope;
-    while (temp->Parent != NULL)
-    {
-        temp = temp->Parent;
         key = "l" + ident->name;
-        sym = temp->hashTab->GetMember(key);
+        sym = scope_to_check->hashTab->GetMember(key);
         if (sym)
         {
             ident->symbol = sym;
@@ -202,12 +199,13 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
         }
         // now look if there exist a parameter variable with that name in the currrent scope (function/procedure)
         key = "par" + ident->name;
-        sym = temp->hashTab->GetMember(key);
+        sym = scope_to_check->hashTab->GetMember(key);
         if (sym)
         {
             ident->symbol = sym;
             return sym;
         }
+        scope_to_check = scope_to_check->Parent;
     }
     // if there  were  no local variables or parameters
     key = 'g' + ident->name;
