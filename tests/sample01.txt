@@ -1,7 +1,7 @@
 program Factorial;
 var cnt, fact : Integer;
-     x: Array[1..5] of Real;
-     t, y : boolean;
+var x: Array[1..5] of Real;
+var t, y : boolean;
 function sum(a: integer) : integer ;
 begin
    a := a + 6;
@@ -16,24 +16,27 @@ end;
 Procedure Mult(c, g: integer; d : real) ;
 var  test : integer;
 begin
-    c := c * (g+test)
+    test := 1;
+    c := c * ( g+test );  
+    write(c)
 end;
 
 begin
     // thiss is a commnt
-    Mult(2+4, 3, 1.0);
+    Mult(2+4, 3, 1.0); // c = 24
     cnt := sum(-5, 7);
     cnt := sum(cnt);
     fact := 1;
     x[1] := -6.0;
     x[4] := 1.1 / 5.0;
     t := true;
+    cnt := 5;
     while cnt > 0 AND ( NOT (fact = 0) ) do
         begin
         fact := fact * cnt;
         cnt := cnt - 1
-        end
-    //Write(fact)
+        end;
+    write(fact)
 end
 
 

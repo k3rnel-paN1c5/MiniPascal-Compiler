@@ -121,18 +121,17 @@
 
 
 %%
-program: KPROGRAM KIDENT ';' kw declarations sub_declarations comp_stmt 
+program: KPROGRAM KIDENT ';' declarations sub_declarations comp_stmt 
     {
-        $$ = new Prog($2, $5, $6, $7, lin, col);
+        $$ = new Prog($2, $4, $5, $6, lin, col);
         root = $$;
     }
+
 ;
-kw: KVAR | /* empty */
-;
-declarations: declarations  ident_list ':' type ';' 
+declarations: declarations  KVAR ident_list ':' type ';' 
     {
         $$ = $1;
-        ParDec* parDec = new ParDec($2, $4, lin, col);
+        ParDec* parDec = new ParDec($3, $5, lin, col);
         $$->AddDec(parDec); 
     }
     | /* empty */
@@ -191,9 +190,9 @@ sub_declarations: sub_declarations sub_dec ';'
         $$ = new SubDecs(lin, col);
     }
 ;
-sub_dec:  sub_head kw local_dec comp_stmt
+sub_dec:  sub_head  local_dec comp_stmt
     {
-        $$ = new SubDec($1, $3, $4, lin, col);
+        $$ = new SubDec($1, $2, $3, lin, col);
     }
 ;
 sub_head: KFUNC KIDENT args ':' std_type ';'
@@ -228,10 +227,10 @@ param_list: ident_list ':' type
         $$->AddDec(parDec);
     }
 ;
-local_dec: local_dec ident_list ':' type ';' 
+local_dec: local_dec KVAR ident_list ':' type ';' 
         {
             $$ = $1;
-            LocalDec* newDec = new LocalDec($2, $4,lin, col);
+            LocalDec* newDec = new LocalDec($3, $5, lin, col);
             $$->AddDec(newDec);
         }
         | /* empty */

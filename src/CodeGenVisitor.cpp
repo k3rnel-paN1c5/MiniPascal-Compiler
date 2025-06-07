@@ -79,6 +79,7 @@ void CodeGenVisitor::Visit(Var *v) { /* Handled by children */ }
 void CodeGenVisitor::Visit(Prog *n)
 {
     emit("START\n");
+
     if (n->declarations)
     {
         int num_globals = 0;
@@ -91,7 +92,22 @@ void CodeGenVisitor::Visit(Prog *n)
             // Allocate space for globals by pushing N zeros onto the stack
             emit("PUSHN " + to_string(num_globals));
         }
+
+        for (auto *dec : *n->declarations->decs)
+        {
+            if (Array *arr = dynamic_cast<Array *>(dec->tp))
+            {
+                int size = arr->endIndex - arr->beginIndex + 1;
+                for (auto *id : *dec->identList->identLst)
+                {
+                    emit("PUSHI " + to_string(size));
+                    emit("ALLOCN");                                   // Allocates block, pushes base address
+                    emit("STOREG " + to_string(id->symbol->Offset)); // Store base address in global var slot
+                }
+            }
+        }
     }
+
     if (n->compoundStatment)
         n->compoundStatment->accept(this);
     emit("STOP");
@@ -132,6 +148,20 @@ void CodeGenVisitor::Visit(SubDec *n)
         {
             emit("PUSHN " + to_string(num_locals));
         }
+
+        for (auto *l_dec : *n->localDecs->localDecs)
+        {
+            if (Array *arr = dynamic_cast<Array *>(l_dec->tp))
+            {
+                int size = arr->endIndex - arr->beginIndex + 1;
+                for (auto *id : *l_dec->identlist->identLst)
+                {
+                    emit("PUSHI " + to_string(size));
+                    emit("ALLOCN");
+                    emit("STOREL " + to_string(id->symbol->Offset));
+                }
+            }
+        }
     }
 
     n->compStmt->accept(this);
@@ -146,7 +176,7 @@ void CodeGenVisitor::Visit(Proc *n) { /* Handled in SubDec */ }
 
 void CodeGenVisitor::Visit(CompStmt *n)
 {
-    if(n->optitonalStmts)
+    if (n->optitonalStmts)
         n->optitonalStmts->accept(this);
 }
 
@@ -181,7 +211,7 @@ void CodeGenVisitor::Visit(IdExp *e)
 
 void CodeGenVisitor::Visit(Assign *n)
 {
-    n->exp->accept(this); // The value to be assigned is now on top of the stack
+    n->exp->accept(this);
 
     // Check if this is a function return assignment
     if (currentFunctionContext && n->var->id->name == currentFunctionContext->id->name)
@@ -194,13 +224,44 @@ void CodeGenVisitor::Visit(Assign *n)
                 num_params += p_dec->identList->identLst->size();
             }
         }
-        // Return value is at fp[-(2 + num_params)]
+        // return value at fp[-(1 + num_params)]
         emit("STOREL " + to_string(-(1 + num_params)));
     }
     else if (n->var->id->symbol)
     {
         Symbol *sym = n->var->id->symbol;
-        if (sym->Kind == GLOBAL_VAR)
+        if (ArrayElement *a = dynamic_cast<ArrayElement *>(n->var))
+        {
+            //? Stack [xxx, val]
+            if (sym->Kind == GLOBAL_VAR)
+            {
+                emit("PUSHG " + to_string(sym->Offset));
+            }
+            else
+            {
+                emit("PUSHL " + to_string(sym->Offset));
+            }
+            
+            //? Stack [xxx, val, ArrayAddress]
+            emit("SWAP");
+            
+            //? Stack [xxx, ArrayAddress,val]
+            a->index->accept(this);
+            //? Stack [xxx, ArrayAddress,val, indexAccess]
+            
+            emit("PUSHI " + to_string(sym->beginIndex));
+            //? Stack [xxx, ArrayAddress,val, indexAccess, begIndex]
+            emit("SUB");
+            //? Stack [xxx, ArrayAddress,val, k]  // k is the real index
+             
+            emit("SWAP");
+            
+            //? Stack [xxx, ArrayAddress, val, k] 
+            //* that's what storn needs
+
+            emit("STOREN");
+        }
+        else if (sym->Kind == GLOBAL_VAR)
         {
             emit("STOREG " + to_string(sym->Offset));
         }
@@ -252,22 +313,24 @@ void CodeGenVisitor::Visit(FuncCall *n)
     // Push arguments
     if (n->exps)
     {
-        for (auto *exp : *n->exps->expList)
+        int siz = n->exps->expList->size();
+        for (int i = siz - 1; i >= 0; i--)
         {
-            exp->accept(this);
+            n->exps->expList->at(i)->accept(this);
         }
     }
     emit("PUSHA f" + n->id->symbol->funcSig->getSignatureString());
     emit("CALL");
 
     int num_params = 0;
-    if (n->id->symbol && n->id->symbol->funcSig && n->id->symbol->funcSig->paramTypes) {
+    if (n->id->symbol && n->id->symbol->funcSig && n->id->symbol->funcSig->paramTypes)
+    {
         num_params = n->id->symbol->funcSig->paramTypes->size();
     }
-    if (num_params > 0) {
+    if (num_params > 0)
+    {
         emit("POP " + to_string(num_params));
     }
-
 }
 
 void CodeGenVisitor::Visit(ProcStmt *n)
@@ -275,9 +338,10 @@ void CodeGenVisitor::Visit(ProcStmt *n)
     // Push arguments
     if (n->expls)
     {
-        for (auto *exp : *n->expls->expList)
+        int siz = n->expls->expList->size();
+        for (int i = siz - 1; i >= 0; i--)
         {
-            exp->accept(this);
+            n->expls->expList->at(i)->accept(this);
         }
     }
     //? Built in write method
@@ -290,7 +354,7 @@ void CodeGenVisitor::Visit(ProcStmt *n)
             switch (argExp->type)
             {
             case INTTYPE:
-            case BOOLTYPE: 
+            case BOOLTYPE:
                 emit("WRITEI");
                 break;
             case REALTYPE:
@@ -309,10 +373,12 @@ void CodeGenVisitor::Visit(ProcStmt *n)
         emit("CALL");
 
         int num_params = 0;
-        if (n->id->symbol && n->id->symbol->funcSig && n->id->symbol->funcSig->paramTypes) {
+        if (n->id->symbol && n->id->symbol->funcSig && n->id->symbol->funcSig->paramTypes)
+        {
             num_params = n->id->symbol->funcSig->paramTypes->size();
         }
-        if (num_params > 0) {
+        if (num_params > 0)
+        {
             emit("POP " + to_string(num_params));
         }
     }
@@ -439,6 +505,28 @@ void CodeGenVisitor::Visit(UnaryMinus *n)
     }
 }
 
-// Stubs for remaining visits
-void CodeGenVisitor::Visit(ArrayElement *n) { /* Stub */ }
-void CodeGenVisitor::Visit(ExpList *n) { /* Stub */ }
+void CodeGenVisitor::Visit(ArrayElement *a)
+{
+    Symbol *sym = a->id->symbol;
+    if (!sym)
+        return;
+
+    if (sym->Kind == GLOBAL_VAR)
+    {
+        emit("PUSHG " + to_string(sym->Offset));
+    }
+    else
+    {
+        emit("PUSHL " + to_string(sym->Offset));
+    }
+    // stack: [xxxx, base_address]
+
+    a->index->accept(this); // push index
+    emit("PUSHI " + to_string(sym->beginIndex));
+    emit("SUB"); // reall index (k) = index - begIndex
+    // Stack: [xxxx, base_address, k]
+
+    emit("LOADN");
+    // Stack: [xxxx, value]
+}
+void CodeGenVisitor::Visit(ExpList *n) {}

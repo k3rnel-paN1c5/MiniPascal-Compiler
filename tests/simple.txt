@@ -1,14 +1,22 @@
 program Factorial;
 var f,x : Integer;
+var a : Array[2..6] Of Integer;
 function inc(x, y : Integer): Integer;
+var lcal:Integer;
 begin
-    x := -1;
+    write(x);
+    write(y);
+    lcal := x;
+    write(lcal);
     inc := x *  y
 end;
 procedure done();
 begin
     x := 5 * inc(5, 2);
-    write(x)
+    a[3] := x;
+
+    write(x);
+    write(inc(5-13, 13 div 5))
 end;
 begin
     done()

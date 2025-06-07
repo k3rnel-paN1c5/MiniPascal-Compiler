@@ -48,7 +48,7 @@ Symbol::Symbol(string name, SymbolKind kind, TypeEnum type)
     this->Kind = kind;
     this->DataType = type;
     this->funcSig = NULL;
-    this->Offset = 0; // Initialize offset
+    this->Offset = 0; 
 }
 
 Symbol::Symbol(string name, SymbolKind kind, FunctionSignature *sig)
@@ -57,7 +57,8 @@ Symbol::Symbol(string name, SymbolKind kind, FunctionSignature *sig)
     this->Kind = kind;
     this->DataType = sig->returnType;
     this->funcSig = sig;
-    this->Offset = 0; // Initialize offset
+    this->Offset = 0; 
+    this->beginIndex = 0;
 }
 
 Scope::Scope()
@@ -65,7 +66,6 @@ Scope::Scope()
     this->hashTab = new HashTable();
     this->Parent = NULL;
     this->Children = new vector<Scope *>;
-    //todo : check these
     // Initialize offsets. Parameters are at negative offsets from FP.
     this->param_offset = -1;
     // Locals are at positive offsets from FP.
@@ -110,7 +110,6 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
         return false;
         break;
     }
-
     Symbol *temp = this->currentScope->hashTab->GetMember(key);
     if (temp)
     {
@@ -118,12 +117,14 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
         return false;
     }
     TypeEnum typ;
+    int beg_indx = 0;
     if(dynamic_cast<StdType*>(type)){
         StdType* x = dynamic_cast<StdType*>(type);
         typ = x->type;
     }
     else{
         Array* x = dynamic_cast<Array*>(type);
+        beg_indx = x->beginIndex;
         switch (x->stdType->type)
         {
         case INTTYPE:
@@ -136,12 +137,14 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
             typ = BOOL_ARRAY;
             break;
         default:
+            // ! Should not happen
             cout <<" Error in add symbol\n";
             break;
         }
     }
     Symbol *newSymbol = new Symbol(ident->name, kind, typ);
     newSymbol->Offset = offset;
+    newSymbol->beginIndex = beg_indx;
     this->currentScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
     return true;
