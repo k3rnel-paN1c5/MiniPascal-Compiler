@@ -3,10 +3,14 @@
 #include "CommonTypes.h"
 #include <iostream>
 
-CodeGenVisitor::CodeGenVisitor(const std::string& filename) : labelCount(0), currentFunctionContext(nullptr) {
+using namespace std;
+
+CodeGenVisitor::CodeGenVisitor(const string& filename) {
+    labelCount = 0;
+    currentFunctionContext = nullptr;
     outFile.open(filename);
     if (!outFile.is_open()) {
-        std::cerr << "Error: Could not open output file " << filename << std::endl;
+        cerr << "Error: Could not open output file " << filename << endl;
     }
 }
 
@@ -16,19 +20,19 @@ CodeGenVisitor::~CodeGenVisitor() {
     }
 }
 
-std::string CodeGenVisitor::newLabel() {
-    return "L" + std::to_string(labelCount++);
+string CodeGenVisitor::newLabel() {
+    return "L" + to_string(labelCount++);
 }
 
-void CodeGenVisitor::emit(const std::string& instruction) {
+void CodeGenVisitor::emit(const string& instruction) {
     if (outFile.is_open()) {
-        outFile << "    " << instruction << std::endl;
+        outFile << "    " << instruction << endl;
     }
 }
 
-void CodeGenVisitor::emitLabel(const std::string& label) {
+void CodeGenVisitor::emitLabel(const string& label) {
     if (outFile.is_open()) {
-        outFile << label << ":" << std::endl;
+        outFile << label << ":" << endl;
     }
 }
 
@@ -52,7 +56,7 @@ void CodeGenVisitor::Visit(BinOp* b) { /* Do nothing */ }
 void CodeGenVisitor::Visit(Var* v) { /* Handled by children */ }
 
 void CodeGenVisitor::Visit(Prog* n) {
-    emit("START");
+    emit("START\n");
     if (n->declarations) {
         int num_globals = 0;
         for (auto dec : *n->declarations->decs) {
@@ -60,12 +64,12 @@ void CodeGenVisitor::Visit(Prog* n) {
         }
         if (num_globals > 0) {
             // Allocate space for globals by pushing N zeros onto the stack
-            emit("PUSHN " + std::to_string(num_globals));
+            emit("PUSHN " + to_string(num_globals));
         }
     }
-    if (n->subDeclarations) n->subDeclarations->accept(this);
     if (n->compoundStatment) n->compoundStatment->accept(this);
     emit("STOP");
+    if (n->subDeclarations) n->subDeclarations->accept(this);
 }
 
 void CodeGenVisitor::Visit(SubDecs* n) {
@@ -77,28 +81,27 @@ void CodeGenVisitor::Visit(SubDecs* n) {
 void CodeGenVisitor::Visit(SubDec* n) {
     Func* func = dynamic_cast<Func*>(n->subHead);
     Proc* proc = dynamic_cast<Proc*>(n->subHead);
-    std::string name = func ? func->id->name : proc->id->name;
+    FunctionSignature * name = func ? func->id->symbol->funcSig : proc->id->symbol->funcSig;
     
-    emitLabel(name);
+    emitLabel(name->getSignatureString());
 
     if (func) {
         currentFunctionContext = func;
     }
     
-    // Prologue: Allocate space for local variables
+    // Allocate space for local variables
     if(n->localDecs) {
         int num_locals = 0;
         for(auto l_dec : *n->localDecs->localDecs) {
             num_locals += l_dec->identlist->identLst->size();
         }
         if (num_locals > 0) {
-            emit("PUSHN " + std::to_string(num_locals));
+            emit("PUSHN " + to_string(num_locals));
         }
     }
 
     n->compStmt->accept(this);
 
-    // Epilogue
     emit("RETURN");
 
     currentFunctionContext = nullptr; // Reset context
@@ -125,9 +128,9 @@ void CodeGenVisitor::Visit(IdExp* e) {
     if (e->id->symbol) {
         Symbol* sym = e->id->symbol;
         if (sym->Kind == GLOBAL_VAR) {
-            emit("PUSHG " + std::to_string(sym->Offset));
+            emit("PUSHG " + to_string(sym->Offset));
         } else { // LOCAL_VAR or PARAM_VAR
-            emit("PUSHL " + std::to_string(sym->Offset));
+            emit("PUSHL " + to_string(sym->Offset));
         }
     }
 }
@@ -144,19 +147,19 @@ void CodeGenVisitor::Visit(Assign* n) {
             }
         }
         // Return value is at fp[-(2 + num_params)]
-        emit("STOREL " + std::to_string(-(2 + num_params)));
+        emit("STOREL " + to_string(-(2 + num_params)));
     } else if (n->var->id->symbol) {
         Symbol* sym = n->var->id->symbol;
         if (sym->Kind == GLOBAL_VAR) {
-            emit("STOREG " + std::to_string(sym->Offset));
+            emit("STOREG " + to_string(sym->Offset));
         } else { // LOCAL_VAR or PARAM_VAR
-            emit("STOREL " + std::to_string(sym->Offset));
+            emit("STOREL " + to_string(sym->Offset));
         }
     }
 }
 
 void CodeGenVisitor::Visit(IfThen* n) {
-    std::string endLabel = newLabel();
+    string endLabel = newLabel();
     n->expr->accept(this);
     emit("JZ " + endLabel);
     n->stmt->accept(this);
@@ -164,8 +167,8 @@ void CodeGenVisitor::Visit(IfThen* n) {
 }
 
 void CodeGenVisitor::Visit(IfThenElse* n) {
-    std::string elseLabel = newLabel();
-    std::string endLabel = newLabel();
+    string elseLabel = newLabel();
+    string endLabel = newLabel();
     n->expr->accept(this);
     emit("JZ " + elseLabel);
     n->trueStmt->accept(this);
@@ -176,8 +179,8 @@ void CodeGenVisitor::Visit(IfThenElse* n) {
 }
 
 void CodeGenVisitor::Visit(While* n) {
-    std::string startLabel = newLabel();
-    std::string endLabel = newLabel();
+    string startLabel = newLabel();
+    string endLabel = newLabel();
     emitLabel(startLabel);
     n->expr->accept(this);
     emit("JZ " + endLabel);
@@ -195,7 +198,7 @@ void CodeGenVisitor::Visit(FuncCall* n) {
             exp->accept(this);
         }
     }
-    emit("PUSHA " + n->id->name);
+    emit("PUSHA " + n->id->symbol->funcSig->getSignatureString());
     emit("CALL");
 }
 
@@ -206,13 +209,13 @@ void CodeGenVisitor::Visit(ProcStmt* n) {
             exp->accept(this);
         }
     }
-    emit("PUSHA " + n->id->name);
+    emit("PUSHA " + n->id->symbol->funcSig->getSignatureString());
     emit("CALL");
 }
 
-void CodeGenVisitor::Visit(Integer* n) { emit("PUSHI " + std::to_string(n->val)); }
-void CodeGenVisitor::Visit(Real* n) { emit("PUSHF " + std::to_string(n->val)); }
-void CodeGenVisitor::Visit(Bool* n) { emit("PUSHI " + std::to_string(n->val)); }
+void CodeGenVisitor::Visit(Integer* n) { emit("PUSHI " + to_string(n->val)); }
+void CodeGenVisitor::Visit(Real* n) { emit("PUSHF " + to_string(n->val)); }
+void CodeGenVisitor::Visit(Bool* n) { emit("PUSHI " + to_string(n->val)); }
 
 void CodeGenVisitor::Visit(Add* b) {
     b->leftExp->accept(this);

@@ -76,6 +76,8 @@ void PrintVisitor::Visit(IdentList *n)
 
 void PrintVisitor::Visit(SubDecs *n)
 {
+    if(n->subdecs==nullptr || n->subdecs->size() == 0)
+        return;
     for(int i = 0; i < this->level; i++)
         cout << "-- ";
     cout << "SubDecs, Size: " << n->subdecs->size() <<endl;
@@ -180,7 +182,8 @@ void PrintVisitor::Visit(FuncCall* a)
         cout << "-- ";
     cout << "Function Call: " << a->id->name <<endl;
     this->level++;
-    a->exps->accept(this);
+    if(a->exps)
+        a->exps->accept(this);
     this->level++;
 }
 

@@ -96,3 +96,4 @@ dist/
 release/
 debug/
 
+!bin/vm.exe

@@ -1,0 +1,11 @@
+program Factorial;
+var cnt : Integer;
+function inc(): Integer;
+begin
+    inc := 5 * 2
+end;
+begin
+    cnt := 5 * inc()
+
+end
+

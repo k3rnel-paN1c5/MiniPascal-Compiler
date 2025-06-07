@@ -20,13 +20,13 @@ FunctionSignature::FunctionSignature(string n, vector<Type*>* params, TypeEnum r
 
 string FunctionSignature::getSignatureString()
 {
-    string res = this->name + '@';
+    string res = this->name + 'D';
     if(this->paramTypes==NULL)
         return res;
     for (int i = 0; i < this->paramTypes->size(); i++)
     {
         if (i > 0)
-            res += ",";
+            res += 'D';
             TypeEnum x;
             if(dynamic_cast<StdType*>(this->paramTypes->at(i))){
                 StdType* s = dynamic_cast<StdType*>(this->paramTypes->at(i));
@@ -235,10 +235,10 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident, SymbolKind kind, vector<TypeEnum
         cout << "Error in lookup function/procedure, invalid kind\n";
         break;
     }
-    key += ident->name + '@';
+    key += ident->name + 'D';
     if(paramTypes != NULL)
         for(int i = 0; i <  paramTypes->size(); i++){
-            if(i > 0) key +=',';
+            if(i > 0) key +='D';
             key += TypeEnumToString(paramTypes->at(i));
         }
     sym = this->rootScope->hashTab->GetMember(key);
