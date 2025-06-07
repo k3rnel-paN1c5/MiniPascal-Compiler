@@ -11,6 +11,39 @@ extern int yyparse();
 extern Prog* root;
 extern FILE* yyin;
 extern Errors *errorStack;
+extern SymbolTable* symbolTable;
+
+void initializeBuiltInFunctions(SymbolTable* st) {
+    // Built-in procedure: write(integer)
+    {
+        Ident* writeIdent = new Ident("write", 0, 0);
+        std::vector<Type*>* params = new std::vector<Type*>();
+        params->push_back(new StdType(INTTYPE, 0, 0));
+        FunctionSignature* sig = new FunctionSignature("write", params, VOID);
+        st->AddSymbol(writeIdent, PROC, sig);
+        delete writeIdent; // Clean up temporary Ident
+    }
+
+    // Built-in procedure: write(real)
+    {
+        Ident* writeIdent = new Ident("write", 0, 0);
+        std::vector<Type*>* params = new std::vector<Type*>();
+        params->push_back(new StdType(REALTYPE, 0, 0));
+        FunctionSignature* sig = new FunctionSignature("write", params, VOID);
+        st->AddSymbol(writeIdent, PROC, sig);
+        delete writeIdent;
+    }
+
+    // Built-in procedure: write(boolean) - will print 0 or 1
+    {
+        Ident* writeIdent = new Ident("write", 0, 0);
+        std::vector<Type*>* params = new std::vector<Type*>();
+        params->push_back(new StdType(BOOLTYPE, 0, 0));
+        FunctionSignature* sig = new FunctionSignature("write", params, VOID);
+        st->AddSymbol(writeIdent, PROC, sig);
+        delete writeIdent;
+    }
+}
 
 
 int main(int argc, char* argv[]) {
@@ -33,8 +66,8 @@ int main(int argc, char* argv[]) {
         if (argc > 3 && string(argv[2]) == "-o") {
             output_filename = argv[3];
         }
-    }
-
+    }   
+    initializeBuiltInFunctions(symbolTable);
     // Parsing
     yyparse(); 
     if (!root) {
@@ -45,7 +78,7 @@ int main(int argc, char* argv[]) {
 
     cout << "--- AST ---" << endl;
     Visitor* printVisitor = new PrintVisitor();
-    root->accept(printVisitor);
+    // root->accept(printVisitor);
     delete printVisitor;
     Visitor* typeVisitor = new TypeVisitor();
     root->accept(typeVisitor);

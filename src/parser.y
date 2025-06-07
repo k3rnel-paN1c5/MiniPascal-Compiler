@@ -252,6 +252,7 @@ optional_stmts: stmt_list
     }
     | /* empty */
     {
+        $$ = NULL
         //cout << "Reduced optional_stmts to empty\n";
     }
 ;

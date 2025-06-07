@@ -1,11 +1,17 @@
 program Factorial;
-var cnt : Integer;
-function inc(): Integer;
+var f,x : Integer;
+function inc(x, y : Integer): Integer;
 begin
-    inc := 5 * 2
+    x := -1;
+    inc := x *  y
+end;
+procedure done();
+begin
+    x := 5 * inc(5, 2);
+    write(x)
 end;
 begin
-    cnt := 5 * inc()
+    done()
 
 end
 

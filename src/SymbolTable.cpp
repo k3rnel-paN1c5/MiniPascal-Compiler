@@ -67,8 +67,7 @@ Scope::Scope()
     this->Children = new vector<Scope *>;
     //todo : check these
     // Initialize offsets. Parameters are at negative offsets from FP.
-    // fp[-1] is old fp, fp[-2] is return address. Params start at fp[-3].
-    this->param_offset = -3;
+    this->param_offset = -1;
     // Locals are at positive offsets from FP.
     this->local_offset = 0;
 }
