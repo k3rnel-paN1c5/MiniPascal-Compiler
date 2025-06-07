@@ -1,10 +1,9 @@
 program ExpressionTest;
 
-var
-  i, j, k : Integer;
-  r, s : Real;
-  p, q : Boolean;
-  a : Array[1..5] of Integer;
+var i, j, k : Integer;
+var r, s : Real;
+var p, q : Boolean;
+var a : Array[1..5] of Integer;
 
 begin
     // Test basic arithmetic and precedence (* before +)

@@ -1,8 +1,7 @@
 program ControlFlowTest;
 
-var
-  i, limit : Integer;
-  stop : Boolean;
+var i, limit : Integer;
+var stop : Boolean;
 
 begin
     i := 0;

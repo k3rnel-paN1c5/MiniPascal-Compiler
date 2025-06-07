@@ -52,6 +52,7 @@ class While;
 class Type;
 class StdType;
 class IdExp;
+class ArrayExp;
 class Integer;
 class Real;
 class Bool;
@@ -116,6 +117,7 @@ public:
     virtual void Visit(Type *) = 0;
     virtual void Visit(StdType *) = 0;
     virtual void Visit(IdExp *) = 0;
+    virtual void Visit(ArrayExp *) = 0;
     virtual void Visit(Integer *) = 0;
     virtual void Visit(Real *) = 0;
     virtual void Visit(Bool *) = 0;
@@ -311,6 +313,11 @@ public:
      * @param idexp The Identifier Expression to visit
      */
     virtual void Visit(IdExp *);
+    /**
+     * @brief Visit method for Array Expression nodes
+     * @param arrrayexp The Identifier Expression to visit
+     */
+    virtual void Visit(ArrayExp *);
     /**
      * @brief Visit method for Integer nodes
      * @param integer The Integer to visit
@@ -593,6 +600,11 @@ public:
      */
     virtual void Visit(IdExp *);
     /**
+     * @brief Visit method for Array Expression nodes
+     * @param arrrayexp The Identifier Expression to visit
+     */
+    virtual void Visit(ArrayExp *);
+    /**
      * @brief Visit method for Integer nodes
      * @param integer The Integer to visit
      */
@@ -724,7 +736,6 @@ private:
 
 public:
     CodeGenVisitor(const string &filename);
-    ~CodeGenVisitor();
 
     /**
      * @brief Visit method for base Node objects
@@ -881,6 +892,11 @@ public:
      * @param idexp The Identifier Expression to visit
      */
     virtual void Visit(IdExp *);
+    /**
+     * @brief Visit method for Array Expression nodes
+     * @param arrrayexp The Identifier Expression to visit
+     */
+    virtual void Visit(ArrayExp *);
     /**
      * @brief Visit method for Integer nodes
      * @param integer The Integer to visit

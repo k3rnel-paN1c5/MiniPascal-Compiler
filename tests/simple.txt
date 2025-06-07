@@ -12,11 +12,10 @@ begin
 end;
 procedure done();
 begin
-    x := 5 * inc(5, 2);
-    a[3] := x;
-
+    a[3] := 5 * inc(5, 2);
+    x := a[3];
     write(x);
-    write(inc(5-13, 13 div 5))
+    write(a[3])
 end;
 begin
     done()

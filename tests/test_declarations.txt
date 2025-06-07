@@ -1,19 +1,18 @@
 program DeclarationTest;
 
 // Test various types of declarations
-var
-  simpleInt : Integer;
-  simpleReal : Real;
-  simpleBool : Boolean;
+var simpleInt : Integer;
+var simpleReal : Real;
+var simpleBool : Boolean;
 
 // Test multiple variables per line
-  x, y, z : Integer;
-  a, b : Real;
+var x, y, z : Integer;
+var a, b : Real;
 
 // Test Array declarations
-  intArray : Array[1..10] of Integer;
-  realArray : Array[0..5] of Real;
-  boolArray : Array[-5..-1] of Boolean;
+var intArray : Array[1..10] of Integer;
+var realArray : Array[0..5] of Real;
+var boolArray : Array[-5..-1] of Boolean;
 
 begin
     // A minimal body is needed for the parser to accept the program.

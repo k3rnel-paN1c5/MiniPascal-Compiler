@@ -80,7 +80,7 @@ void TypeVisitor::Visit(SubDec *n)
     {
         subId = procNode->id;
         kind = PROC;
-        
+
         if (procNode->args)
         {
             if (procNode->args->parList && procNode->args->parList->parList)
@@ -426,6 +426,47 @@ void TypeVisitor::Visit(IdExp *e)
         e->type = VOID;
     }
 }
+void TypeVisitor::Visit(ArrayExp *e)
+{
+    if (!e->index)
+    {
+        errorStack->AddError("Missing Index for Array: " + e->id->name, e->line, e->column);
+    }
+    else
+    {
+        e->index->accept(this);
+        if (e->index->type != INTTYPE)
+            errorStack->AddError("Index of Array '" + e->id->name + "' must be integr by got " + TypeEnumToString(e->index->type), e->index->line, e->index->column);
+    }
+    Symbol *sym = symbolTable->LookUpSymbol(e->id);
+    if (sym)
+    {
+
+        e->type = sym->DataType;
+        switch (sym->DataType)
+        {
+        case INT_ARRAY:
+            e->type = INTTYPE;
+            break;
+        case REAL_ARRAY:
+            e->type = REALTYPE;
+            break;
+        case BOOL_ARRAY:
+            e->type = BOOLTYPE;
+            break;
+
+        default:
+            //! should nott happen
+            break;
+        }
+        if (e->id->symbol == nullptr)
+            e->id->symbol = sym;
+    }
+    else
+    {
+        e->type = VOID;
+    }
+}
 
 void TypeVisitor::Visit(Integer *n)
 {
@@ -501,7 +542,7 @@ void TypeVisitor::Visit(ArrayElement *a)
 void TypeVisitor::Visit(UnaryMinus *n)
 {
     n->exp->accept(this);
-    
+
     if (n->exp->type == INTTYPE)
     {
         n->type = INTTYPE;
@@ -510,7 +551,7 @@ void TypeVisitor::Visit(UnaryMinus *n)
     {
         n->type = REALTYPE;
     }
-    else if (n->exp->type != VOID) 
+    else if (n->exp->type != VOID)
     {
         errorStack->AddError("Unary minus operator requires an integer or real expression, but got " +
                                  TypeEnumToString(n->exp->type) + ".",

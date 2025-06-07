@@ -79,10 +79,10 @@ int main(int argc, char* argv[]) {
     cout << "--- AST ---" << endl;
     Visitor* printVisitor = new PrintVisitor();
     // root->accept(printVisitor);
-    delete printVisitor;
+
     Visitor* typeVisitor = new TypeVisitor();
     root->accept(typeVisitor);
-    delete typeVisitor;
+
 
     errorStack->PrintWarnings();
     errorStack->PrintErrors();
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
         cout << "No errors found. Generating code to " << output_filename << "..." << endl;
         CodeGenVisitor* codeGen = new CodeGenVisitor(output_filename);
         root->accept(codeGen);
-        delete codeGen;
+
         cout << "Code generation complete." << endl;
     } else {
         if (yyin != stdin) fclose(yyin);

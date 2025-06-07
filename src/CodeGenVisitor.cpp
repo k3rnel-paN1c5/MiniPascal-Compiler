@@ -16,14 +16,6 @@ CodeGenVisitor::CodeGenVisitor(const string &filename)
     }
 }
 
-CodeGenVisitor::~CodeGenVisitor()
-{
-    if (outFile.is_open())
-    {
-        outFile.close();
-    }
-}
-
 string CodeGenVisitor::newLabel()
 {
     return "L" + to_string(labelCount++);
@@ -101,7 +93,7 @@ void CodeGenVisitor::Visit(Prog *n)
                 for (auto *id : *dec->identList->identLst)
                 {
                     emit("PUSHI " + to_string(size));
-                    emit("ALLOCN");                                   // Allocates block, pushes base address
+                    emit("ALLOCN");                                  // Allocates block, pushes base address
                     emit("STOREG " + to_string(id->symbol->Offset)); // Store base address in global var slot
                 }
             }
@@ -195,20 +187,45 @@ void CodeGenVisitor::Visit(StmtList *n)
 
 void CodeGenVisitor::Visit(IdExp *e)
 {
-    if (e->id->symbol)
+
+    Symbol *sym = e->id->symbol;
+    if (!sym)
+        return;
+
+    if (sym->Kind == GLOBAL_VAR)
     {
-        Symbol *sym = e->id->symbol;
-        if (sym->Kind == GLOBAL_VAR)
-        {
-            emit("PUSHG " + to_string(sym->Offset));
-        }
-        else
-        { // LOCAL_VAR or PARAM_VAR
-            emit("PUSHL " + to_string(sym->Offset));
-        }
+        emit("PUSHG " + to_string(sym->Offset));
+    }
+    else
+    { // LOCAL_VAR or PARAM_VAR
+        emit("PUSHL " + to_string(sym->Offset));
     }
 }
+void CodeGenVisitor::Visit(ArrayExp *a)
+{
 
+    Symbol *sym = a->id->symbol;
+    if (!sym)
+        return;
+
+    if (sym->Kind == GLOBAL_VAR)
+    {
+        emit("PUSHG " + to_string(sym->Offset));
+    }
+    else
+    {
+        emit("PUSHL " + to_string(sym->Offset));
+    }
+    // stack: [xxxx, base_address]
+
+    a->index->accept(this); // push index
+    emit("PUSHI " + to_string(sym->beginIndex));
+    emit("SUB"); // reall index (k) = index - begIndex
+    // Stack: [xxxx, base_address, k]
+
+    emit("LOADN");
+    // Stack: [xxxx, value]
+}
 void CodeGenVisitor::Visit(Assign *n)
 {
     n->exp->accept(this);
@@ -241,22 +258,22 @@ void CodeGenVisitor::Visit(Assign *n)
             {
                 emit("PUSHL " + to_string(sym->Offset));
             }
-            
+
             //? Stack [xxx, val, ArrayAddress]
             emit("SWAP");
-            
+
             //? Stack [xxx, ArrayAddress,val]
             a->index->accept(this);
             //? Stack [xxx, ArrayAddress,val, indexAccess]
-            
+
             emit("PUSHI " + to_string(sym->beginIndex));
             //? Stack [xxx, ArrayAddress,val, indexAccess, begIndex]
             emit("SUB");
             //? Stack [xxx, ArrayAddress,val, k]  // k is the real index
-             
+
             emit("SWAP");
-            
-            //? Stack [xxx, ArrayAddress, val, k] 
+
+            //? Stack [xxx, ArrayAddress, val, k]
             //* that's what storn needs
 
             emit("STOREN");
@@ -507,26 +524,5 @@ void CodeGenVisitor::Visit(UnaryMinus *n)
 
 void CodeGenVisitor::Visit(ArrayElement *a)
 {
-    Symbol *sym = a->id->symbol;
-    if (!sym)
-        return;
-
-    if (sym->Kind == GLOBAL_VAR)
-    {
-        emit("PUSHG " + to_string(sym->Offset));
-    }
-    else
-    {
-        emit("PUSHL " + to_string(sym->Offset));
-    }
-    // stack: [xxxx, base_address]
-
-    a->index->accept(this); // push index
-    emit("PUSHI " + to_string(sym->beginIndex));
-    emit("SUB"); // reall index (k) = index - begIndex
-    // Stack: [xxxx, base_address, k]
-
-    emit("LOADN");
-    // Stack: [xxxx, value]
 }
 void CodeGenVisitor::Visit(ExpList *n) {}

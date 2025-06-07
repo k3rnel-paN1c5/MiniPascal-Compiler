@@ -322,6 +322,10 @@ exp: KIDENT
     {
         $$ = new IdExp($1, lin, col);
     }
+    | KIDENT '[' exp ']'
+    {
+        $$ = new ArrayExp($1, $3, lin, col);
+    }
     | KINTNUM
     {
         $$ = new Integer($1->val, lin, col);

@@ -1,7 +1,6 @@
 program SubprogramTest;
 
-var
-  global_var : Integer;
+var global_var : Integer;
 
 // Procedure with no parameters
 procedure DoNothing();
