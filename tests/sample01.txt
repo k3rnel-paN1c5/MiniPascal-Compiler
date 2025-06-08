@@ -1,6 +1,6 @@
 program Factorial;
 var cnt, fact : Integer;
-var x: Array[1..5] of Real;
+var x: Array[1..7] of Real;
 var t, y : boolean;
 function sum(a: integer) : integer ;
 begin
@@ -31,7 +31,7 @@ begin
     x[4] := 1.1 / 5.0;
     t := true;
     cnt := 5;
-    while cnt > 0 AND ( NOT (fact = 0) ) do
+    while cnt > 0 AND Not ( fact = 0 )   do
         begin
         fact := fact * cnt;
         cnt := cnt - 1

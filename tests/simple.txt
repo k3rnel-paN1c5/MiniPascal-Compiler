@@ -1,20 +1,19 @@
 program Factorial;
-var f,x : Integer;
+var x : Integer;
+var r : real;
 var a : Array[2..6] Of Integer;
 function inc(x, y : Integer): Integer;
-var lcal:Integer;
 begin
-    write(x);
-    write(y);
-    lcal := x;
-    write(lcal);
     inc := x *  y
 end;
 procedure done();
 begin
-    a[3] := 5 * inc(5, 2);
-    x := a[3];
+    r := 1.0;
+    r := 101 / inc(5, 2);
+    a[3] := 100 div inc(5, 2);
+    x := a[3]; 
     write(x);
+    write(r);
     write(a[3])
 end;
 begin

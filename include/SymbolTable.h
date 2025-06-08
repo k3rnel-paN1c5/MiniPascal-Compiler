@@ -81,6 +81,7 @@ public:
     SymbolKind Kind;            ///< Symbol kind (variable, function, etc.)
     TypeEnum DataType;          ///< Data type (int, real, bool.)
     int beginIndex;             ///< Begining index (for Arrays Only)
+    int endIndex;             ///< end index (for Arrays Only)
     int Offset;                 ///< Memory offset for code generation
     FunctionSignature *funcSig; ///< Function signature (for functions/procedures only)
     /**

@@ -37,6 +37,33 @@ void CodeGenVisitor::emitLabel(const string &label)
     }
 }
 
+void CodeGenVisitor::emitBoundsCheck(Symbol* arraySymbol) {
+    string lowerOkLabel = newLabel();
+    string upperOkLabel = newLabel();
+
+    // Lower bound check: index < beginIndex?
+    emit("// --- Array Bounds Check ---\n");
+    emit("DUP 1");
+    emit("PUSHI " + to_string(arraySymbol->beginIndex));
+    emit("INF"); 
+
+    emit("JZ " + lowerOkLabel);
+    emit("ERR \"Runtime Error: Array index out of bounds.\"");
+    emit("STOP");
+    emitLabel(lowerOkLabel);
+
+    // Upper bound check:  index > endIndex?
+    emit("DUP 1");
+    emit("PUSHI " + to_string(arraySymbol->endIndex));
+    emit("SUP");
+
+    emit("JZ " + upperOkLabel);
+    emit("ERR \"Runtime Error: Array index out of bounds.\"");
+    emit("STOP");
+    emitLabel(upperOkLabel);
+    emit("// --- End Bounds Check ---\n");
+
+}
 // Visit Methods Implementation
 void CodeGenVisitor::Visit(Node *n)
 {
@@ -74,6 +101,7 @@ void CodeGenVisitor::Visit(Prog *n)
 
     if (n->declarations)
     {
+        emit("// --- Global Variables ---\n");
         int num_globals = 0;
         for (auto dec : *n->declarations->decs)
         {
@@ -98,13 +126,23 @@ void CodeGenVisitor::Visit(Prog *n)
                 }
             }
         }
+        emit("// --- End of Global Variables ---\n");
     }
 
+    emit("\n\n");
+    emit("// --- Main ---\n");
     if (n->compoundStatment)
         n->compoundStatment->accept(this);
     emit("STOP");
     if (n->subDeclarations)
         n->subDeclarations->accept(this);
+        
+
+
+    if (outFile.is_open())
+    {
+        outFile.close();
+    }
 }
 
 void CodeGenVisitor::Visit(SubDecs *n)
@@ -117,6 +155,7 @@ void CodeGenVisitor::Visit(SubDecs *n)
 
 void CodeGenVisitor::Visit(SubDec *n)
 {
+    emit("// --- Sub Declaration Definition ---\n");
     Func *func = dynamic_cast<Func *>(n->subHead);
     Proc *proc = dynamic_cast<Proc *>(n->subHead);
     FunctionSignature *name = func ? func->id->symbol->funcSig : proc->id->symbol->funcSig;
@@ -219,6 +258,7 @@ void CodeGenVisitor::Visit(ArrayExp *a)
     // stack: [xxxx, base_address]
 
     a->index->accept(this); // push index
+     emitBoundsCheck(sym); // * check the index to be in range;
     emit("PUSHI " + to_string(sym->beginIndex));
     emit("SUB"); // reall index (k) = index - begIndex
     // Stack: [xxxx, base_address, k]
@@ -263,8 +303,12 @@ void CodeGenVisitor::Visit(Assign *n)
             emit("SWAP");
 
             //? Stack [xxx, ArrayAddress,val]
+
             a->index->accept(this);
             //? Stack [xxx, ArrayAddress,val, indexAccess]
+
+            emitBoundsCheck(sym); // * check the index to be in range;
+
 
             emit("PUSHI " + to_string(sym->beginIndex));
             //? Stack [xxx, ArrayAddress,val, indexAccess, begIndex]
@@ -291,6 +335,7 @@ void CodeGenVisitor::Visit(Assign *n)
 
 void CodeGenVisitor::Visit(IfThen *n)
 {
+    emit("// --- If Then Statement ---\n");
     string endLabel = newLabel();
     n->expr->accept(this);
     emit("JZ " + endLabel);
@@ -300,6 +345,7 @@ void CodeGenVisitor::Visit(IfThen *n)
 
 void CodeGenVisitor::Visit(IfThenElse *n)
 {
+    emit("// --- If Then Else Statement ---\n");
     string elseLabel = newLabel();
     string endLabel = newLabel();
     n->expr->accept(this);
@@ -313,6 +359,7 @@ void CodeGenVisitor::Visit(IfThenElse *n)
 
 void CodeGenVisitor::Visit(While *n)
 {
+    emit("// --- While Statement ---\n");
     string startLabel = newLabel();
     string endLabel = newLabel();
     emitLabel(startLabel);
@@ -325,7 +372,8 @@ void CodeGenVisitor::Visit(While *n)
 
 void CodeGenVisitor::Visit(FuncCall *n)
 {
-    // Allocate space for the return value
+    emit("// --- Calling a Function ---\n");
+    // allocate space for the return value
     emit("PUSHN 1");
     // Push arguments
     if (n->exps)
@@ -352,6 +400,7 @@ void CodeGenVisitor::Visit(FuncCall *n)
 
 void CodeGenVisitor::Visit(ProcStmt *n)
 {
+    emit("// --- Calling a Procedure Statement ---\n");
     // Push arguments
     if (n->expls)
     {
@@ -379,7 +428,6 @@ void CodeGenVisitor::Visit(ProcStmt *n)
                 break;
             default:
                 //! Should Not Happen
-                // No code is emitted if the type is not printable.
                 break;
             }
         }
@@ -407,64 +455,177 @@ void CodeGenVisitor::Visit(Bool *n) { emit("PUSHI " + to_string(n->val)); }
 
 void CodeGenVisitor::Visit(Add *b)
 {
+    emit("// --- Addition Op ---\n");
+
     b->leftExp->accept(this);
+    if (b->type == REALTYPE && b->leftExp->type == INTTYPE) {
+        emit("ITOF");
+    }
     b->rightExp->accept(this);
+    if (b->type == REALTYPE && b->rightExp->type == INTTYPE) {
+        emit("ITOF");
+    }
+
     emit(b->type == REALTYPE ? "FADD" : "ADD");
 }
 
 void CodeGenVisitor::Visit(Sub *b)
 {
+    emit("// --- Subtraction Op ---\n");
+
     b->leftExp->accept(this);
+    if (b->type == REALTYPE && b->leftExp->type == INTTYPE) {
+        emit("ITOF");
+    }
     b->rightExp->accept(this);
+    if (b->type == REALTYPE && b->rightExp->type == INTTYPE) {
+        emit("ITOF");
+    }
+
     emit(b->type == REALTYPE ? "FSUB" : "SUB");
 }
 
 void CodeGenVisitor::Visit(Mult *b)
 {
+    emit("// --- Multiplication Op ---\n");
+    
     b->leftExp->accept(this);
+    if (b->type == REALTYPE && b->leftExp->type == INTTYPE) {
+        emit("ITOF");
+    }
     b->rightExp->accept(this);
+    if (b->type == REALTYPE && b->rightExp->type == INTTYPE) {
+        emit("ITOF");
+    }
+
     emit(b->type == REALTYPE ? "FMUL" : "MUL");
 }
 
 void CodeGenVisitor::Visit(Divide *b)
 {
+    emit("// --- Division Op ---\n");
+    string okLabel = newLabel();
+    string ProbLabel = newLabel();
+    
     b->leftExp->accept(this);
+    if (b->type == REALTYPE && b->leftExp->type == INTTYPE) {
+        emit("ITOF");
+    }
     b->rightExp->accept(this);
-    emit("FDIV"); // Division always results in a real
+    if (b->type == REALTYPE && b->rightExp->type == INTTYPE) {
+        emit("ITOF");
+    }
+    
+
+    // emit("// --- Division by Zero Check ---\n");
+    emit("DUP 1");
+    emit("FTOI");
+    emit("JZ " + ProbLabel);
+    emit("JUMP " + okLabel);
+    
+    emitLabel(ProbLabel);
+    emit("ERR \"Runtime Error: Division by zero.\"");
+    emit("STOP");
+    emitLabel(okLabel);
+    emit("// --- End Check ---\n");
+
+    emit("FDIV"); 
 }
 
 void CodeGenVisitor::Visit(IntDiv *b)
 {
+    emit("// --- Integer Division Op ---\n");
+    string ProbLabel = newLabel();
+    string okLabel = newLabel();
+    
     b->leftExp->accept(this);
+
     b->rightExp->accept(this);
-    emit("DIV"); // Integer division
+
+
+    emit("// --- Division by Zero Check ---\n");
+    emit("DUP 1");
+    emit("JZ " + ProbLabel);
+    emit("JUMP " + okLabel);
+    
+    emitLabel(ProbLabel);
+    emit("ERR \"Runtime Error: Division by zero.\"");
+    emit("STOP");
+    emitLabel(okLabel);
+    emit("// --- End Check ---\n");
+
+    emit("DIV"); 
 }
 
 void CodeGenVisitor::Visit(GT *b)
 {
+    emit("// --- Greater Than Op ---\n");
+    
     b->leftExp->accept(this);
     b->rightExp->accept(this);
+    if (b->rightExp->type == INTTYPE && b->leftExp->type == REALTYPE) {
+        emit("ITOF");
+    }
+    else if(b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE){
+        emit("SWAP");
+        emit("ITOF");
+        emit("SWAP");
+    }
+
     emit(b->leftExp->type == REALTYPE || b->rightExp->type == REALTYPE ? "FSUP" : "SUP");
 }
 
 void CodeGenVisitor::Visit(LT *b)
 {
-    b->leftExp->accept(this);
+    emit("// --- Less Than Op ---\n");
+    
+   b->leftExp->accept(this);
     b->rightExp->accept(this);
+    if (b->rightExp->type == INTTYPE && b->leftExp->type == REALTYPE) {
+        emit("ITOF");
+    }
+    else if(b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE){
+        emit("SWAP");
+        emit("ITOF");
+        emit("SWAP");
+    }
+
     emit(b->leftExp->type == REALTYPE || b->rightExp->type == REALTYPE ? "FINF" : "INF");
 }
 
 void CodeGenVisitor::Visit(GE *b)
 {
-    b->leftExp->accept(this);
+    emit("// --- Greater Than or Equal Op ---\n");
+    
+   b->leftExp->accept(this);
     b->rightExp->accept(this);
+    if (b->rightExp->type == INTTYPE && b->leftExp->type == REALTYPE) {
+        emit("ITOF");
+    }
+    else if(b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE){
+        emit("SWAP");
+        emit("ITOF");
+        emit("SWAP");
+    }
+
     emit(b->leftExp->type == REALTYPE || b->rightExp->type == REALTYPE ? "FSUPEQ" : "SUPEQ");
 }
 
 void CodeGenVisitor::Visit(LE *b)
 {
+    emit("// --- Less Than or Equal Op ---\n");
+    
     b->leftExp->accept(this);
     b->rightExp->accept(this);
+    if (b->rightExp->type == INTTYPE && b->leftExp->type == REALTYPE) {
+        emit("ITOF");
+    }
+    else if(b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE){
+        emit("SWAP");
+        emit("ITOF");
+        emit("SWAP");
+    }
+
     emit(b->leftExp->type == REALTYPE || b->rightExp->type == REALTYPE ? "FINFEQ" : "INFEQ");
 }
 
@@ -472,43 +633,86 @@ void CodeGenVisitor::Visit(ET *b)
 {
     b->leftExp->accept(this);
     b->rightExp->accept(this);
+    if (b->rightExp->type == INTTYPE && b->leftExp->type == REALTYPE) {
+        emit("ITOF");
+    }
+    else if(b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE){
+        emit("SWAP");
+        emit("ITOF");
+        emit("SWAP");
+    }
+
     emit("EQUAL");
 }
 
 void CodeGenVisitor::Visit(NE *b)
 {
+    emit("// --- Not Equal Op ---\n");
+    
     b->leftExp->accept(this);
     b->rightExp->accept(this);
+    if (b->rightExp->type == INTTYPE && b->leftExp->type == REALTYPE) {
+        emit("ITOF");
+    }
+    else if(b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE){
+        emit("SWAP");
+        emit("ITOF");
+        emit("SWAP");
+    }
+
     emit("EQUAL");
     emit("NOT");
 }
 
 void CodeGenVisitor::Visit(And *b)
 {
+    emit("// --- And Op ---\n");
+    string falseLabel = newLabel();
+    string endLabel = newLabel();
+
+    // b->leftExp->accept(this);
+    // b->rightExp->accept(this);
+    // emit("ADD"); 
+    // emit("PUSHI 2");
+    // emit("EQUAL");
+
+    // Short Cirtuting the And operation
     b->leftExp->accept(this);
-    b->rightExp->accept(this);
-    emit("ADD"); // A short-circuiting AND would be better
-    emit("PUSHI 2");
-    emit("EQUAL");
+    emit("JZ " + falseLabel);
+
+    b->rightExp->accept(this); 
+    emit("JZ " + falseLabel);
+
+    emit("PUSHI 1");           
+    emit("JUMP " + endLabel);
+
+    emitLabel(falseLabel);
+    emit("PUSHI 0");        
+
+    emitLabel(endLabel);
+
 }
 
 void CodeGenVisitor::Visit(Or *b)
 {
+    emit("// --- Or Op ---\n");
     b->leftExp->accept(this);
     b->rightExp->accept(this);
-    emit("ADD"); // A short-circuiting OR would be better
+    emit("ADD");
     emit("PUSHI 0");
     emit("SUP");
 }
 
 void CodeGenVisitor::Visit(Not *n)
 {
+    emit("// --- Not Op ---\n");
     n->exp->accept(this);
     emit("NOT");
 }
 
 void CodeGenVisitor::Visit(UnaryMinus *n)
 {
+    emit("// --- Negation Op ---\n");
     n->exp->accept(this);
     if (n->type == REALTYPE)
     {

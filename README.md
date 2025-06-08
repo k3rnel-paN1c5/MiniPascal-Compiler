@@ -52,3 +52,35 @@ Before you begin, ensure you have the following tools installed on your system:
 ```bash
 git clone [https://github.com/k3rnel-paN1c5/MiniPascal-Compiler.git](https://github.com/k3rnel-paN1c5/MiniPascal-Compiler.git)
 cd MiniPascal-Compiler
+```
+
+### Building the Compiler
+
+This project uses `make` to simplify the build process. A `Makefile` is provided.
+
+1.  Navigate to the project's root directory.
+2.  Run the `make` command:
+
+    ```bash
+    make
+    ```
+This will compile the Flex, Bison, and C++ source files and create an executable named `compiler` in the `build/` directory.
+
+### How to Run
+
+You can run the compiler with a source file or from standard input.
+
+* **To compile a file:**
+    ```bash
+    ./build/compiler tests/test_comprehensive.txt
+    ```
+    
+* **To specify an output file for the generated VM code:**
+    ```bash
+    ./build/compiler tests/test_comprehensive.txt -o my_program.vm
+    ```
+
+* **To compile from standard input (press Ctrl+D to end input):**
+    ```bash
+    ./build/compiler
+    ```

@@ -117,7 +117,7 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
         return false;
     }
     TypeEnum typ;
-    int beg_indx = 0;
+    int beg_indx = 0, end_indx;
     if(dynamic_cast<StdType*>(type)){
         StdType* x = dynamic_cast<StdType*>(type);
         typ = x->type;
@@ -125,6 +125,7 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
     else{
         Array* x = dynamic_cast<Array*>(type);
         beg_indx = x->beginIndex;
+        end_indx = x->endIndex;
         switch (x->stdType->type)
         {
         case INTTYPE:
@@ -145,6 +146,7 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
     Symbol *newSymbol = new Symbol(ident->name, kind, typ);
     newSymbol->Offset = offset;
     newSymbol->beginIndex = beg_indx;
+    newSymbol->endIndex = end_indx;
     this->currentScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
     return true;

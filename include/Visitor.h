@@ -74,6 +74,7 @@ class And;
 class Or;
 class Not;
 class UnaryMinus;
+class Symbol;
 
 /**
  * @class Visitor
@@ -721,8 +722,8 @@ public:
 class CodeGenVisitor : public Visitor
 {
 private:
-    ofstream outFile; ///< the file to write the code tp
-    int labelCount; ///<  count of labels to faciltate naming the labels
+    ofstream outFile;             ///< the file to write the code tp
+    int labelCount;               ///<  count of labels to faciltate naming the labels
     Func *currentFunctionContext; ///< To access function properties
 
     // Helper to generate unique labels for jumps
@@ -733,6 +734,14 @@ private:
 
     // Helper to emit a label
     void emitLabel(const string &label);
+
+    /**
+     * @brief Emits assembly instructions to perform an array bounds check.
+     * Assumes the index to be checked is on top of the stack.
+     * If the check fails, it terminates the program with an error.
+     * @param arraySymbol The symbol representing the array, which contains the bounds.
+     */
+    void emitBoundsCheck(Symbol *arraySymbol);
 
 public:
     CodeGenVisitor(const string &filename);
