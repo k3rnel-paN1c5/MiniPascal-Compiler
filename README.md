@@ -91,7 +91,7 @@ MiniPascal Source Code (*.txt)
 
 ## Language Specification (MiniPascal)
 
-MiniPascal is a statically-typed, procedural language. The full grammar is specified in the [parser specification document](docs/MiniPascal%20Parser%20Specification.pdf).
+MiniPascal is a statically-typed, procedural language. The full grammar is specified in the [parser specification document](docs/MiniPascalLanguageSpecifications.md).
 
 * **Data Types**: `Integer`, `Real`, `Boolean`, and one-dimensional `Array`s of these types.
 * **Control Flow**: `if-then`, `if-then-else`, and `while-do` statements.
@@ -111,7 +111,7 @@ The compiler generates code for a custom stack-based virtual machine (VM). The V
 * Instructions for memory access (`PUSHG`, `STOREL`), control flow (`JUMP`, `JZ`), and function calls (`CALL`, `RETURN`).
 * Built-in I/O operations like `WRITEI` and `WRITEF`.
 
-The full specification can be found in the [VM specification document](docs/Virutal%20Machine%20Spec.pdf).
+The full specification can be found in the [VM specification document](docs/VirutalMachineSpecification.md).
 
 ## Project Structure
 
