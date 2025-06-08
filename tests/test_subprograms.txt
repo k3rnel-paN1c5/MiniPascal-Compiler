@@ -1,12 +1,10 @@
 program SubprogramTest;
 
-var
-  global_var : Integer;
+var global_var : Integer;
 
 // Procedure with no parameters
 procedure DoNothing();
 begin
-    global_var := global_var
     // This procedure does nothing
 end;
 
@@ -26,5 +24,6 @@ begin
 end;
 
 begin  // Main program body
-    Calculate(10)
+    Calculate(-10);
+    write(global_var)
 end

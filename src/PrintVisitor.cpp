@@ -76,6 +76,8 @@ void PrintVisitor::Visit(IdentList *n)
 
 void PrintVisitor::Visit(SubDecs *n)
 {
+    if(n->subdecs==nullptr || n->subdecs->size() == 0)
+        return;
     for(int i = 0; i < this->level; i++)
         cout << "-- ";
     cout << "SubDecs, Size: " << n->subdecs->size() <<endl;
@@ -111,8 +113,8 @@ void PrintVisitor::Visit(Func *n)
     cout << "Func: " << n->id->name << endl;
     this->level++;
     if (n->args) n->args->accept(this);
-    if (n->typ) n->typ->accept(this);
     this->level--;
+    if (n->typ) n->typ->accept(this);
 }
 
 void PrintVisitor::Visit(Args *n)
@@ -180,8 +182,9 @@ void PrintVisitor::Visit(FuncCall* a)
         cout << "-- ";
     cout << "Function Call: " << a->id->name <<endl;
     this->level++;
-    a->exps->accept(this);
-    this->level++;
+    if(a->exps)
+        a->exps->accept(this);
+    this->level--;
 }
 
 void PrintVisitor::Visit(CompStmt *n)
@@ -315,6 +318,17 @@ void PrintVisitor::Visit(IdExp *e)
     for(int i = 0; i < this->level; i++)
         cout << "-- ";
     cout << "IdExpr: " << e->id->name << endl;
+}
+void PrintVisitor::Visit(ArrayExp *e)
+{
+    for(int i = 0; i < this->level; i++)
+        cout << "-- ";
+    cout << "Araay '" << e->id->name  <<"' At Index: ";
+    int x = this->level;
+    this->level = 0;
+    if(e->index)
+        e->index->accept(this);
+    this->level = x;
 }
 
 void PrintVisitor::Visit(Integer *n)

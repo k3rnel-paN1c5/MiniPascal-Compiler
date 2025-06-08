@@ -1,7 +1,6 @@
 #include "ast.h"
 #include <iostream>
 
-
 Node::Node(int lin, int col)
 {
     this->line = lin;
@@ -196,11 +195,11 @@ Assign::Assign(Var *vr, Exp *ex, int lin, int col) : Stmt(lin, col)
 ProcStmt::ProcStmt(Ident *ident, ExpList *exls, int lin, int col) : Stmt(lin, col)
 {
     this->id = ident;
-    if(ident)
-    ident->father = this;
+    if (ident)
+        ident->father = this;
     this->expls = exls;
-    if(expls)
-    expls->father = this;
+    if (expls)
+        expls->father = this;
 }
 
 ExpList::ExpList(Exp *ex, int lin, int col) : Node(lin, col)
@@ -221,6 +220,15 @@ IdExp::IdExp(Ident *ident, int lin, int col) : Exp(lin, col)
 {
     this->id = ident;
     ident->father = this;
+}
+ArrayExp::ArrayExp(Ident *ident, Exp *ind, int lin, int col) : Exp(lin, col)
+{
+    this->id = ident;
+    if(ident)
+        ident->father = this;
+    this->index = ind;
+    if(ind)
+        ind->father = this;
 }
 
 Integer::Integer(int value, int lin, int col) : Exp(lin, col)
@@ -328,8 +336,8 @@ FuncCall::FuncCall(Ident *iden, ExpList *exls, int lin, int col) : Exp(lin, col)
     this->id = iden;
     iden->father = this;
     this->exps = exls;
-    if(exls)
-        exls->father=this;
+    if (exls)
+        exls->father = this;
 }
 
 //* The accept function for Visitor Design Pattern (For printing, type checking, and code generation) *//
@@ -485,6 +493,10 @@ void StdType::accept(Visitor *v)
 }
 
 void IdExp::accept(Visitor *v)
+{
+    v->Visit(this);
+}
+void ArrayExp::accept(Visitor *v)
 {
     v->Visit(this);
 }

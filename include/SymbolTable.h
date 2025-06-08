@@ -17,7 +17,7 @@
 #ifndef SYMBOLTABLE
 #define SYMBOLTABLE
 
-#include "CommonTypes.h" 
+#include "CommonTypes.h"
 #include "ast.h"
 #include "hash_fun.h"
 #include "hash_table.h"
@@ -80,7 +80,9 @@ public:
     string Name;                ///< Symbol name (identifier)
     SymbolKind Kind;            ///< Symbol kind (variable, function, etc.)
     TypeEnum DataType;          ///< Data type (int, real, bool.)
-    int Location;               ///< Memory location for code generation
+    int beginIndex;             ///< Begining index (for Arrays Only)
+    int endIndex;             ///< end index (for Arrays Only)
+    int Offset;                 ///< Memory offset for code generation
     FunctionSignature *funcSig; ///< Function signature (for functions/procedures only)
     /**
      * @brief Constructor for variable symbols
@@ -121,7 +123,8 @@ public:
     Scope *Parent;             ///< Parent scope (null for global scope)
     HashTable *hashTab;        ///< Hash table for this scope
     vector<Scope *> *Children; ///< List of child scopes
-
+    int local_offset;          ///< Current offset for local variables in this scope
+    int param_offset;          ///< Current offset for parameters in this scope
     /**
      * @brief Constructor for Scope
      *

@@ -1,8 +1,8 @@
 program FactorialRecursive;
 
-var
-  result, input : Integer;
-  cont : boolean;
+var result, input : Integer;
+
+var cont : boolean;
 
 // A recursive function to calculate factorial
 function factorial(n: integer) : integer;
@@ -15,9 +15,8 @@ end;
 
 // A procedure to run the test
 procedure RunTest(val : integer);
-var
-    i : integer;
-    msgPrinted : boolean;
+  var i : integer;  
+  var msgPrinted : boolean;
 begin
     { This is a multi-line comment.
       It can span multiple lines. }
@@ -40,5 +39,6 @@ begin
     cont := true;
 
     if cont then
-        RunTest(input)
+        RunTest(input);
+    write(result)
 end

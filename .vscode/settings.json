@@ -82,6 +82,8 @@
         "codecvt": "cpp",
         "execution": "cpp",
         "fstream": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "print": "cpp",
+        "forward_list": "cpp"
     }
 }

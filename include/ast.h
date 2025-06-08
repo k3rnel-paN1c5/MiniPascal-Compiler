@@ -810,6 +810,31 @@ public:
      */
     virtual void accept(Visitor* ); 
 };
+/**
+ * @class ArrayExp
+ * @brief Represents an Array Element expression
+ * 
+ * Contains an identifier that refers to a an array and an index to access the array.
+ */
+class ArrayExp : public Exp
+{
+public:
+    Ident* id; ///< Array identifier
+    Exp* index; ///< Array access index
+    /**
+     * @brief Constructor for IdExp
+     * @param ident Array identifier
+     * @param ind expression representing the access index
+     * @param lin Line number in source code
+     * @param col Column number in source code
+     */
+    ArrayExp(Ident*, Exp*, int, int);
+    /**
+     * @brief Virtual accept method for the Visitor pattern
+     * @param v The visitor object
+     */
+    virtual void accept(Visitor* ); 
+};
 
 /**
  * @class Integer

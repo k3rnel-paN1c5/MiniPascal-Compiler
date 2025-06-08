@@ -20,13 +20,13 @@ FunctionSignature::FunctionSignature(string n, vector<Type*>* params, TypeEnum r
 
 string FunctionSignature::getSignatureString()
 {
-    string res = this->name + '@';
+    string res = this->name + 'D';
     if(this->paramTypes==NULL)
         return res;
     for (int i = 0; i < this->paramTypes->size(); i++)
     {
         if (i > 0)
-            res += ",";
+            res += 'D';
             TypeEnum x;
             if(dynamic_cast<StdType*>(this->paramTypes->at(i))){
                 StdType* s = dynamic_cast<StdType*>(this->paramTypes->at(i));
@@ -48,6 +48,7 @@ Symbol::Symbol(string name, SymbolKind kind, TypeEnum type)
     this->Kind = kind;
     this->DataType = type;
     this->funcSig = NULL;
+    this->Offset = 0; 
 }
 
 Symbol::Symbol(string name, SymbolKind kind, FunctionSignature *sig)
@@ -56,6 +57,8 @@ Symbol::Symbol(string name, SymbolKind kind, FunctionSignature *sig)
     this->Kind = kind;
     this->DataType = sig->returnType;
     this->funcSig = sig;
+    this->Offset = 0; 
+    this->beginIndex = 0;
 }
 
 Scope::Scope()
@@ -63,6 +66,10 @@ Scope::Scope()
     this->hashTab = new HashTable();
     this->Parent = NULL;
     this->Children = new vector<Scope *>;
+    // Initialize offsets. Parameters are at negative offsets from FP.
+    this->param_offset = -1;
+    // Locals are at positive offsets from FP.
+    this->local_offset = 0;
 }
 
 void Scope::AddChildScope(Scope *s)
@@ -83,23 +90,26 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
 {
 
     string key;
+    int offset = 0;
     switch (kind)
     {
     case PARAM_VAR:
         key = "par" + ident->name; // parameter var for function or procedure
+        offset = this->currentScope->param_offset--;
         break;
     case GLOBAL_VAR:
         key = 'g' + ident->name; // global variables
+        offset = this->rootScope->local_offset++;
         break;
     case LOCAL_VAR:
         key = 'l' + ident->name; // local variable
+        offset = this->currentScope->local_offset++;
         break;
     default:
         cout << "Error in symbol table, invalid kind for a variable \n";
         return false;
         break;
     }
-
     Symbol *temp = this->currentScope->hashTab->GetMember(key);
     if (temp)
     {
@@ -107,12 +117,15 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
         return false;
     }
     TypeEnum typ;
+    int beg_indx = 0, end_indx;
     if(dynamic_cast<StdType*>(type)){
         StdType* x = dynamic_cast<StdType*>(type);
         typ = x->type;
     }
     else{
         Array* x = dynamic_cast<Array*>(type);
+        beg_indx = x->beginIndex;
+        end_indx = x->endIndex;
         switch (x->stdType->type)
         {
         case INTTYPE:
@@ -125,11 +138,15 @@ bool SymbolTable::AddSymbol(Ident *ident, SymbolKind kind, Type* type)
             typ = BOOL_ARRAY;
             break;
         default:
+            // ! Should not happen
             cout <<" Error in add symbol\n";
             break;
         }
     }
     Symbol *newSymbol = new Symbol(ident->name, kind, typ);
+    newSymbol->Offset = offset;
+    newSymbol->beginIndex = beg_indx;
+    newSymbol->endIndex = end_indx;
     this->currentScope->hashTab->AddKey(key, newSymbol);
     ident->symbol = newSymbol;
     return true;
@@ -173,28 +190,12 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
 {
     string key;
     Symbol *sym;
-    // first look if there exist a local variable with that name in the currrent scope
-    key = "l" + ident->name;
-    sym = this->currentScope->hashTab->GetMember(key);
-    if (sym)
+    
+    Scope *scope_to_check = this->currentScope;
+    while (scope_to_check != NULL)
     {
-        ident->symbol = sym;
-        return sym;
-    }
-    // now look if there exist a parameter variable with that name in the currrent scope (function/procedure)
-    key = "par" + ident->name;
-    sym = this->currentScope->hashTab->GetMember(key);
-    if (sym)
-    {
-        ident->symbol = sym;
-        return sym;
-    }
-    Scope *temp = this->currentScope;
-    while (temp->Parent != NULL)
-    {
-        temp = temp->Parent;
         key = "l" + ident->name;
-        sym = temp->hashTab->GetMember(key);
+        sym = scope_to_check->hashTab->GetMember(key);
         if (sym)
         {
             ident->symbol = sym;
@@ -202,12 +203,13 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident)
         }
         // now look if there exist a parameter variable with that name in the currrent scope (function/procedure)
         key = "par" + ident->name;
-        sym = temp->hashTab->GetMember(key);
+        sym = scope_to_check->hashTab->GetMember(key);
         if (sym)
         {
             ident->symbol = sym;
             return sym;
         }
+        scope_to_check = scope_to_check->Parent;
     }
     // if there  were  no local variables or parameters
     key = 'g' + ident->name;
@@ -237,10 +239,10 @@ Symbol *SymbolTable::LookUpSymbol(Ident *ident, SymbolKind kind, vector<TypeEnum
         cout << "Error in lookup function/procedure, invalid kind\n";
         break;
     }
-    key += ident->name + '@';
+    key += ident->name + 'D';
     if(paramTypes != NULL)
         for(int i = 0; i <  paramTypes->size(); i++){
-            if(i > 0) key +=',';
+            if(i > 0) key +='D';
             key += TypeEnumToString(paramTypes->at(i));
         }
     sym = this->rootScope->hashTab->GetMember(key);

@@ -1,8 +1,7 @@
 program ControlFlowTest;
 
-var
-  i, limit : Integer;
-  stop : Boolean;
+var i, limit : Integer;
+var stop : Boolean;
 
 begin
     i := 0;
@@ -12,25 +11,29 @@ begin
     // Simple if-then
     if (i = 0) then
         i := 1;
+    write(i); 
 
     // Simple if-then-else
     if (i > 0) then
-        i := 10
+        i := 2
     else
         i := -1;
 
+    write(i); 
     // While loop with a compound statement
-    while (i < limit) and (not stop) do
+    while (i < limit) and (not stop) do   
     begin
         i := i + 1;
+        write(i);
         if i = 5 then
             stop := true
-        else
+        else  // L5
             // Nested compound statement
-            begin
+            begin 
                 limit := limit + 1;
+                write(limit);
                 if limit > 15 then
                   stop := true
-            end
-    end
-end
+            end  // L7
+    end  // L6
+end  // L4
