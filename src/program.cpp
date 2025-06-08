@@ -1,6 +1,7 @@
 #include "ast.h"
 #include "Error.h"
 #include "parser.h"
+#include "CommonTypes.h"
 #include <cstdio>    
 #include <cstdlib>
 #include <iostream>

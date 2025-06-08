@@ -436,8 +436,6 @@ public:
  */
 class TypeVisitor : public Visitor
 {
-class TypeVisitor : public Visitor
-{
 private:
     /**
      * @brief Recursively checks if a statement or block of statements guarantees a return.
@@ -447,8 +445,7 @@ private:
     bool checkReturn(Stmt *statement);
 public:
     Func *currentFunction;         ///< To keep track of the current function context for return type checking
-    bool currentFunctionHasReturn; ///< Flag to check if current function has a return statement
-    Func *currentFunction;         ///< To keep track of the current function context for return type checking
+    bool currentFunctionHasReturn; ///< Flag to check if current function has a return statemen
     /**
      * @brief Constructor for TypeVisitor
      *
@@ -462,18 +459,15 @@ public:
      * @param node The Node to visit
      */
     virtual void Visit(Node *);
-    virtual void Visit(Node *);
     /**
      * @brief Visit method for Statement nodes
      * @param stmt The Statement to visit
      */
     virtual void Visit(Stmt *);
-    virtual void Visit(Stmt *);
     /**
      * @brief Visit method for Program nodes
      * @param prog The Program to visit
      */
-    virtual void Visit(Prog *);
     virtual void Visit(Prog *);
     /**
      * @brief Visit method for Identifier nodes
