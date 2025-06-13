@@ -11,6 +11,7 @@
 DIGIT [0-9]
 ALPHA [a-zA-Z]
 
+%X ML_COMMENT 
 
 %%
 
@@ -24,9 +25,12 @@ ALPHA [a-zA-Z]
 "//".*  {
     //cout  << "One-Line Comment\n";
 }
-"{"[^}]*"}"  {
-    //cout  << "Multi-Line Comment\n";
-}
+"{"      { BEGIN(ML_COMMENT); } 
+
+<ML_COMMENT>"}" { BEGIN(INITIAL); } 
+<ML_COMMENT>[\n] { lin++; col = 0; } 
+<ML_COMMENT>.    { col += yyleng; }
+
 
 [Pp][Rr][Oo][Gg][Rr][Aa][Mm] {
     col += yyleng;
@@ -136,6 +140,7 @@ ALPHA [a-zA-Z]
 }
 
 (({DIGIT}+\.{DIGIT}+([e|E][+-]?{DIGIT}+)?)|(\.{DIGIT}+([e|E][+-]?{DIGIT}+)?)|({DIGIT}+[e|E][+-]?{DIGIT}+)) {
+    col += yyleng;
     yylval.tReal = new Real(atof(yytext), lin, col);
     return KREALNUM;
 }
@@ -198,7 +203,7 @@ ALPHA [a-zA-Z]
 
 . {
     col += yyleng;
-    cout <<"Lexical Error at column: " << col << " row: " << lin+1  << endl;
+    cout <<"Lexical Error at line: " << lin+1 << " column: " << col  << endl;
     return 1;
     }
 

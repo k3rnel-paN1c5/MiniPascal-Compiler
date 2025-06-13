@@ -19,12 +19,16 @@ Procedure Mult(c, g: integer; d : real) ;
 var  test : integer;
 begin
     test := 1;
-    c := c * ( g+test );  
+    c := c * ( g+test) ;  
     write(c)
 end;
 
 begin
     // thiss is a commnt
+    {This is a
+    Multi linne comment 
+    And it is working 
+    }
     Mult(2+4, 3, 1.0); // c = 24
     cnt := sum(-5, 7);
     write(cnt);
@@ -34,7 +38,7 @@ begin
     write(fact);
     x[-2] := -6.0;
     write(x[-2]);
-    x[-1] := 1.1 / x[-2];
+    x[-1] := -1.1 / x[-2];
     write(x[-1]);
     t := true;
     cnt := 5;

@@ -13,23 +13,32 @@ TypeVisitor::TypeVisitor()
     this->currentFunction = nullptr;
 }
 
-bool TypeVisitor::checkReturn(Stmt* statement) {
-    if (!statement) {
+bool TypeVisitor::checkReturn(Stmt *statement)
+{
+    if (!statement)
+    {
         return false;
     }
 
-    if (auto* assign = dynamic_cast<Assign*>(statement)) {
-        if (this->currentFunction && assign->var->id->name == this->currentFunction->id->name) {
+    if (auto *assign = dynamic_cast<Assign *>(statement))
+    {
+        if (this->currentFunction && assign->var->id->name == this->currentFunction->id->name)
+        {
             return true;
         }
-    } else if (auto* compStmt = dynamic_cast<CompStmt*>(statement)) {
-        if (compStmt->optitonalStmts && compStmt->optitonalStmts->stmtList) {
-            if(compStmt->optitonalStmts->stmtList->stmts)
-                if(compStmt->optitonalStmts->stmtList->stmts->size()!=0 && compStmt->optitonalStmts->stmtList->stmts->back())
-            // A compound statement returns if its last statement return
-            return checkReturn(compStmt->optitonalStmts->stmtList->stmts->back());
+    }
+    else if (auto *compStmt = dynamic_cast<CompStmt *>(statement))
+    {
+        if (compStmt->optitonalStmts && compStmt->optitonalStmts->stmtList)
+        {
+            if (compStmt->optitonalStmts->stmtList->stmts)
+                if (compStmt->optitonalStmts->stmtList->stmts->size() != 0 && compStmt->optitonalStmts->stmtList->stmts->back())
+                    // A compound statement returns if its last statement return
+                    return checkReturn(compStmt->optitonalStmts->stmtList->stmts->back());
         }
-    }  else if (auto* ifThenElse = dynamic_cast<IfThenElse*>(statement)) {
+    }
+    else if (auto *ifThenElse = dynamic_cast<IfThenElse *>(statement))
+    {
         // An if-then-else returns if BOTH branches return.
         return checkReturn(ifThenElse->trueStmt) && checkReturn(ifThenElse->falseStmt);
     }
@@ -132,10 +141,9 @@ void TypeVisitor::Visit(SubDec *n)
 
     Func *previousFunctionContext = this->currentFunction;
 
-
     if (funcNode)
     {
-        this->currentFunction = funcNode; 
+        this->currentFunction = funcNode;
     }
     else
     {
@@ -762,17 +770,30 @@ void TypeVisitor::Visit(GT *b)
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
+
+    if (b->leftExp->type == VOID || b->rightExp->type == VOID)
     {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
+        b->type = VOID;
+        return;
+    }
+
+    bool leftIsNumeric = (b->leftExp->type == INTTYPE || b->leftExp->type == REALTYPE);
+    bool rightIsNumeric = (b->rightExp->type == INTTYPE || b->rightExp->type == REALTYPE);
+
+    if (leftIsNumeric && rightIsNumeric)
+    {
+        if (b->leftExp->type != b->rightExp->type)
         {
-            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
+            errorStack->AddWarning("Implicitly casting integer to real in comparison.", b->line + 1, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (greater than) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
-            return;
-        }
+    }
+    else
+    {
+        errorStack->AddError("Incompatible types for '>' operator: Cannot compare " +
+                                 TypeEnumToString(b->leftExp->type) + " and " +
+                                 TypeEnumToString(b->rightExp->type) + ".",
+                             b->line + 1, b->column);
+        b->type = VOID;
     }
 }
 
@@ -781,17 +802,30 @@ void TypeVisitor::Visit(LT *b)
     b->leftExp->accept(this);
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
+
+    if (b->leftExp->type == VOID || b->rightExp->type == VOID)
     {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
+        b->type = VOID;
+        return;
+    }
+
+    bool leftIsNumeric = (b->leftExp->type == INTTYPE || b->leftExp->type == REALTYPE);
+    bool rightIsNumeric = (b->rightExp->type == INTTYPE || b->rightExp->type == REALTYPE);
+
+    if (leftIsNumeric && rightIsNumeric)
+    {
+        if (b->leftExp->type != b->rightExp->type)
         {
-            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
+            errorStack->AddWarning("Implicitly casting integer to real in comparison.", b->line + 1, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (Less than) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
-            return;
-        }
+    }
+    else
+    {
+        errorStack->AddError("Incompatible types for '<' operator: Cannot compare " +
+                                 TypeEnumToString(b->leftExp->type) + " and " +
+                                 TypeEnumToString(b->rightExp->type) + ".",
+                             b->line + 1, b->column);
+        b->type = VOID;
     }
 }
 
@@ -801,17 +835,29 @@ void TypeVisitor::Visit(GE *b)
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
 
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
+    if (b->leftExp->type == VOID || b->rightExp->type == VOID)
     {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
+        b->type = VOID;
+        return;
+    }
+
+    bool leftIsNumeric = (b->leftExp->type == INTTYPE || b->leftExp->type == REALTYPE);
+    bool rightIsNumeric = (b->rightExp->type == INTTYPE || b->rightExp->type == REALTYPE);
+
+    if (leftIsNumeric && rightIsNumeric)
+    {
+        if (b->leftExp->type != b->rightExp->type)
         {
-            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
+            errorStack->AddWarning("Implicitly casting integer to real in comparison.", b->line + 1, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (greater than or equal) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
-            return;
-        }
+    }
+    else
+    {
+        errorStack->AddError("Incompatible types for '>=' operator: Cannot compare " +
+                                 TypeEnumToString(b->leftExp->type) + " and " +
+                                 TypeEnumToString(b->rightExp->type) + ".",
+                             b->line + 1, b->column);
+        b->type = VOID;
     }
 }
 
@@ -821,17 +867,29 @@ void TypeVisitor::Visit(LE *b)
     b->rightExp->accept(this);
     b->type = BOOLTYPE;
 
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
+    if (b->leftExp->type == VOID || b->rightExp->type == VOID)
     {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
+        b->type = VOID;
+        return;
+    }
+
+    bool leftIsNumeric = (b->leftExp->type == INTTYPE || b->leftExp->type == REALTYPE);
+    bool rightIsNumeric = (b->rightExp->type == INTTYPE || b->rightExp->type == REALTYPE);
+
+    if (leftIsNumeric && rightIsNumeric)
+    {
+        if (b->leftExp->type != b->rightExp->type)
         {
-            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
+            errorStack->AddWarning("Implicitly casting integer to real in comparison.", b->line + 1, b->column);
         }
-        else
-        {
-            errorStack->AddError("Can't evaluate (less than or equal) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
-            return;
-        }
+    }
+    else
+    {
+        errorStack->AddError("Incompatible types for '<=' operator: Cannot compare " +
+                                 TypeEnumToString(b->leftExp->type) + " and " +
+                                 TypeEnumToString(b->rightExp->type) + ".",
+                             b->line + 1, b->column);
+        b->type = VOID;
     }
 }
 
@@ -839,19 +897,18 @@ void TypeVisitor::Visit(ET *b)
 {
     b->leftExp->accept(this);
     b->rightExp->accept(this);
-    b->type = BOOLTYPE;
 
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
+    b->type = BOOLTYPE;
+    if (b->leftExp->type == b->rightExp->type)
+        return;
+    else if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
     {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
-        }
-        else
-        {
-            errorStack->AddError("Can't evaluate (equals) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
-            return;
-        }
+        errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
+    }
+    else
+    {
+        errorStack->AddError("Can't evaluate '=' operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
+        return;
     }
 }
 
@@ -861,18 +918,16 @@ void TypeVisitor::Visit(NE *b)
     b->rightExp->accept(this);
 
     b->type = BOOLTYPE;
-
-    if (b->leftExp->type != b->rightExp->type || b->leftExp->type == BOOLTYPE)
+    if (b->leftExp->type == b->rightExp->type)
+        return;
+    else if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
     {
-        if ((b->leftExp->type == REALTYPE && b->rightExp->type == INTTYPE) || (b->rightExp->type == REALTYPE && b->leftExp->type == INTTYPE))
-        {
-            errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
-        }
-        else
-        {
-            errorStack->AddError("Can't evaluate (not equal tp) operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
-            return;
-        }
+        errorStack->AddWarning("Implicitly casting integer to real", b->line, b->column);
+    }
+    else
+    {
+        errorStack->AddError("Can't evaluate '<>' operator for expressions of type : " + TypeEnumToString(b->rightExp->type) + " and: " + TypeEnumToString(b->leftExp->type), b->line + 1, b->column);
+        return;
     }
 }
 

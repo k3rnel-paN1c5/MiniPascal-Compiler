@@ -15,6 +15,5 @@ var realArray : Array[0..5] of Real;
 var boolArray : Array[-5..-1] of Boolean;
 
 begin
-    // A minimal body is needed for the parser to accept the program.
-    x := 1
+    // An empty body.
 end
