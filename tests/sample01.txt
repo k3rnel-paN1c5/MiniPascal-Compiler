@@ -5,12 +5,14 @@ var t, y : boolean;
 function sum(a: integer) : integer ;
 begin
    a := a + 6;
+   write(a);
    sum := a
 end;
 //overloading
 function sum( a, b: integer) : integer ;
 begin
    a := a+b;
+   write(a);
    sum := a
 end;
 Procedure Mult(c, g: integer; d : real) ;
@@ -25,10 +27,15 @@ begin
     // thiss is a commnt
     Mult(2+4, 3, 1.0); // c = 24
     cnt := sum(-5, 7);
+    write(cnt);
     cnt := sum(cnt);
+    write(cnt);
     fact := 1;
+    write(fact);
     x[-2] := -6.0;
+    write(x[-2]);
     x[-1] := 1.1 / x[-2];
+    write(x[-1]);
     t := true;
     cnt := 5;
     while cnt > 0 AND Not ( fact = 0 )   do

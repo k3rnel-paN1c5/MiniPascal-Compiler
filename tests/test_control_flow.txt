@@ -27,13 +27,13 @@ begin
         write(i);
         if i = 5 then
             stop := true
-        else  // L5
+        else  
             // Nested compound statement
             begin 
                 limit := limit + 1;
                 write(limit);
                 if limit > 15 then
                   stop := true
-            end  // L7
-    end  // L6
-end  // L4
+            end 
+    end
+end  

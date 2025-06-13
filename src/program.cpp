@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    cout << "--- AST ---" << endl;
+    // cout << "--- AST ---" << endl;
     Visitor* printVisitor = new PrintVisitor();
     // root->accept(printVisitor);
 

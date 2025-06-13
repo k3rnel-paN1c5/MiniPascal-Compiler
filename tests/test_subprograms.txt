@@ -12,12 +12,15 @@ function Multiply(a: integer; b: integer) : integer;
 var
   local_result : integer;
 begin
+   write(a);
+   write(b);
    local_result := a * b;
    Multiply := local_result
 end;
 
 // Procedure that calls another function
 procedure Calculate(x : integer);
+var local_result:integer;
 begin
    global_var := Multiply(x, 2);
    DoNothing() // Test procedure call with no args

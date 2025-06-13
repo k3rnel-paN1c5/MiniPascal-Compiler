@@ -199,7 +199,7 @@ void CodeGenVisitor::Visit(SubDec *n)
 
     emit("RETURN");
 
-    currentFunctionContext = nullptr; // Reset context
+    currentFunctionContext = nullptr;
 }
 
 void CodeGenVisitor::Visit(Func *n) { /* Handled in SubDec */ }
