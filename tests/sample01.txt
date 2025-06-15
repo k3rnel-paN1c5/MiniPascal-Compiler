@@ -17,9 +17,14 @@ begin
 end;
 Procedure Mult(c, g: integer; d : real) ;
 var  test : integer;
+var arr : Array[2..4] of real;
 begin
     test := 1;
-    c := c * ( g+test) ;  
+    d := 69.69;
+    c := c * ( g+test) ; 
+    arr[2] := d; 
+    write(arr[2]);
+    write(d);
     write(c)
 end;
 

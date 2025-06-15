@@ -1103,10 +1103,10 @@ public:
 
 /**
  * @class IntDiv
- * @brief Represents a integer divison operation
+ * @brief Represents an integer divison operation
  * 
- * Binary operation for computing the remainder when dividing
- * the left expression by the right.
+ * Binary operation for computing the result of integer divison 
+ * of the left expression by the right.
  */
 
 class IntDiv : public BinOp 
