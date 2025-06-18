@@ -907,13 +907,7 @@ public:
     virtual void accept(Visitor* ); 
 };
 
-/**
- * @class FuncCall
- * @brief Represents a function call expression
- * 
- * Contains an identifier and a list of expressions that
- * represent the arguments to a function call.
- */
+
 
 /**
  * @class UnaryMinus
@@ -937,6 +931,14 @@ public:
      */
     virtual void accept(Visitor* ); 
 };
+
+/**
+ * @class FuncCall
+ * @brief Represents a function call expression
+ * 
+ * Contains an identifier and a list of expressions that
+ * represent the arguments to a function call.
+ */
 class FuncCall : public Exp
 {
 public:
@@ -1420,7 +1422,7 @@ public:
     Ident* id; ///< the identifies of the variable
     TypeEnum type; ///< the type of the variable
     Var(Ident*, int, int);
-    /**
+    /** 
      * @brief Virtual accept method for the Visitor pattern
      * @param v The visitor object
      */
